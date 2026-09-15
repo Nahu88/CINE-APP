@@ -18,7 +18,6 @@ export class Registro {
   private auth = inject(Auth);
   private router = inject(Router);
 
-  // Opciones cerradas (select) en vez de texto libre: los datos quedan uniformes para los reportes
   readonly tiposSangre = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', '0+', '0-'];
   readonly coloresOjos = ['Marrón', 'Negro', 'Miel', 'Verde', 'Azul', 'Gris', 'Otro'];
   readonly meses = [
@@ -26,8 +25,6 @@ export class Registro {
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
   ];
 
-  // Signals para el estado del envío: la respuesta de Supabase llega de forma asíncrona
-  // y las señales son las que avisan a la vista que se tiene que actualizar.
   enviando = signal(false);
   errorServidor = signal<string | null>(null);
 
@@ -37,7 +34,7 @@ export class Registro {
         nonNullable: true,
         validators: [Validators.required, Validators.email],
       }),
-      // Mínimo 6 porque es el mínimo que exige Supabase Auth por defecto
+      // 6 es el mínimo de Supabase Auth
       clave: new FormControl('', {
         nonNullable: true,
         validators: [Validators.required, Validators.minLength(6)],
@@ -54,8 +51,7 @@ export class Registro {
         nonNullable: true,
         validators: [Validators.required, Validators.maxLength(50), soloLetrasValidator()],
       }),
-      // Día / mes / año por separado en vez de un calendario: el cliente pidió (mail 28/02)
-      // no tener que buscar la fecha navegando un calendario, y para un nacimiento eso es retroceder años.
+      // Sin calendario: lo pidió el cliente en el mail del 28/02
       fecha_nacimiento: new FormGroup(
         {
           dia: new FormControl('', {
@@ -73,7 +69,6 @@ export class Registro {
         },
         { validators: [fechaNacimientoValidator()] }
       ),
-      // Obligatorios porque el cliente los pide explícitamente en el mail inicial
       tipo_sangre: new FormControl('', {
         nonNullable: true,
         validators: [Validators.required],
@@ -94,7 +89,6 @@ export class Registro {
     { validators: [clavesCoincidenValidator('clave', 'confirmarClave')] }
   );
 
-  // Muestra el error solo si el usuario ya pasó por el campo, para no llenar de rojo un formulario vacío
   tieneError(campo: string, error: string): boolean {
     const control = this.formRegistro.get(campo);
     return !!control && control.touched && control.hasError(error);
@@ -107,7 +101,7 @@ export class Registro {
     );
   }
 
-  // El año es el último campo de la fecha: cuando el usuario pasa por él se considera que terminó de cargarla
+  // Se muestra recién cuando el usuario pasó por el año, el último campo de la fecha
   fechaIncompleta(): boolean {
     const { dia, mes, anio } = this.formRegistro.controls.fecha_nacimiento.controls;
     return anio.touched && [dia, mes, anio].some((control) => control.hasError('required'));
@@ -119,8 +113,6 @@ export class Registro {
   }
 
   async registrar() {
-    // En vez de deshabilitar el botón, al enviar se marcan todos los campos
-    // para que el usuario vea exactamente qué le falta completar.
     if (this.formRegistro.invalid) {
       this.formRegistro.markAllAsTouched();
       return;
@@ -147,11 +139,10 @@ export class Registro {
       return;
     }
 
-    // Con la confirmación de email desactivada, signUp ya deja la sesión iniciada
+    // signUp ya deja la sesión iniciada porque la confirmación de email está desactivada
     this.router.navigate(['/home']);
   }
 
-  // La columna date de Postgres espera el formato AAAA-MM-DD
   private aFechaIso(fecha: { dia: string; mes: string; anio: string }): string {
     const dia = fecha.dia.padStart(2, '0');
     const mes = fecha.mes.padStart(2, '0');

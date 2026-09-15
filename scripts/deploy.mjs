@@ -14,8 +14,7 @@ const sinDeploy = process.argv.includes('--sin-deploy');
 
 const correr = (cmd) => execSync(cmd, { stdio: 'inherit' });
 
-// 1) Limpiar public/ (solo queda favicon.ico). Hay que hacerlo ANTES del build,
-//    porque Angular copia todo lo que haya en public/ dentro de dist.
+// Limpiar public/ ANTES del build: Angular copia su contenido dentro de dist.
 console.log('\n[1/4] Limpiando public/ ...');
 for (const archivo of readdirSync(PUBLIC)) {
   if (archivo !== 'favicon.ico') {
@@ -23,15 +22,12 @@ for (const archivo of readdirSync(PUBLIC)) {
   }
 }
 
-// 2) Build de producción
 console.log('\n[2/4] Compilando (ng build) ...');
 correr('npx ng build');
 
-// 3) Copiar el build a public/
 console.log('\n[3/4] Copiando dist/browser a public/ ...');
 cpSync(BUILD, PUBLIC, { recursive: true, force: true });
 
-// 4) Publicar
 if (sinDeploy) {
   console.log('\n[4/4] Omitido (--sin-deploy). public/ quedó listo para publicar.');
 } else {

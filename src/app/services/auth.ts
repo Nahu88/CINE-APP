@@ -15,13 +15,9 @@ export interface DatosRegistro {
 
 @Service()
 export class Auth {
-  // Usa el cliente compartido: si cada servicio creara su propio cliente, cada uno
-  // manejaría su propia sesión y las consultas con RLS podrían ir sin el usuario logueado.
+  // Cliente compartido para que toda la app use la misma sesión.
   private supabase = inject(SupabaseService).client;
 
-  // Paso 1: crea el usuario en auth.users.
-  // Paso 2: si salió bien, crea su fila en perfiles con el resto de los datos.
-  // Son dos pasos porque son dos tablas distintas (ver explicación en el chat).
   async registrar(datos: DatosRegistro) {
     const { data: authData, error: authError } = await this.supabase.auth.signUp({
       email: datos.email,
@@ -32,8 +28,7 @@ export class Auth {
       return { data: null, error: authError };
     }
 
-    // El insert en perfiles necesita la sesión del usuario recién creado para pasar la política RLS.
-    // Si no hay sesión es porque la confirmación de email está activada en Supabase.
+    // Sin sesión RLS rechaza el insert en perfiles (pasa si "Confirm email" está activado).
     if (!authData.session) {
       return {
         data: authData,
@@ -62,9 +57,7 @@ export class Auth {
       .insert(nuevoPerfil);
 
     if (perfilError) {
-      // El usuario de auth ya se creó pero el perfil falló.
-      // Se informa el error para manejarlo en el formulario;
-      // no se revierte el signUp automáticamente desde el cliente.
+      // El usuario de auth queda creado aunque falle el perfil.
       return { data: authData, error: perfilError };
     }
 

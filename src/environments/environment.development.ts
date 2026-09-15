@@ -1,4 +1,3 @@
-// Entorno de desarrollo (usado por `ng serve`)
 export const environment = {
   production: false,
   supabaseUrl: 'https://pxyibglkqggaskxqkwjg.supabase.co',

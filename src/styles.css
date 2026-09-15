@@ -1,5 +1,4 @@
-/* Tokens de diseño PROVISORIOS: cuando se defina la paleta y tipografía final
-   se cambian solo estos valores y se actualiza toda la app. */
+/* Tokens de diseño provisorios hasta definir la paleta final */
 :root {
   --color-fondo: #0f0f12;
   --color-superficie: #1a1a21;

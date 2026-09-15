@@ -2,8 +2,7 @@ import { Service } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
 
-// Único cliente de Supabase de toda la app. Los demás servicios usan `client`
-// en vez de crear el suyo, para que todos compartan la misma sesión del usuario.
+// Único cliente de Supabase de la app: los demás servicios usan `client`.
 @Service()
 export class SupabaseService {
   private supabase: SupabaseClient = createClient(

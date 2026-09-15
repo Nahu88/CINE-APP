@@ -1,8 +1,6 @@
 import { Routes } from '@angular/router';
 import { rolGuard } from './guards/rol.guard';
 
-// loadComponent: cada página se descarga recién cuando se navega a ella (lazy loading),
-// así el bundle inicial no carga el panel de admin a un cliente que nunca lo va a usar.
 export const routes: Routes = [
   {
     path: '',
