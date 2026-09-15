@@ -1,0 +1,139 @@
+.registro {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem 1rem;
+}
+
+.tarjeta {
+  width: 100%;
+  max-width: 36rem;
+  padding: 2rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.bajada {
+  margin: 0.25rem 0 1.5rem;
+  color: var(--color-texto-suave);
+}
+
+fieldset {
+  display: grid;
+  gap: 1rem;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  border: 0;
+}
+
+legend {
+  margin-bottom: 0.75rem;
+  padding: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-acento);
+}
+
+.opcional {
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--color-texto-suave);
+}
+
+.fila {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+}
+
+.campo {
+  display: grid;
+  gap: 0.35rem;
+  align-content: start;
+}
+
+label {
+  font-size: 0.9rem;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  font: inherit;
+  color: var(--color-texto);
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde);
+  border-radius: calc(var(--radio) / 2);
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid var(--color-acento);
+  outline-offset: 1px;
+}
+
+.fecha {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr 6rem;
+  gap: 0.5rem;
+}
+
+input.ng-invalid.ng-touched,
+select.ng-invalid.ng-touched,
+input.invalido,
+.fecha.invalido input,
+.fecha.invalido select {
+  border-color: var(--color-error);
+}
+
+.error {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-error);
+}
+
+.aviso {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: calc(var(--radio) / 2);
+}
+
+.aviso-error {
+  color: var(--color-error);
+  background: color-mix(in srgb, var(--color-error) 15%, transparent);
+}
+
+button {
+  width: 100%;
+  padding: 0.8rem;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-fondo);
+  background: var(--color-acento);
+  border: 0;
+  border-radius: calc(var(--radio) / 2);
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.pie {
+  margin: 1.25rem 0 0;
+  text-align: center;
+  color: var(--color-texto-suave);
+}
+
+.pie a {
+  color: var(--color-acento);
+}

@@ -1,0 +1,189 @@
+<main class="registro">
+  <section class="tarjeta">
+    <header>
+      <h1>Crear cuenta</h1>
+      <p class="bajada">Registrate para comprar tus entradas más rápido.</p>
+    </header>
+
+    <form [formGroup]="formRegistro" (ngSubmit)="registrar()">
+      <fieldset>
+        <legend>Datos de acceso</legend>
+
+        <div class="campo">
+          <label for="email">Email</label>
+          <input id="email" type="email" formControlName="email" autocomplete="email" />
+          @if (tieneError('email', 'required')) {
+            <p class="error">Ingresá tu email.</p>
+          } @else if (tieneError('email', 'email')) {
+            <p class="error">El formato del email no es válido.</p>
+          }
+        </div>
+
+        <div class="fila">
+          <div class="campo">
+            <label for="clave">Contraseña</label>
+            <input id="clave" type="password" formControlName="clave" autocomplete="new-password" />
+            @if (tieneError('clave', 'required')) {
+              <p class="error">Ingresá una contraseña.</p>
+            } @else if (tieneError('clave', 'minlength')) {
+              <p class="error">Tiene que tener al menos 6 caracteres.</p>
+            }
+          </div>
+
+          <div class="campo">
+            <label for="confirmar-clave">Repetir contraseña</label>
+            <input
+              id="confirmar-clave"
+              type="password"
+              formControlName="confirmarClave"
+              autocomplete="new-password"
+              [class.invalido]="clavesNoCoinciden()"
+            />
+            @if (tieneError('confirmarClave', 'required')) {
+              <p class="error">Repetí la contraseña.</p>
+            } @else if (clavesNoCoinciden()) {
+              <p class="error">Las contraseñas no coinciden.</p>
+            }
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Datos personales</legend>
+
+        <div class="fila">
+          <div class="campo">
+            <label for="nombre">Nombre</label>
+            <input id="nombre" type="text" formControlName="nombre" autocomplete="given-name" />
+            @if (tieneError('nombre', 'required')) {
+              <p class="error">Ingresá tu nombre.</p>
+            } @else if (tieneError('nombre', 'soloLetras')) {
+              <p class="error">Solo puede contener letras.</p>
+            } @else if (tieneError('nombre', 'maxlength')) {
+              <p class="error">Máximo 50 caracteres.</p>
+            }
+          </div>
+
+          <div class="campo">
+            <label for="apellido">Apellido</label>
+            <input id="apellido" type="text" formControlName="apellido" autocomplete="family-name" />
+            @if (tieneError('apellido', 'required')) {
+              <p class="error">Ingresá tu apellido.</p>
+            } @else if (tieneError('apellido', 'soloLetras')) {
+              <p class="error">Solo puede contener letras.</p>
+            } @else if (tieneError('apellido', 'maxlength')) {
+              <p class="error">Máximo 50 caracteres.</p>
+            }
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="fecha-dia">Fecha de nacimiento</label>
+          <div class="fecha" formGroupName="fecha_nacimiento" [class.invalido]="fechaConError()">
+            <input
+              id="fecha-dia"
+              type="text"
+              inputmode="numeric"
+              maxlength="2"
+              placeholder="DD"
+              aria-label="Día"
+              formControlName="dia"
+              autocomplete="bday-day"
+            />
+            <select aria-label="Mes" formControlName="mes" autocomplete="bday-month">
+              <option value="" disabled>Mes</option>
+              @for (mes of meses; track mes; let i = $index) {
+                <option [value]="i + 1">{{ mes }}</option>
+              }
+            </select>
+            <input
+              type="text"
+              inputmode="numeric"
+              maxlength="4"
+              placeholder="AAAA"
+              aria-label="Año"
+              formControlName="anio"
+              autocomplete="bday-year"
+            />
+          </div>
+          @if (fechaIncompleta()) {
+            <p class="error">Completá día, mes y año.</p>
+          } @else if (
+            tieneError('fecha_nacimiento.dia', 'pattern') ||
+            tieneError('fecha_nacimiento.anio', 'pattern') ||
+            tieneError('fecha_nacimiento', 'fechaInexistente')
+          ) {
+            <p class="error">Esa fecha no existe.</p>
+          } @else if (tieneError('fecha_nacimiento', 'fechaFutura')) {
+            <p class="error">La fecha no puede ser futura.</p>
+          } @else if (tieneError('fecha_nacimiento', 'fechaDemasiadoAntigua')) {
+            <p class="error">Revisá el año ingresado.</p>
+          }
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Otros datos</legend>
+
+        <div class="fila">
+          <div class="campo">
+            <label for="tipo-sangre">Tipo de sangre</label>
+            <select id="tipo-sangre" formControlName="tipo_sangre">
+              <option value="" disabled>Elegí una opción</option>
+              @for (tipo of tiposSangre; track tipo) {
+                <option [value]="tipo">{{ tipo }}</option>
+              }
+            </select>
+            @if (tieneError('tipo_sangre', 'required')) {
+              <p class="error">Elegí tu tipo de sangre.</p>
+            }
+          </div>
+
+          <div class="campo">
+            <label for="color-ojos">Color de ojos</label>
+            <select id="color-ojos" formControlName="color_ojos">
+              <option value="" disabled>Elegí una opción</option>
+              @for (color of coloresOjos; track color) {
+                <option [value]="color">{{ color }}</option>
+              }
+            </select>
+            @if (tieneError('color_ojos', 'required')) {
+              <p class="error">Elegí tu color de ojos.</p>
+            }
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="dias-vacaciones">Días de vacaciones por año</label>
+          <input
+            id="dias-vacaciones"
+            type="number"
+            min="0"
+            max="365"
+            step="1"
+            formControlName="dias_vacaciones"
+          />
+          @if (tieneError('dias_vacaciones', 'required')) {
+            <p class="error">Ingresá tus días de vacaciones anuales.</p>
+          } @else if (
+            tieneError('dias_vacaciones', 'min') ||
+            tieneError('dias_vacaciones', 'max') ||
+            tieneError('dias_vacaciones', 'pattern')
+          ) {
+            <p class="error">Ingresá un número entero entre 0 y 365.</p>
+          }
+        </div>
+      </fieldset>
+
+      @if (errorServidor()) {
+        <p class="aviso aviso-error" role="alert">{{ errorServidor() }}</p>
+      }
+
+      <button type="submit" [disabled]="enviando()">
+        {{ enviando() ? 'Creando cuenta…' : 'Crear cuenta' }}
+      </button>
+    </form>
+
+    <p class="pie">¿Ya tenés cuenta? <a routerLink="/login">Iniciá sesión</a></p>
+  </section>
+</main>
