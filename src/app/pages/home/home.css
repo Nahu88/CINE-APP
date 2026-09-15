@@ -62,7 +62,7 @@ h1 {
   max-width: 38rem;
   margin: 1.25rem 0 2rem;
   font-size: 1.05rem;
-  color: #cfcac0;
+  color: #c9d3ee;
 }
 
 .hero-acciones {
@@ -202,7 +202,7 @@ h1 {
 }
 
 .chip.activo {
-  color: #1a1204;
+  color: var(--color-sobre-acento);
   background: var(--color-acento);
   border-color: var(--color-acento);
 }

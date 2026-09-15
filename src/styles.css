@@ -1,15 +1,17 @@
 /* Tokens de diseño: la paleta y tipografía de toda la app se cambian desde acá */
 :root {
-  --color-fondo: #0a0a0d;
-  --color-superficie: #14141a;
-  --color-superficie-2: #1c1c24;
-  --color-borde: #2a2a33;
-  --color-texto: #f4f1ea;
-  --color-texto-suave: #9d998f;
-  --color-acento: #f2b33d;
-  --color-terciopelo: #c8243f;
-  --color-error: #ff6b6b;
-  --color-ok: #5fd49a;
+  --color-fondo: #0b1020;
+  --color-superficie: #141c33;
+  --color-superficie-2: #1c2745;
+  --color-borde: #2c3a63;
+  --color-texto: #eaf0ff;
+  --color-texto-suave: #98a4c6;
+  --color-acento: #3ed6cd;
+  --color-acento-claro: #63e4dc;
+  --color-sobre-acento: #06202b;
+  --color-terciopelo: #ff5470;
+  --color-error: #ff6b81;
+  --color-ok: #4ade9b;
   --radio: 14px;
   --radio-chico: 8px;
   --ancho-maximo: 1200px;
@@ -82,12 +84,12 @@ a {
 }
 
 .boton-primario {
-  color: #1a1204;
+  color: var(--color-sobre-acento);
   background: var(--color-acento);
 }
 
 .boton-primario:hover {
-  background: #ffc75a;
+  background: var(--color-acento-claro);
 }
 
 .boton-secundario {
