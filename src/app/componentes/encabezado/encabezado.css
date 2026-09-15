@@ -1,0 +1,91 @@
+:host {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: block;
+}
+
+.encabezado {
+  background: rgb(10 10 13 / 0.75);
+  backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid rgb(255 255 255 / 0.06);
+}
+
+.barra {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  min-height: 4rem;
+}
+
+.marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+}
+
+.marca svg {
+  width: 1.9rem;
+  height: 1.9rem;
+  color: var(--color-acento);
+}
+
+.marca-texto {
+  font-family: var(--fuente-titulos);
+  font-size: 1.75rem;
+  white-space: nowrap;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.navegacion {
+  display: none;
+  gap: 1.5rem;
+}
+
+.navegacion a {
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--color-texto-suave);
+  transition: color 0.15s;
+}
+
+.navegacion a:hover {
+  color: var(--color-texto);
+}
+
+.acciones {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.acciones .boton {
+  padding: 0.5rem 0.9rem;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 26rem) {
+  .barra {
+    gap: 0.75rem;
+  }
+
+  .marca-texto {
+    font-size: 1.4rem;
+  }
+
+  .acciones .boton {
+    padding: 0.45rem 0.7rem;
+    font-size: 0.82rem;
+  }
+}
+
+@media (min-width: 48rem) {
+  .navegacion {
+    display: flex;
+  }
+}

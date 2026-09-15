@@ -1,5 +1,5 @@
 .registro {
-  min-height: 100vh;
+  min-height: calc(100vh - 4rem);
   display: grid;
   place-items: center;
   padding: 2rem 1rem;

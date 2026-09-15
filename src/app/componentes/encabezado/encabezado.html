@@ -1,0 +1,24 @@
+<header class="encabezado">
+  <div class="contenedor barra">
+    <a routerLink="/home" class="marca" aria-label="Cine Paraíso, ir al inicio">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <path
+          fill="currentColor"
+          d="M7 6h18a3 3 0 0 1 3 3v3.2a3.8 3.8 0 0 0 0 7.6V23a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-3.2a3.8 3.8 0 0 0 0-7.6V9a3 3 0 0 1 3-3Z"
+        />
+        <path d="M12 8v16" stroke="var(--color-fondo)" stroke-width="1.6" stroke-dasharray="2 2.4" />
+      </svg>
+      <span class="marca-texto">Cine Paraíso</span>
+    </a>
+
+    <nav class="navegacion" aria-label="Principal">
+      <a routerLink="/home" fragment="cartelera">Cartelera</a>
+      <a routerLink="/home" fragment="proximamente">Próximamente</a>
+    </nav>
+
+    <div class="acciones">
+      <a routerLink="/login" class="boton boton-secundario">Ingresar</a>
+      <a routerLink="/registro" class="boton boton-primario">Crear cuenta</a>
+    </div>
+  </div>
+</header>
