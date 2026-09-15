@@ -1,15 +1,20 @@
-/* Tokens de diseño provisorios hasta definir la paleta final */
+/* Tokens de diseño: la paleta y tipografía de toda la app se cambian desde acá */
 :root {
-  --color-fondo: #0f0f12;
-  --color-superficie: #1a1a21;
-  --color-borde: #2e2e38;
-  --color-texto: #f2f0eb;
-  --color-texto-suave: #a7a3a0;
-  --color-acento: #e0b04a;
+  --color-fondo: #0a0a0d;
+  --color-superficie: #14141a;
+  --color-superficie-2: #1c1c24;
+  --color-borde: #2a2a33;
+  --color-texto: #f4f1ea;
+  --color-texto-suave: #9d998f;
+  --color-acento: #f2b33d;
+  --color-terciopelo: #c8243f;
   --color-error: #ff6b6b;
   --color-ok: #5fd49a;
-  --radio: 12px;
-  --fuente-base: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --radio: 14px;
+  --radio-chico: 8px;
+  --ancho-maximo: 1200px;
+  --fuente-base: 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --fuente-titulos: 'Big Shoulders Display', 'Arial Narrow', Impact, sans-serif;
   color-scheme: dark;
 }
 
@@ -19,10 +24,99 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   font-family: var(--fuente-base);
   line-height: 1.5;
   color: var(--color-texto);
   background: var(--color-fondo);
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-acento);
+  outline-offset: 2px;
+}
+
+/* Deja lugar para el encabezado fijo al saltar a una sección */
+[id] {
+  scroll-margin-top: 5rem;
+}
+
+.contenedor {
+  width: min(100% - 2rem, var(--ancho-maximo));
+  margin-inline: auto;
+}
+
+.boton {
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.4rem;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+}
+
+.boton:active {
+  transform: scale(0.97);
+}
+
+.boton-primario {
+  color: #1a1204;
+  background: var(--color-acento);
+}
+
+.boton-primario:hover {
+  background: #ffc75a;
+}
+
+.boton-secundario {
+  color: var(--color-texto);
+  background: rgb(255 255 255 / 0.04);
+  border-color: var(--color-borde);
+}
+
+.boton-secundario:hover {
+  border-color: var(--color-texto-suave);
+}
+
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
 }
