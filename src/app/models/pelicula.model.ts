@@ -14,3 +14,7 @@ export interface Genero {
   id: number;
   nombre: string;
 }
+// Película con los nombres de sus géneros (join con peliculas_generos).
+export interface PeliculaConGeneros extends Pelicula {
+  generos: string[];
+}

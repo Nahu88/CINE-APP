@@ -1,0 +1,31 @@
+<article class="card">
+  <div class="poster">
+    @if (pelicula().imagen_url) {
+      <img [src]="pelicula().imagen_url" [alt]="'Póster de ' + pelicula().nombre" loading="lazy" />
+    } @else {
+      <div class="poster-generado" aria-hidden="true">
+        <span>{{ pelicula().nombre }}</span>
+      </div>
+    }
+
+    <span
+      class="edad"
+      [class.edad-13]="pelicula().restriccion_edad === 13"
+      [class.edad-18]="pelicula().restriccion_edad === 18"
+    >
+      {{ etiquetaEdad() }}
+    </span>
+
+    @if (proximamente() && pelicula().fecha_estreno) {
+      <span class="estreno">{{ pelicula().fecha_estreno | date: 'd MMM' }}</span>
+    }
+  </div>
+
+  @if (mostrarInfo()) {
+    <div class="info">
+      <h3>{{ pelicula().nombre }}</h3>
+      <p>{{ pelicula().generos.join(' · ') }}</p>
+      <p>{{ pelicula().duracion_minutos | duracion }}</p>
+    </div>
+  }
+</article>

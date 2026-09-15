@@ -1,0 +1,104 @@
+:host {
+  display: block;
+}
+
+.poster {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  container-type: inline-size;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover .poster {
+  transform: translateY(-3px);
+  border-color: var(--color-texto-suave);
+}
+
+.poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.poster-generado {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+  padding: clamp(0.6rem, 7cqi, 1.1rem);
+}
+
+.poster-generado::before {
+  content: '';
+  width: 2rem;
+  height: 2px;
+  margin-bottom: 0.6rem;
+  background: var(--color-acento);
+}
+
+.poster-generado span {
+  font-family: var(--fuente-titulos);
+  /* Proporcional al ancho de la card, así el título entra en pósters chicos */
+  font-size: clamp(1rem, 16cqi, 2.2rem);
+  font-weight: 800;
+  line-height: 0.92;
+  text-transform: uppercase;
+  text-wrap: balance;
+  color: var(--color-texto);
+}
+
+.edad,
+.estreno {
+  position: absolute;
+  top: 0.6rem;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde);
+  border-radius: 4px;
+}
+
+.edad {
+  left: 0.6rem;
+  color: var(--color-texto-suave);
+}
+
+.edad-13 {
+  color: var(--color-acento);
+  border-color: currentColor;
+}
+
+.edad-18 {
+  color: var(--color-terciopelo);
+  border-color: currentColor;
+}
+
+.estreno {
+  right: 0.6rem;
+  text-transform: uppercase;
+  color: var(--color-acento);
+  border-color: currentColor;
+}
+
+.info {
+  padding-top: 0.75rem;
+}
+
+.info h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.info p {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  color: var(--color-texto-suave);
+}
