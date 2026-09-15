@@ -1,1 +1,29 @@
-/* You can add global styles to this file, and also import other style files */
+/* Tokens de diseño PROVISORIOS: cuando se defina la paleta y tipografía final
+   se cambian solo estos valores y se actualiza toda la app. */
+:root {
+  --color-fondo: #0f0f12;
+  --color-superficie: #1a1a21;
+  --color-borde: #2e2e38;
+  --color-texto: #f2f0eb;
+  --color-texto-suave: #a7a3a0;
+  --color-acento: #e0b04a;
+  --color-error: #ff6b6b;
+  --color-ok: #5fd49a;
+  --radio: 12px;
+  --fuente-base: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--fuente-base);
+  line-height: 1.5;
+  color: var(--color-texto);
+  background: var(--color-fondo);
+}
