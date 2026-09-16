@@ -14,10 +14,13 @@ const sinDeploy = process.argv.includes('--sin-deploy');
 
 const correr = (cmd) => execSync(cmd, { stdio: 'inherit' });
 
+// Archivos fuente que viven en public/ y no se tienen que borrar al limpiar.
+const FUENTE = ['favicon.ico', 'icono.svg', 'manifest.webmanifest', 'icons'];
+
 // Limpiar public/ ANTES del build: Angular copia su contenido dentro de dist.
 console.log('\n[1/4] Limpiando public/ ...');
 for (const archivo of readdirSync(PUBLIC)) {
-  if (archivo !== 'favicon.ico') {
+  if (!FUENTE.includes(archivo)) {
     rmSync(join(PUBLIC, archivo), { recursive: true, force: true });
   }
 }
