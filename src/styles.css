@@ -122,3 +122,87 @@ a {
     transition: none !important;
   }
 }
+
+/* Formularios (login y registro): los estilos comunes viven acá para no repetirlos */
+.pagina-form {
+  display: grid;
+  place-items: center;
+  min-height: calc(100vh - 4rem);
+  padding: 2rem 1rem;
+}
+
+.tarjeta-form {
+  width: 100%;
+  max-width: 36rem;
+  padding: 2rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+
+.tarjeta-form h1 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.bajada {
+  margin: 0.25rem 0 1.5rem;
+  color: var(--color-texto-suave);
+}
+
+.campo {
+  display: grid;
+  gap: 0.35rem;
+  align-content: start;
+}
+
+.campo label {
+  font-size: 0.9rem;
+}
+
+.campo input,
+.campo select {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  font: inherit;
+  color: var(--color-texto);
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde);
+  border-radius: calc(var(--radio) / 2);
+}
+
+.campo input.ng-invalid.ng-touched,
+.campo select.ng-invalid.ng-touched {
+  border-color: var(--color-error);
+}
+
+.error {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-error);
+}
+
+.aviso {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: calc(var(--radio) / 2);
+}
+
+.aviso-error {
+  color: var(--color-error);
+  background: color-mix(in srgb, var(--color-error) 15%, transparent);
+}
+
+.ancho-completo {
+  width: 100%;
+}
+
+.pie-form {
+  margin: 1.25rem 0 0;
+  text-align: center;
+  color: var(--color-texto-suave);
+}
+
+.pie-form a {
+  color: var(--color-acento);
+}

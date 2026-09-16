@@ -1,1 +1,36 @@
-<p>login works!</p>
+<main class="pagina-form">
+  <section class="tarjeta-form">
+    <h1>Iniciar sesión</h1>
+    <p class="bajada">Entrá para ver tus entradas y tus puntos.</p>
+
+    <form [formGroup]="formLogin" (ngSubmit)="ingresar()">
+      <div class="campo">
+        <label for="email">Email</label>
+        <input id="email" type="email" formControlName="email" autocomplete="email" />
+        @if (tieneError('email', 'required')) {
+          <p class="error">Ingresá tu email.</p>
+        } @else if (tieneError('email', 'email')) {
+          <p class="error">El formato del email no es válido.</p>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="clave">Contraseña</label>
+        <input id="clave" type="password" formControlName="clave" autocomplete="current-password" />
+        @if (tieneError('clave', 'required')) {
+          <p class="error">Ingresá tu contraseña.</p>
+        }
+      </div>
+
+      @if (errorServidor()) {
+        <p class="aviso aviso-error" role="alert">{{ errorServidor() }}</p>
+      }
+
+      <button type="submit" class="boton boton-primario ancho-completo" [disabled]="enviando()">
+        {{ enviando() ? 'Entrando…' : 'Entrar' }}
+      </button>
+    </form>
+
+    <p class="pie-form">¿No tenés cuenta? <a routerLink="/registro">Creá una</a></p>
+  </section>
+</main>
