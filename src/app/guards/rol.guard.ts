@@ -9,7 +9,8 @@ export function rolGuard(rolesPermitidos: RolUsuario[]): CanActivateFn {
     const auth = inject(Auth);
     const router = inject(Router);
 
-    const perfil = await auth.obtenerPerfilActual();
+    // Si el perfil ya está en la señal no se vuelve a consultar la base.
+    const perfil = auth.perfil() ?? (await auth.cargarPerfil());
 
     if (!perfil) {
       return router.createUrlTree(['/login']);

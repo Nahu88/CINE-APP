@@ -1,6 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Encabezado } from './componentes/encabezado/encabezado';
+import { Auth } from './services/auth';
 
 @Component({
   imports: [RouterOutlet, Encabezado],
@@ -9,5 +10,10 @@ import { Encabezado } from './componentes/encabezado/encabezado';
   templateUrl: './app.html',
 })
 export class App {
-  protected readonly title = signal('cine-app');
+  private auth = inject(Auth);
+
+  constructor() {
+    // La sesión queda guardada en el navegador: al abrir la app recuperamos el perfil.
+    void this.auth.cargarPerfil();
+  }
 }
