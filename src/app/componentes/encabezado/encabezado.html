@@ -14,11 +14,25 @@
     <nav class="navegacion" aria-label="Principal">
       <a routerLink="/home" fragment="cartelera">Cartelera</a>
       <a routerLink="/home" fragment="proximamente">Próximamente</a>
+
+      @if (auth.perfil(); as perfil) {
+        @if (perfil.rol === 'administrador') {
+          <a routerLink="/admin/peliculas">Películas</a>
+        }
+        @if (perfil.rol === 'empleado' || perfil.rol === 'administrador') {
+          <a routerLink="/empleado/validar">Validar entradas</a>
+        }
+      }
     </nav>
 
     <div class="acciones">
-      <a routerLink="/login" class="boton boton-secundario">Ingresar</a>
-      <a routerLink="/registro" class="boton boton-primario">Crear cuenta</a>
+      @if (auth.perfil(); as perfil) {
+        <span class="usuario">Hola, {{ perfil.nombre }}</span>
+        <button type="button" class="boton boton-secundario" (click)="cerrarSesion()">Salir</button>
+      } @else {
+        <a routerLink="/login" class="boton boton-secundario">Ingresar</a>
+        <a routerLink="/registro" class="boton boton-primario">Crear cuenta</a>
+      }
     </div>
   </div>
 </header>
