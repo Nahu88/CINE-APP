@@ -51,7 +51,7 @@ export class Registro {
         nonNullable: true,
         validators: [Validators.required, Validators.maxLength(50), soloLetrasValidator()],
       }),
-      // Sin calendario: lo pidió el cliente en el mail del 28/02
+      // Sin calendario
       fecha_nacimiento: new FormGroup(
         {
           dia: new FormControl('', {

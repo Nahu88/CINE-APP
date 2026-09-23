@@ -1,1 +1,153 @@
-<p>peliculas works!</p>
+<header class="abm-encabezado">
+  <h1>Administrar películas</h1>
+  <p class="bajada">Cargá las películas y elegí cuáles se muestran en la cartelera.</p>
+</header>
+
+@if (error()) {
+  <p class="mensaje-error" role="alert">{{ error() }}</p>
+}
+
+<form [formGroup]="form" (ngSubmit)="guardar()" class="form-pelicula">
+  <h2>{{ editandoId() ? 'Editar película' : 'Nueva película' }}</h2>
+
+  <div class="campo">
+    <label for="nombre">Nombre</label>
+    <input id="nombre" type="text" formControlName="nombre" />
+    @if (tieneError('nombre', 'required')) {
+      <p class="error">Ingresá el nombre de la película.</p>
+    }
+  </div>
+
+  <div class="campo">
+    <label for="sinopsis">Sinopsis</label>
+    <textarea id="sinopsis" rows="3" formControlName="sinopsis"></textarea>
+  </div>
+
+  <div class="campo">
+    <label for="imagen">URL de la imagen</label>
+    <input id="imagen" type="text" formControlName="imagen_url" placeholder="https://..." />
+    <p class="ayuda">Si la dejás vacía, se muestra un póster con el título.</p>
+  </div>
+
+  <div class="fila">
+    <div class="campo">
+      <label for="duracion">Duración (minutos)</label>
+      <input id="duracion" type="number" min="1" formControlName="duracion_minutos" />
+      @if (tieneError('duracion_minutos', 'required')) {
+        <p class="error">Ingresá la duración.</p>
+      } @else if (tieneError('duracion_minutos', 'min')) {
+        <p class="error">Tiene que ser mayor a cero.</p>
+      }
+    </div>
+
+    <div class="campo">
+      <label for="restriccion">Restricción de edad</label>
+      <select id="restriccion" formControlName="restriccion_edad">
+        <option value="sin_restriccion">Sin restricción</option>
+        <option value="13">+13</option>
+        <option value="18">+18</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="fila">
+    <div class="campo">
+      <label for="estreno">Fecha de estreno</label>
+      <input id="estreno" type="date" formControlName="fecha_estreno" />
+      <p class="ayuda">Dejala vacía si ya está en cartelera.</p>
+    </div>
+
+    <div class="campo">
+      <label for="generos">Géneros</label>
+      <input id="generos" type="text" formControlName="generos" placeholder="Acción, Drama" />
+      <p class="ayuda">Separados por coma.</p>
+    </div>
+  </div>
+
+  <div class="opciones">
+    <label class="checkbox">
+      <input type="checkbox" formControlName="destacada" />
+      <span>Destacada en la portada</span>
+    </label>
+
+    <label class="checkbox">
+      <input type="checkbox" formControlName="activa" />
+      <span>Visible en la cartelera</span>
+    </label>
+  </div>
+
+  <div class="acciones">
+    <button type="submit" class="boton boton-primario" [disabled]="guardando()">
+      {{ guardando() ? 'Guardando…' : editandoId() ? 'Guardar cambios' : 'Crear película' }}
+    </button>
+    @if (editandoId()) {
+      <button type="button" class="boton boton-secundario" (click)="cancelarEdicion()">Cancelar</button>
+    }
+  </div>
+</form>
+
+<section class="listado">
+  <header class="listado-encabezado">
+    <h2>Películas cargadas</h2>
+    @if (!cargando()) {
+      <p>{{ peliculas().length }} en total</p>
+    }
+  </header>
+
+  @if (cargando()) {
+    <p class="vacio">Cargando…</p>
+  } @else {
+    <div class="tabla-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Géneros</th>
+            <th>Duración</th>
+            <th>Edad</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (pelicula of peliculas(); track pelicula.id) {
+            <tr [class.oculta]="!pelicula.activa">
+              <td class="nombre">{{ pelicula.nombre }}</td>
+              <td>{{ pelicula.generos.join(', ') }}</td>
+              <td class="numero">{{ pelicula.duracion_minutos | duracion }}</td>
+              <td>
+                <span
+                  class="etiqueta"
+                  [class.etiqueta-13]="pelicula.restriccion_edad === 13"
+                  [class.etiqueta-18]="pelicula.restriccion_edad === 18"
+                >
+                  {{ pelicula.restriccion_edad ? '+' + pelicula.restriccion_edad : 'ATP' }}
+                </span>
+              </td>
+              <td>
+                <span class="estado" [class.estado-oculta]="!pelicula.activa">
+                  {{ pelicula.activa ? 'Visible' : 'Oculta' }}
+                </span>
+              </td>
+              <td class="celda-acciones">
+                <div class="acciones-fila">
+                  <button type="button" class="boton-chico" (click)="editar(pelicula)">Editar</button>
+                  <button type="button" class="boton-chico" (click)="alternarVisibilidad(pelicula)">
+                    {{ pelicula.activa ? 'Ocultar' : 'Mostrar' }}
+                  </button>
+                  <button type="button" class="boton-chico boton-peligro" (click)="eliminar(pelicula)">
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="vacio">Todavía no hay películas cargadas.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

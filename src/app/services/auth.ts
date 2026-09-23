@@ -19,35 +19,23 @@ export class Auth {
   private supabase = inject(SupabaseService).client;
 
   // Perfil del usuario logueado, o null si no hay sesión.
-  // El encabezado y los guards leen esta señal en vez de consultar la base cada vez.
+  // El encabezado y el guard leen esta señal.
   perfil = signal<Perfil | null>(null);
 
-  // Consulta en curso, para que el arranque de la app y el guard no pregunten dos veces.
-  private cargaEnCurso: Promise<Perfil | null> | null = null;
-
+  // Son dos pasos porque son dos tablas: la cuenta y el perfil.
   async registrar(datos: DatosRegistro) {
-    const { data: authData, error: authError } = await this.supabase.auth.signUp({
+    const { data, error } = await this.supabase.auth.signUp({
       email: datos.email,
       password: datos.password,
     });
 
-    if (authError || !authData.user) {
-      return { data: null, error: authError };
-    }
-
-    // Sin sesión RLS rechaza el insert en perfiles (pasa si "Confirm email" está activado).
-    if (!authData.session) {
-      return {
-        data: authData,
-        error: new Error(
-          'signUp no devolvió sesión: desactivar "Confirm email" en Supabase (Authentication > Providers > Email).'
-        ),
-      };
+    if (error || !data.user) {
+      return { error };
     }
 
     const nuevoPerfil: Partial<Perfil> = {
-      id: authData.user.id,
-      rol: 'cliente',
+      id: data.user.id,
+      rol: 'cliente', // fijo acá: nadie puede registrarse como administrador
       nombre: datos.nombre,
       apellido: datos.apellido,
       fecha_nacimiento: datos.fecha_nacimiento,
@@ -59,73 +47,54 @@ export class Auth {
       cupon_bienvenida_usado: false,
     };
 
-    const { error: perfilError } = await this.supabase
-      .from('perfiles')
-      .insert(nuevoPerfil);
-
-    if (perfilError) {
+    const { error: errorPerfil } = await this.supabase.from('perfiles').insert(nuevoPerfil);
+    if (errorPerfil) {
       // El usuario de auth queda creado aunque falle el perfil.
-      return { data: authData, error: perfilError };
+      return { error: errorPerfil };
     }
 
     await this.cargarPerfil();
-    return { data: authData, error: null };
+    return { error: null };
   }
 
   async iniciarSesion(email: string, password: string) {
-    const resultado = await this.supabase.auth.signInWithPassword({ email, password });
+    const { error } = await this.supabase.auth.signInWithPassword({ email, password });
 
-    if (!resultado.error) {
+    if (!error) {
       await this.cargarPerfil();
     }
-    return resultado;
+    return { error };
   }
 
   async cerrarSesion() {
-    const resultado = await this.supabase.auth.signOut();
+    await this.supabase.auth.signOut();
     this.perfil.set(null);
-    return resultado;
   }
 
-  // Pregunta a Supabase quién está logueado y guarda su perfil en la señal.
-  // Se llama al iniciar sesión y al abrir la app, porque la sesión queda guardada en el navegador.
-  cargarPerfil(): Promise<Perfil | null> {
-    this.cargaEnCurso ??= this.obtenerPerfilActual()
-      .then((perfil) => {
-        this.perfil.set(perfil);
-        return perfil;
-      })
-      .finally(() => {
-        this.cargaEnCurso = null;
-      });
+  // Le pregunta a Supabase quién está logueado, busca su perfil y lo guarda en la señal.
+  // Se llama al entrar, al registrarse y al abrir la app, porque la sesión queda en el navegador.
+  async cargarPerfil(): Promise<Perfil | null> {
+    const { data } = await this.supabase.auth.getUser();
 
-    return this.cargaEnCurso;
-  }
-
-  async obtenerUsuarioActual() {
-    const { data, error } = await this.supabase.auth.getUser();
-
-    if (error) {
-      console.error('No se pudo obtener el usuario de Supabase:', error);
+    if (!data.user) {
+      this.perfil.set(null);
+      return null;
     }
-    return { usuario: data?.user ?? null, error };
-  }
 
-  async obtenerPerfilActual(): Promise<Perfil | null> {
-    const { usuario } = await this.obtenerUsuarioActual();
-    if (!usuario) return null;
-
-    const { data, error } = await this.supabase
+    const { data: perfil, error } = await this.supabase
       .from('perfiles')
       .select('*')
-      .eq('id', usuario.id)
+      .eq('id', data.user.id)
       .single();
 
     if (error) {
       // Si falla acá el usuario tiene sesión pero se queda sin perfil: casi siempre es RLS.
       console.error('No se pudo leer el perfil:', error);
+      this.perfil.set(null);
       return null;
     }
-    return data as Perfil;
+
+    this.perfil.set(perfil);
+    return perfil;
   }
 }

@@ -193,6 +193,14 @@ a {
   background: color-mix(in srgb, var(--color-error) 15%, transparent);
 }
 
+/* Error de pantalla completa (home y panel de admin) */
+.mensaje-error {
+  padding: 0.75rem 1rem;
+  color: var(--color-error);
+  background: color-mix(in srgb, var(--color-error) 15%, transparent);
+  border-radius: calc(var(--radio) / 2);
+}
+
 .ancho-completo {
   width: 100%;
 }

@@ -21,7 +21,7 @@ export class Login {
       nonNullable: true,
       validators: [Validators.required, Validators.email],
     }),
-    // Acá no se valida el largo: si la contraseña es incorrecta lo dice Supabase.
+    // Aca no se valida el largo por que si la contraseña es incorrecta lo dice supabase.
     clave: new FormControl('', {
       nonNullable: true,
       validators: [Validators.required],
