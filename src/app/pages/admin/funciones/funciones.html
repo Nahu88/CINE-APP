@@ -1,0 +1,106 @@
+<header class="abm-encabezado">
+  <h1>Programar funciones</h1>
+  <p class="bajada">La sala se asigna sola: buscamos la primera libre para ese horario.</p>
+</header>
+
+@if (error()) {
+  <p class="mensaje-error" role="alert">{{ error() }}</p>
+}
+
+<form [formGroup]="form" (ngSubmit)="crear()" class="form-funcion">
+  <div class="campo">
+    <label for="pelicula">Película</label>
+    <select id="pelicula" formControlName="pelicula_id">
+      <option value="" disabled>Elegí una película</option>
+      @for (pelicula of peliculas(); track pelicula.id) {
+        <option [value]="pelicula.id">{{ pelicula.nombre }} ({{ pelicula.duracion_minutos }} min)</option>
+      }
+    </select>
+  </div>
+
+  <div class="fila">
+    <div class="campo">
+      <label for="fecha">Fecha</label>
+      <input id="fecha" type="date" formControlName="fecha" />
+    </div>
+    <div class="campo">
+      <label for="hora">Hora</label>
+      <input id="hora" type="time" formControlName="hora" />
+    </div>
+  </div>
+
+  <div class="fila">
+    <div class="campo">
+      <label for="formato">Formato</label>
+      <select id="formato" formControlName="formato">
+        <option value="2D">2D</option>
+        <option value="3D">3D</option>
+        <option value="4D">4D</option>
+        <option value="5D">5D</option>
+      </select>
+    </div>
+    <div class="campo">
+      <label for="idioma">Idioma</label>
+      <select id="idioma" formControlName="idioma">
+        <option value="castellano">Castellano</option>
+        <option value="subtitulada">Subtitulada</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="fila">
+    <div class="campo">
+      <label for="precioNormal">Precio normal</label>
+      <input id="precioNormal" type="number" min="1" formControlName="precio_normal" />
+    </div>
+    <div class="campo">
+      <label for="precioVip">Precio VIP</label>
+      <input id="precioVip" type="number" min="1" formControlName="precio_vip" />
+    </div>
+  </div>
+
+  <button type="submit" class="boton boton-primario" [disabled]="guardando()">
+    {{ guardando() ? 'Buscando sala…' : 'Crear función' }}
+  </button>
+</form>
+
+<section class="listado">
+  <h2>Funciones programadas</h2>
+
+  @if (cargando()) {
+    <p class="vacio">Cargando…</p>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>Película</th>
+          <th>Sala</th>
+          <th>Inicio</th>
+          <th>Fin</th>
+          <th>Formato</th>
+          <th>Idioma</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (funcion of funciones(); track funcion.id) {
+          <tr>
+            <td>{{ nombrePelicula(funcion.pelicula_id) }}</td>
+            <td>{{ nombreSala(funcion.sala_id) }}</td>
+            <td>{{ funcion.inicio | date: 'short' }}</td>
+            <td>{{ funcion.fin | date: 'short' }}</td>
+            <td>{{ funcion.formato }}</td>
+            <td>{{ funcion.idioma }}</td>
+            <td>
+              <button type="button" class="boton-chico boton-peligro" (click)="eliminar(funcion)">
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        } @empty {
+          <tr><td colspan="7" class="vacio">Todavía no hay funciones programadas.</td></tr>
+        }
+      </tbody>
+    </table>
+  }
+</section>
