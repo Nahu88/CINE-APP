@@ -1,0 +1,38 @@
+@if (cargando()) {
+  <p class="contenedor">Cargando…</p>
+} @else if (error()) {
+  <p class="contenedor mensaje-error">{{ error() }}</p>
+} @else if (pelicula(); as p) {
+  <section class="contenedor detalle-pelicula">
+    <a routerLink="/home" class="volver">&larr; Volver a la cartelera</a>
+
+    <div class="detalle-cabecera">
+      @if (p.imagen_url) {
+        <img [src]="p.imagen_url" [alt]="p.nombre" />
+      }
+      <div>
+        <h1>{{ p.nombre }}</h1>
+        <p class="detalle-meta">
+          {{ p.restriccion_edad ? '+' + p.restriccion_edad : 'ATP' }} ·
+          {{ p.duracion_minutos | duracion }} ·
+          {{ p.generos.join(' · ') }}
+        </p>
+        <p>{{ p.sinopsis }}</p>
+      </div>
+    </div>
+
+    <h2>Funciones disponibles</h2>
+    @if (funciones().length) {
+      <ul class="lista-funciones">
+        @for (funcion of funciones(); track funcion.id) {
+          <li>
+            {{ funcion.inicio | date: 'short' }} — Sala {{ nombreSala(funcion.sala_id) }} —
+            {{ funcion.formato }} — {{ funcion.idioma }} — ${{ funcion.precio_normal }}
+          </li>
+        }
+      </ul>
+    } @else {
+      <p>Todavía no hay funciones programadas para esta película.</p>
+    }
+  </section>
+}
