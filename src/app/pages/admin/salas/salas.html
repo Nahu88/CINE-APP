@@ -1,0 +1,52 @@
+<header class="abm-encabezado">
+  <h1>Administrar salas</h1>
+  <p class="bajada">Al crear una sala se generan solas sus 532 butacas.</p>
+</header>
+
+@if (error()) {
+  <p class="mensaje-error" role="alert">{{ error() }}</p>
+}
+
+<form [formGroup]="form" (ngSubmit)="crear()" class="form-sala">
+  <div class="campo">
+    <label for="nombre">Nombre de la sala</label>
+    <input id="nombre" type="text" formControlName="nombre" placeholder="Sala 1" />
+  </div>
+
+  <button type="submit" class="boton boton-primario" [disabled]="guardando()">
+    {{ guardando() ? 'Creando…' : 'Crear sala' }}
+  </button>
+</form>
+
+<section class="listado">
+  <h2>Salas cargadas</h2>
+
+  @if (cargando()) {
+    <p class="vacio">Cargando…</p>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Butacas</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (sala of salas(); track sala.id) {
+          <tr>
+            <td>{{ sala.nombre }}</td>
+            <td>532</td>
+            <td>
+              <button type="button" class="boton-chico boton-peligro" (click)="eliminar(sala)">
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        } @empty {
+          <tr><td colspan="3" class="vacio">Todavía no hay salas cargadas.</td></tr>
+        }
+      </tbody>
+    </table>
+  }
+</section>
