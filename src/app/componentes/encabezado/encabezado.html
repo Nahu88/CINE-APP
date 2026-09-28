@@ -18,6 +18,8 @@
       @if (auth.perfil(); as perfil) {
         @if (perfil.rol === 'administrador') {
           <a routerLink="/admin/peliculas">Películas</a>
+          <a routerLink="/admin/salas">Salas</a>
+          <a routerLink="/admin/funciones">Funciones</a>
         }
         @if (perfil.rol === 'empleado' || perfil.rol === 'administrador') {
           <a routerLink="/empleado/validar">Validar entradas</a>

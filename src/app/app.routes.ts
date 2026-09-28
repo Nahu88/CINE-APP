@@ -12,6 +12,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/home/home').then((m) => m.Home),
   },
   {
+    path: 'pelicula/:id',
+    loadComponent: () =>
+      import('./pages/pelicula-detalle/pelicula-detalle').then((m) => m.PeliculaDetalle),
+  },
+  {
     path: 'login',
     loadComponent: () => import('./pages/login/login').then((m) => m.Login),
   },
@@ -22,6 +27,16 @@ export const routes: Routes = [
   {
     path: 'admin/peliculas',
     loadComponent: () => import('./pages/admin/peliculas/peliculas').then((m) => m.Peliculas),
+    canActivate: [rolGuard(['administrador'])],
+  },
+  {
+    path: 'admin/salas',
+    loadComponent: () => import('./pages/admin/salas/salas').then((m) => m.Salas),
+    canActivate: [rolGuard(['administrador'])],
+  },
+  {
+    path: 'admin/funciones',
+    loadComponent: () => import('./pages/admin/funciones/funciones').then((m) => m.Funciones),
     canActivate: [rolGuard(['administrador'])],
   },
   {
