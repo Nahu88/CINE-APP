@@ -22,7 +22,7 @@ export class Auth {
   // El encabezado y el guard leen esta señal.
   perfil = signal<Perfil | null>(null);
 
-  // Son dos pasos porque son dos tablas: la cuenta y el perfil.
+  // Registra un nuevo usuario en la cuenta y el perfil.
   async registrar(datos: DatosRegistro) {
     const { data, error } = await this.supabase.auth.signUp({
       email: datos.email,
@@ -71,7 +71,6 @@ export class Auth {
     this.perfil.set(null);
   }
 
-  // Le pregunta a Supabase quién está logueado, busca su perfil y lo guarda en la señal.
   // Se llama al entrar, al registrarse y al abrir la app, porque la sesión queda en el navegador.
   async cargarPerfil(): Promise<Perfil | null> {
     const { data } = await this.supabase.auth.getUser();
@@ -88,7 +87,6 @@ export class Auth {
       .single();
 
     if (error) {
-      // Si falla acá el usuario tiene sesión pero se queda sin perfil: casi siempre es RLS.
       console.error('No se pudo leer el perfil:', error);
       this.perfil.set(null);
       return null;

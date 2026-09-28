@@ -1,6 +1,6 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
-// De grupo para que se reevalúe al cambiar cualquiera de las dos claves.
+// De grupo para que se vuelva a evaluar al cambiar cualquiera de las dos claves.
 export function clavesCoincidenValidator(nombreClave: string, nombreConfirmacion: string): ValidatorFn {
   return (grupo: AbstractControl): ValidationErrors | null => {
     const clave = grupo.get(nombreClave)?.value;
@@ -26,7 +26,7 @@ export function soloLetrasValidator(): ValidatorFn {
   };
 }
 
-// De grupo porque solo con día, mes y año juntos se sabe si la fecha existe (ej: 31/02).
+// De grupo porque solo con día, mes y año juntos se sabe si la fecha existe .
 export function fechaNacimientoValidator(edadMaxima = 120): ValidatorFn {
   return (grupo: AbstractControl): ValidationErrors | null => {
     const diaTexto: string = grupo.get('dia')?.value ?? '';
