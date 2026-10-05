@@ -1,0 +1,48 @@
+@if (cargando()) {
+  <p class="contenedor">Cargando…</p>
+} @else if (funcion(); as f) {
+  @if (pelicula(); as p) {
+    <section class="contenedor compra">
+      <a routerLink="/pelicula/{{ p.id }}" class="volver">Volver a la película</a>
+      <h1>{{ p.nombre }}</h1>
+      <p class="meta">{{ f.inicio | date: 'short' }}, {{ salaNombre() }}, {{ f.formato }}, {{ f.idioma }}</p>
+
+      @if (error()) {
+        <p class="mensaje-error" role="alert">{{ error() }}</p>
+      }
+      @if (exito()) {
+        <p class="mensaje-exito" role="status">Compra confirmada. Tus entradas ya están reservadas.</p>
+      }
+
+      <app-mapa-butacas
+        [butacas]="butacas()"
+        [ocupadas]="ocupadas()"
+        [seleccionadas]="idsSeleccionados()"
+        (alternar)="alternarButaca($event)"
+      />
+
+      <aside class="resumen">
+        <h2>Tu selección</h2>
+        <ul>
+          @for (b of seleccionadas(); track b.id) {
+            <li>Fila {{ b.fila }}, butaca {{ b.numero }} ({{ b.tipo }}): ${{ precioDe(b) }}</li>
+          } @empty {
+            <li>Tocá una butaca del mapa para elegirla.</li>
+          }
+        </ul>
+        <p class="total">Total: ${{ total() }}</p>
+        <button
+          type="button"
+          class="boton boton-primario"
+          [disabled]="confirmando() || !seleccionadas().length"
+          (click)="confirmar()"
+        >
+          {{ confirmando() ? 'Confirmando…' : 'Confirmar compra' }}
+        </button>
+        <p class="aviso">El pago es simulado: al confirmar, la compra queda registrada.</p>
+      </aside>
+    </section>
+  }
+} @else {
+  <p class="contenedor mensaje-error">{{ error() ?? 'Función no encontrada.' }}</p>
+}

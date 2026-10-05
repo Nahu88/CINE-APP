@@ -18,7 +18,7 @@ export class Peliculas implements OnInit {
   guardando = signal(false);
   error = signal<string | null>(null);
 
-  // null = está creando una nueva; con valor = está editando esa película.
+  // null = está creando una nueva y con valor = está editando esa película.
   editandoId = signal<string | null>(null);
 
   form = new FormGroup({

@@ -3,9 +3,7 @@ import { Funcion, FormatoFuncion, IdiomaFuncion } from '../models/funcion.model'
 import { SupabaseService } from './supabase';
 
 
-// No hay sala disponible: se tira un Error común con este mensaje
-// especial, para poder distinguirlo en el catch del componente sin
-// tener que declarar una clase de error propia.
+// se tira un Error con este mensaje para poder distinguirlo en el catch del componente
 export const SIN_SALA_DISPONIBLE = 'SIN_SALA_DISPONIBLE';
 
 // Lo que manda el formulario. sala_id y fin no están porque los calcula el servicio.

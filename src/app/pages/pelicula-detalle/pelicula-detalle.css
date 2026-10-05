@@ -1,0 +1,95 @@
+:host {
+  display: block;
+  padding-block: 2.5rem 4rem;
+}
+
+.volver {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--color-texto-suave);
+  text-decoration: none;
+}
+
+.volver:hover {
+  color: var(--color-acento);
+}
+
+.detalle-cabecera {
+  display: grid;
+  gap: 1.75rem;
+  align-items: start;
+  margin-bottom: 3rem;
+}
+
+@media (min-width: 48rem) {
+  .detalle-cabecera {
+    grid-template-columns: 16rem 1fr;
+  }
+}
+
+/* La caja manda, no la imagen: todos los pósters ocupan lo mismo aunque vengan
+   de archivos de distinto tamaño. cover los recorta en vez de deformarlos. */
+.detalle-cabecera img {
+  width: 100%;
+  max-width: 16rem;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+
+h1 {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: clamp(2.2rem, 6vw, 3.4rem);
+  font-weight: 900;
+  line-height: 0.95;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.detalle-meta {
+  margin: 0.6rem 0 1.25rem;
+  font-weight: 600;
+  color: var(--color-texto-suave);
+}
+
+.detalle-cabecera p {
+  max-width: 60ch;
+}
+
+h2 {
+  margin: 0 0 1rem;
+  font-family: var(--fuente-titulos);
+  font-size: 1.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.lista-funciones {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lista-funciones li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+  padding: 1rem 1.2rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+
+.lista-funciones .boton {
+  margin-left: auto;
+  padding: 0.55rem 1.1rem;
+  font-size: 0.9rem;
+}

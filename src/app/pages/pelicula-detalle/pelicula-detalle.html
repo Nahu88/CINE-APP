@@ -28,6 +28,7 @@
           <li>
             {{ funcion.inicio | date: 'short' }} — Sala {{ nombreSala(funcion.sala_id) }} —
             {{ funcion.formato }} — {{ funcion.idioma }} — ${{ funcion.precio_normal }}
+            <a class="boton boton-primario" routerLink="/compra/{{ funcion.id }}">Elegir butacas</a>
           </li>
         }
       </ul>

@@ -1,0 +1,30 @@
+<div class="pantalla">Pantalla</div>
+
+<div class="mapa">
+  @for (fila of filas(); track fila) {
+    <div class="fila">
+      <span class="letra">{{ fila }}</span>
+      @for (butaca of butacasDeFila(fila); track butaca.id) {
+        <button
+          type="button"
+          class="butaca"
+          [appButaca]="butaca.tipo"
+          [class.pasillo]="esPasillo(butaca)"
+          [class.ocupada]="estaOcupada(butaca)"
+          [class.seleccionada]="estaSeleccionada(butaca)"
+          [disabled]="estaOcupada(butaca)"
+          [attr.aria-label]="'Fila ' + butaca.fila + ', butaca ' + butaca.numero"
+          (click)="clic(butaca)"
+        ></button>
+      }
+    </div>
+  }
+</div>
+
+<ul class="leyenda">
+  <li><span class="muestra normal"></span> Normal</li>
+  <li><span class="muestra accesible"></span> Accesible</li>
+  <li><span class="muestra vip"></span> VIP</li>
+  <li><span class="muestra seleccionada"></span> Tu elección</li>
+  <li><span class="muestra ocupada"></span> Vendida</li>
+</ul>

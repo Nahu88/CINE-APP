@@ -45,6 +45,11 @@ export const routes: Routes = [
     canActivate: [rolGuard(['empleado', 'administrador'])],
   },
   {
+    path: 'compra/:funcionId',
+    loadComponent: () => import('./pages/compra/compra').then((m) => m.Compra),
+    canActivate: [rolGuard(['cliente', 'empleado', 'administrador'])],
+  },
+  {
     path: '**',
     loadComponent: () => import('./not-found/not-found').then((m) => m.NotFoundComponent),
   },
