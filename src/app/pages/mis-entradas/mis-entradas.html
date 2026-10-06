@@ -1,0 +1,42 @@
+<section class="contenedor mis-entradas">
+  <h1>Mis entradas</h1>
+  <p class="bajada">Mostrá el QR en el ingreso a la sala, o descargá la entrada en PDF.</p>
+
+  @if (cargando()) {
+    <p>Cargando…</p>
+  } @else if (error()) {
+    <p class="mensaje-error" role="alert">{{ error() }}</p>
+  } @else {
+    <ul class="lista-entradas">
+      @for (d of entradas(); track d.entrada.id) {
+        <li class="entrada" [class.no-vigente]="d.entrada.estado !== 'valida'">
+          <div class="entrada-datos">
+            <h2>{{ d.pelicula }}</h2>
+            <p>{{ d.inicio | date: 'short' }}, {{ d.sala }}</p>
+            <p>{{ d.butaca }}</p>
+            <p>${{ d.entrada.precio }}</p>
+
+            @if (d.entrada.estado === 'usada') {
+              <p class="estado">Ya usada</p>
+            } @else if (d.entrada.estado === 'cancelada') {
+              <p class="estado">Cancelada</p>
+            }
+
+            <button type="button" class="boton boton-secundario" (click)="descargar(d)">
+              Descargar PDF
+            </button>
+          </div>
+
+          <div class="entrada-qr">
+            <img [src]="d.qr" alt="Código QR de la entrada" />
+            <code>{{ d.entrada.codigo_qr }}</code>
+          </div>
+        </li>
+      } @empty {
+        <li class="vacio">
+          Todavía no compraste entradas. <a routerLink="/home">Ver la cartelera</a>
+        </li>
+      }
+    </ul>
+  }
+</section>

@@ -1,1 +1,60 @@
-<p>validar works!</p>
+<section class="contenedor validar">
+  <h1>Validar entradas</h1>
+  <p class="bajada">Escribí o pegá el código que figura debajo del QR de la entrada.</p>
+
+  <form [formGroup]="form" (ngSubmit)="buscar()" class="form-validar">
+    <div class="campo">
+      <label for="codigo">Código de la entrada</label>
+      <input id="codigo" type="text" formControlName="codigo" autocomplete="off" />
+      @if (tieneError('required')) {
+        <p class="error">Ingresá el código de la entrada.</p>
+      } @else if (tieneError('codigoInvalido')) {
+        <p class="error">El código tiene que tener 36 caracteres, como figura en la entrada.</p>
+      }
+    </div>
+
+    <button type="submit" class="boton boton-primario" [disabled]="buscando()">
+      {{ buscando() ? 'Buscando…' : 'Buscar entrada' }}
+    </button>
+  </form>
+
+  @if (error()) {
+    <p class="mensaje-error" role="alert">{{ error() }}</p>
+  }
+  @if (exito()) {
+    <p class="mensaje-ok" role="status">{{ exito() }}</p>
+  }
+
+  @if (detalle(); as d) {
+    <article class="resultado" [class.rechazada]="!esValida()">
+      @if (esValida()) {
+        <h2>Entrada válida</h2>
+      } @else if (d.entrada.estado === 'usada') {
+        <h2>Ya fue usada</h2>
+      } @else {
+        <h2>Entrada cancelada</h2>
+      }
+
+      <dl>
+        <dt>Película</dt>
+        <dd>{{ d.pelicula }}</dd>
+        <dt>Función</dt>
+        <dd>{{ d.inicio | date: 'short' }}</dd>
+        <dt>Sala</dt>
+        <dd>{{ d.sala }}</dd>
+        <dt>Ubicación</dt>
+        <dd>{{ d.butaca }}</dd>
+        @if (d.entrada.validada_at) {
+          <dt>Usada el</dt>
+          <dd>{{ d.entrada.validada_at | date: 'short' }}</dd>
+        }
+      </dl>
+
+      @if (esValida()) {
+        <button type="button" class="boton boton-primario" (click)="marcarUsada()">
+          Marcar como usada
+        </button>
+      }
+    </article>
+  }
+</section>

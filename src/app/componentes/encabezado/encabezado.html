@@ -16,6 +16,7 @@
       <a routerLink="/home" fragment="proximamente">Próximamente</a>
 
       @if (auth.perfil(); as perfil) {
+        <a routerLink="/mis-entradas">Mis entradas</a>
         @if (perfil.rol === 'administrador') {
           <a routerLink="/admin/peliculas">Películas</a>
           <a routerLink="/admin/salas">Salas</a>

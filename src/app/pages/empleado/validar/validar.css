@@ -1,0 +1,70 @@
+.validar {
+  display: grid;
+  gap: 1rem;
+  max-width: 40rem;
+  padding-block: 2rem;
+}
+
+.validar h1,
+.validar .bajada {
+  margin: 0;
+}
+
+.form-validar {
+  display: grid;
+  gap: 1rem;
+  justify-items: start;
+}
+
+.form-validar .campo {
+  width: 100%;
+}
+
+.mensaje-ok {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  color: var(--color-ok);
+  background: color-mix(in srgb, var(--color-ok) 15%, transparent);
+  border-radius: calc(var(--radio) / 2);
+}
+
+/* Verde si puede pasar; con la clase .rechazada el mismo bloque se pone rojo. */
+.resultado {
+  padding: 1.25rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-left: 8px solid var(--color-ok);
+  border-radius: var(--radio);
+}
+
+.resultado h2 {
+  margin: 0 0 1rem;
+  font-family: var(--fuente-titulos);
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--color-ok);
+}
+
+.resultado.rechazada {
+  border-left-color: var(--color-error);
+}
+
+.resultado.rechazada h2 {
+  color: var(--color-error);
+}
+
+.resultado dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 1rem;
+  margin: 0 0 1rem;
+}
+
+.resultado dt {
+  color: var(--color-texto-suave);
+}
+
+.resultado dd {
+  margin: 0;
+  font-weight: 700;
+}
