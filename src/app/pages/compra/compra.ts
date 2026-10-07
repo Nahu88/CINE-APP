@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MapaButacas } from '../../componentes/mapa-butacas/mapa-butacas';
@@ -17,7 +17,7 @@ import { SalasService } from '../../services/salas';
   styleUrl: './compra.css',
   templateUrl: './compra.html',
 })
-export class Compra implements OnInit {
+export class Compra implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private auth = inject(Auth);
   private comprasService = inject(ComprasService);
@@ -69,11 +69,29 @@ export class Compra implements OnInit {
 
       this.butacas.set(await this.comprasService.listarButacas(funcion.sala_id));
       this.ocupadas.set(await this.comprasService.listarOcupadas(funcion.id));
+
+      // Realtime: cada vez que cambia la tabla `entradas`, se actualiza el mapa.
+      this.comprasService.escucharEntradas(() => this.actualizarOcupadas());
     } catch {
       this.error.set('No se pudo cargar la función.');
     } finally {
       this.cargando.set(false);
     }
+  }
+
+  // Al salir de la pantalla se cierra el canal de realtime.
+  ngOnDestroy() {
+    this.comprasService.dejarDeEscuchar();
+  }
+
+  // Vuelve a pedir las butacas vendidas y saca de la selección las que ya no están libres.
+  private async actualizarOcupadas() {
+    const funcion = this.funcion();
+    if (!funcion) return;
+
+    const ocupadas = await this.comprasService.listarOcupadas(funcion.id);
+    this.ocupadas.set(ocupadas);
+    this.seleccionadas.update((actual) => actual.filter((b) => !ocupadas.includes(b.id)));
   }
 
   precioDe(butaca: Butaca): number {
@@ -115,13 +133,11 @@ export class Compra implements OnInit {
       this.exito.set(true);
     } catch (error) {
       // 23505 = la base rechazó una butaca repetida (unique funcion_id + butaca_id).
-      console.error('Error al confirmar la compra:', error);
       const codigo = (error as { code?: string }).code;
       this.error.set(
         codigo === '23505'
           ? 'Alguien compró una de esas butacas recién. Elegí otra.'
           : 'No se pudo confirmar la compra.'
-          
       );
       this.seleccionadas.set([]);
     } finally {
