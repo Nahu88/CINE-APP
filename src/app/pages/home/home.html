@@ -6,6 +6,20 @@
   <p class="contenedor">Todavía no hay películas cargadas en la cartelera.</p>
 } @else {
 
+@if (avisos().length) {
+  <section class="contenedor avisos" aria-label="Avisos de estreno">
+    @for (pelicula of avisos(); track pelicula.id) {
+      <div class="aviso-estreno" role="status">
+        <span>🎬 Ya están a la venta las entradas de <strong>{{ pelicula.nombre }}</strong>.</span>
+        <span class="aviso-acciones">
+          <a class="boton boton-primario" routerLink="/pelicula/{{ pelicula.id }}">Ver funciones</a>
+          <button type="button" class="boton boton-secundario" (click)="descartarAviso(pelicula)">Listo</button>
+        </span>
+      </div>
+    }
+  </section>
+}
+
 @if (destacada; as peliDestacada) {
   <section class="hero">
     <div class="contenedor hero-contenido">
@@ -38,7 +52,7 @@
   <section class="seccion contenedor" aria-labelledby="titulo-mas-vistas">
     <header class="seccion-encabezado">
       <h2 id="titulo-mas-vistas">Las más vistas</h2>
-      <p>Las películas que más entradas vendieron esta semana.</p>
+      <p>Las películas de la cartelera que más entradas vendieron.</p>
     </header>
 
     <ol class="ranking">

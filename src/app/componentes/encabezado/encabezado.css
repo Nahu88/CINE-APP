@@ -101,3 +101,11 @@
     display: flex;
   }
 }
+
+a.usuario {
+  text-decoration: none;
+}
+
+a.usuario:hover {
+  color: var(--color-acento);
+}

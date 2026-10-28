@@ -1,0 +1,43 @@
+<section class="panel">
+  <header>
+    <h1>Mis películas</h1>
+    <p class="bajada">Todo lo que viste en Cine Paraíso, con tu calificación.</p>
+  </header>
+
+  @if (error()) {
+    <p class="mensaje-error" role="alert">{{ error() }}</p>
+  }
+
+  @if (cargando()) {
+    <p class="vacio">Cargando…</p>
+  } @else {
+    <ul class="vistas">
+      @for (vista of vistas(); track vista.pelicula.id) {
+        <li>
+          <a routerLink="/pelicula/{{ vista.pelicula.id }}" class="vista">
+            @if (vista.pelicula.imagen_url) {
+              <img [src]="vista.pelicula.imagen_url" [alt]="vista.pelicula.nombre" />
+            } @else {
+              <span class="poster-vacio">{{ vista.pelicula.nombre }}</span>
+            }
+            <span class="vista-datos">
+              <strong>{{ vista.pelicula.nombre }}</strong>
+              <span class="ayuda">La viste el {{ vista.fecha | date: 'd/M/yyyy' }}</span>
+              @if (vista.estrellas) {
+                <span class="estrellas" [attr.aria-label]="vista.estrellas + ' de 5 estrellas'">
+                  @for (n of estrellas; track n) {
+                    <span [class.llena]="n <= vista.estrellas">★</span>
+                  }
+                </span>
+              } @else {
+                <span class="calificar">Calificala</span>
+              }
+            </span>
+          </a>
+        </li>
+      } @empty {
+        <li class="vacio">Cuando veas una película, va a aparecer acá.</li>
+      }
+    </ul>
+  }
+</section>

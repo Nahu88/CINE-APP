@@ -3,44 +3,178 @@
 } @else if (funcion(); as f) {
   @if (pelicula(); as p) {
     <section class="contenedor compra">
-      <a routerLink="/pelicula/{{ p.id }}" class="volver">Volver a la película</a>
-      <h1>{{ p.nombre }}</h1>
-      <p class="meta">{{ f.inicio | date: 'short' }}, {{ salaNombre() }}, {{ f.formato }}, {{ f.idioma }}</p>
+      <a routerLink="/pelicula/{{ p.id }}" class="volver">&larr; Volver a la película</a>
+      <header>
+        <h1>{{ p.nombre }}</h1>
+        <p class="meta">{{ f.inicio | date: 'EEEE d/M, HH:mm' }} · {{ salaNombre() }} · {{ f.formato }} · {{ f.idioma }}</p>
+        @if (enPreventa()) {
+          <span class="etiqueta etiqueta-acento">Preventa: ${{ f.precio_preventa }} hasta el estreno</span>
+        }
+      </header>
 
-      @if (error()) {
-        <p class="mensaje-error" role="alert">{{ error() }}</p>
+      @if (p.restriccion_edad) {
+        <p class="aviso-edad">
+          Película para mayores de {{ p.restriccion_edad }} años. El espectador debe asistir acompañado por un adulto.
+        </p>
       }
-      @if (exito()) {
-        <p class="mensaje-exito" role="status">Compra confirmada. Tus entradas ya están reservadas.</p>
+
+      @if (!aLaVenta()) {
+        <p class="mensaje-error">Las entradas para esta función todavía no están a la venta.</p>
+      } @else {
+        <div class="compra-columnas">
+          <div class="compra-principal">
+            <div class="bloque">
+              <h2>1. Elegí tus butacas</h2>
+              <app-mapa-butacas
+                [butacas]="butacas()"
+                [ocupadas]="ocupadas()"
+                [seleccionadas]="idsSeleccionados()"
+                (alternar)="alternarButaca($event)"
+              />
+            </div>
+
+            <div class="bloque">
+              <h2>2. Sumá algo del candy <small>(opcional)</small></h2>
+
+              <app-candy-bar [carrito]="carrito()" (carritoCambio)="carrito.set($event)" />
+            </div>
+
+            @if (auth.perfil(); as perfil) {
+              @if (!perfil.invitado && recompensas().length) {
+                <div class="bloque">
+                  <h2>3. Canjeá tus puntos <small>(tenés {{ puntos() }})</small></h2>
+                  <ul class="recompensas">
+                    @for (recompensa of recompensas(); track recompensa.id) {
+                      <li>
+                        <button
+                          type="button"
+                          class="recompensa"
+                          [class.elegida]="recompensaElegida()?.id === recompensa.id"
+                          [disabled]="puntos() < recompensa.puntos_requeridos"
+                          (click)="elegirRecompensa(recompensa)"
+                        >
+                          <strong>{{ recompensa.descripcion }}</strong>
+                          <span>{{ recompensa.puntos_requeridos }} puntos</span>
+                        </button>
+                      </li>
+                    }
+                  </ul>
+                </div>
+              }
+            }
+          </div>
+
+          <aside class="resumen">
+            <h2>Tu compra</h2>
+
+            <ul class="lineas">
+              @for (b of seleccionadas(); track b.id) {
+                <li>
+                  <span>
+                    Fila {{ b.fila }}, butaca {{ b.numero }}
+                    @if (b.tipo === 'vip') {
+                      <span class="etiqueta etiqueta-vip">VIP</span>
+                    } @else if (b.tipo === 'accesible') {
+                      <span class="etiqueta">Accesible</span>
+                    }
+                  </span>
+                  <span>${{ precioDe(b) }}</span>
+                </li>
+              } @empty {
+                <li class="ayuda">Tocá una butaca del mapa para elegirla.</li>
+              }
+              @for (item of carrito(); track item.nombre) {
+                <li>
+                  <span>{{ item.cantidad }} x {{ item.nombre }}</span>
+                  <span>${{ item.precio * item.cantidad }}</span>
+                </li>
+              }
+              @if (recompensaElegida(); as r) {
+                @if (r.producto_id) {
+                  <li><span>{{ r.descripcion }} (canje)</span><span>$0</span></li>
+                }
+              }
+            </ul>
+
+            @if (hayVip()) {
+              <p class="aviso-vip">Elegiste butacas VIP: tienen un precio mayor que las normales.</p>
+            }
+
+            <dl class="cuentas">
+              <dt>Subtotal</dt>
+              <dd>${{ subtotal() }}</dd>
+              @if (descuentoCanje()) {
+                <dt>Entrada gratis (canje)</dt>
+                <dd>−${{ descuentoCanje() }}</dd>
+              }
+              @if (cuponAplicado(); as cupon) {
+                <dt>Cupón {{ cupon.nombre ?? cupon.tipo }} ({{ cupon.porcentaje }}%)</dt>
+                <dd>−${{ descuentoCupon() }}</dd>
+              }
+              @if (creditoUsado()) {
+                <dt>Crédito usado</dt>
+                <dd>−${{ creditoUsado() }}</dd>
+              }
+              <dt class="total">Total</dt>
+              <dd class="total">${{ total() }}</dd>
+            </dl>
+
+            @if (creditoDisponible() > 0) {
+              <label class="checkbox">
+                <input type="checkbox" [checked]="usarCredito()" (change)="usarCredito.set(!usarCredito())" />
+                <span>Usar mi crédito (${{ creditoDisponible() }} disponible)</span>
+              </label>
+            }
+
+            @if (!auth.perfil()) {
+              <form [formGroup]="formInvitado" class="invitado">
+                <p>
+                  ¿Sin cuenta? Podés comprar igual. <a routerLink="/login">Ingresá</a> o
+                  <a routerLink="/registro">creá una cuenta</a> para sumar puntos y tener cupón de bienvenida.
+                </p>
+                <span>Tu fecha de nacimiento</span>
+                <div class="fecha-partes">
+                  <input type="text" inputmode="numeric" maxlength="2" placeholder="Día" aria-label="Día" formControlName="dia" />
+                  <select aria-label="Mes" formControlName="mes">
+                    <option value="" disabled>Mes</option>
+                    @for (mes of meses; track mes; let i = $index) {
+                      <option [value]="i + 1">{{ mes }}</option>
+                    }
+                  </select>
+                  <input type="text" inputmode="numeric" maxlength="4" placeholder="Año" aria-label="Año" formControlName="anio" />
+                </div>
+                @if (tieneErrorInvitado('fechaInexistente')) {
+                  <p class="error">Esa fecha no existe.</p>
+                } @else if (tieneErrorInvitado('fechaFutura')) {
+                  <p class="error">La fecha no puede ser futura.</p>
+                }
+              </form>
+            }
+
+            @if (error()) {
+              <p class="mensaje-error" role="alert">{{ error() }}</p>
+            }
+            @if (exito()) {
+              <p class="mensaje-exito" role="status">
+                Compra confirmada. <a routerLink="/mis-entradas">Ver mis entradas y descargar el PDF</a>
+                @if (auth.perfil()?.invitado) {
+                  <br />Descargá tus entradas ahora: sin cuenta, si cerrás la sesión no vas a poder volver a verlas.
+                }
+              </p>
+            }
+
+            <button
+              type="button"
+              class="boton boton-primario ancho-completo"
+              [disabled]="confirmando() || !seleccionadas().length"
+              (click)="confirmar()"
+            >
+              {{ confirmando() ? 'Confirmando…' : 'Confirmar compra' }}
+            </button>
+            <p class="ayuda">El pago es simulado: al confirmar, la compra queda registrada.</p>
+          </aside>
+        </div>
       }
-
-      <app-mapa-butacas
-        [butacas]="butacas()"
-        [ocupadas]="ocupadas()"
-        [seleccionadas]="idsSeleccionados()"
-        (alternar)="alternarButaca($event)"
-      />
-
-      <aside class="resumen">
-        <h2>Tu selección</h2>
-        <ul>
-          @for (b of seleccionadas(); track b.id) {
-            <li>Fila {{ b.fila }}, butaca {{ b.numero }} ({{ b.tipo }}): ${{ precioDe(b) }}</li>
-          } @empty {
-            <li>Tocá una butaca del mapa para elegirla.</li>
-          }
-        </ul>
-        <p class="total">Total: ${{ total() }}</p>
-        <button
-          type="button"
-          class="boton boton-primario"
-          [disabled]="confirmando() || !seleccionadas().length"
-          (click)="confirmar()"
-        >
-          {{ confirmando() ? 'Confirmando…' : 'Confirmar compra' }}
-        </button>
-        <p class="aviso">El pago es simulado: al confirmar, la compra queda registrada.</p>
-      </aside>
     </section>
   }
 } @else {

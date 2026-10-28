@@ -1,6 +1,16 @@
 <section class="contenedor validar">
-  <h1>Validar entradas</h1>
-  <p class="bajada">Escribí o pegá el código que figura debajo del QR de la entrada.</p>
+  <h1>Validar entradas y candy</h1>
+  <p class="bajada">Escaneá el QR con la cámara, o escribí el código que figura debajo del QR.</p>
+
+  <div class="camara">
+    <!-- La librería dibuja el video de la cámara adentro de este div (vacío no ocupa lugar). -->
+    <div id="lector"></div>
+    @if (leyendo()) {
+      <button type="button" class="boton boton-secundario" (click)="cerrarCamara()">Cerrar cámara</button>
+    } @else {
+      <button type="button" class="boton boton-secundario" (click)="abrirCamara()">📷 Escanear con la cámara</button>
+    }
+  </div>
 
   <form [formGroup]="form" (ngSubmit)="buscar()" class="form-validar">
     <div class="campo">
@@ -44,6 +54,10 @@
         <dd>{{ d.sala }}</dd>
         <dt>Ubicación</dt>
         <dd>{{ d.butaca }}</dd>
+        @if (d.restriccion_edad) {
+          <dt>Edad</dt>
+          <dd>+{{ d.restriccion_edad }}, con adulto acompañante</dd>
+        }
         @if (d.entrada.validada_at) {
           <dt>Usada el</dt>
           <dd>{{ d.entrada.validada_at | date: 'short' }}</dd>
@@ -51,10 +65,26 @@
       </dl>
 
       @if (esValida()) {
-        <button type="button" class="boton boton-primario" (click)="marcarUsada()">
-          Marcar como usada
-        </button>
+        <button type="button" class="boton boton-primario" (click)="marcarUsada()">Marcar como usada</button>
       }
     </article>
+
+    @if (d.candy.length && d.entrada.estado !== 'cancelada') {
+      <article class="resultado candy" [class.rechazada]="!candyPendiente()">
+        <h2>{{ candyPendiente() ? 'Candy para entregar' : 'Candy ya entregado' }}</h2>
+        <ul>
+          @for (linea of d.candy; track linea) {
+            <li>{{ linea }}</li>
+          }
+        </ul>
+        @if (candyPendiente()) {
+          <button type="button" class="boton boton-primario" (click)="entregarCandy()">Marcar candy como entregado</button>
+        } @else if (candyEntregadoEl()) {
+          <p class="ayuda">Entregado el {{ candyEntregadoEl() | date: 'short' }}.</p>
+        }
+      </article>
+    }
+
+    <button type="button" class="boton boton-secundario" (click)="limpiar()">Validar otra entrada</button>
   }
 </section>

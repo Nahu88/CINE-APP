@@ -1,0 +1,32 @@
+.saldos,
+.historiales {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 45rem) {
+  .saldos {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 60rem) {
+  .historiales {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.accesos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.numero {
+  font-weight: 700;
+  color: var(--color-ok);
+}
+
+.numero.negativo {
+  color: var(--color-terciopelo);
+}

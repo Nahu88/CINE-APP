@@ -1,0 +1,80 @@
+<section class="panel">
+  @if (auth.perfil(); as perfil) {
+    <header>
+      <h1>{{ perfil.nombre }} {{ perfil.apellido }}</h1>
+      <p class="bajada">Cliente desde {{ perfil.created_at | date: 'MMMM yyyy' }} · Nacimiento: {{ perfil.fecha_nacimiento + 'T00:00:00' | date: 'd/M/yyyy' }}</p>
+    </header>
+
+    @if (error()) {
+      <p class="mensaje-error" role="alert">{{ error() }}</p>
+    }
+
+    @if (cargando()) {
+      <p class="vacio">Cargando…</p>
+    } @else {
+      <div class="saldos">
+        <div class="caja dato-grande">
+          <strong>{{ puntos() }}</strong>
+          <span>Puntos para canjear al comprar (1 por cada peso pagado)</span>
+        </div>
+        <div class="caja dato-grande">
+          <strong>${{ credito() }}</strong>
+          <span>Crédito a favor por cancelaciones</span>
+        </div>
+      </div>
+
+      <nav class="accesos" aria-label="Mis cosas">
+        <a routerLink="/mis-entradas" class="boton boton-secundario">Mis entradas</a>
+        <a routerLink="/mis-peliculas" class="boton boton-secundario">Mis películas</a>
+      </nav>
+
+      <div class="historiales">
+        <div class="caja">
+          <h2>Historial de canjes</h2>
+          <ul class="lista-simple">
+            @for (canje of canjes(); track canje.id) {
+              <li>
+                <span>{{ nombreRecompensa(canje.recompensa_id) }}</span>
+                <span class="ayuda">{{ canje.puntos_usados }} pts · {{ canje.created_at | date: 'd/M/yy' }}</span>
+              </li>
+            } @empty {
+              <li class="ayuda">Todavía no canjeaste nada.</li>
+            }
+          </ul>
+        </div>
+
+        <div class="caja">
+          <h2>Movimientos de puntos</h2>
+          <ul class="lista-simple">
+            @for (movimiento of movimientosPuntos(); track movimiento.id) {
+              <li>
+                <span>{{ movimiento.motivo }}</span>
+                <span class="numero" [class.negativo]="movimiento.puntos < 0">
+                  {{ movimiento.puntos > 0 ? '+' : '' }}{{ movimiento.puntos }}
+                </span>
+              </li>
+            } @empty {
+              <li class="ayuda">Sumás puntos con cada compra.</li>
+            }
+          </ul>
+        </div>
+
+        <div class="caja">
+          <h2>Movimientos de crédito</h2>
+          <ul class="lista-simple">
+            @for (movimiento of movimientosCredito(); track movimiento.id) {
+              <li>
+                <span>{{ movimiento.motivo }} <small class="ayuda">{{ movimiento.created_at | date: 'd/M/yy' }}</small></span>
+                <span class="numero" [class.negativo]="movimiento.monto < 0">
+                  {{ movimiento.monto > 0 ? '+' : '−' }}${{ movimiento.monto < 0 ? -movimiento.monto : movimiento.monto }}
+                </span>
+              </li>
+            } @empty {
+              <li class="ayuda">Si cancelás una compra, el total queda acá como crédito.</li>
+            }
+          </ul>
+        </div>
+      </div>
+    }
+  }
+</section>

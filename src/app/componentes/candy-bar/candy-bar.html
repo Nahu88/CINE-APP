@@ -1,0 +1,41 @@
+@if (combos().length) {
+  <h3>Combos destacados</h3>
+  <ul class="combos">
+    @for (combo of combos(); track combo.id) {
+      <li class="combo">
+        <div>
+          <strong>{{ combo.nombre }}</strong>
+          <p>{{ contenidoDe(combo) }}</p>
+        </div>
+        <div class="combo-pie">
+          <span class="precio">${{ combo.precio }}</span>
+          <span class="contador">
+            <button type="button" (click)="quitar(null, combo.id)" [attr.aria-label]="'Quitar ' + combo.nombre">−</button>
+            <span>{{ cantidad(null, combo.id) }}</span>
+            <button type="button" (click)="agregarCombo(combo)" [attr.aria-label]="'Agregar ' + combo.nombre">+</button>
+          </span>
+        </div>
+      </li>
+    }
+  </ul>
+}
+
+@for (categoria of categorias(); track categoria.id) {
+  @if (productosDe(categoria).length) {
+    <h3>{{ categoria.nombre }}</h3>
+    <ul class="productos">
+      @for (producto of productosDe(categoria); track producto.id) {
+        <li>
+          <span>{{ producto.nombre }} <span class="precio-chico">${{ producto.precio }}</span></span>
+          <span class="contador">
+            <button type="button" (click)="quitar(producto.id, null)" [attr.aria-label]="'Quitar ' + producto.nombre">−</button>
+            <span>{{ cantidad(producto.id, null) }}</span>
+            <button type="button" (click)="agregarProducto(producto)" [attr.aria-label]="'Agregar ' + producto.nombre">+</button>
+          </span>
+        </li>
+      }
+    </ul>
+  }
+} @empty {
+  <p class="vacio">El candy bar todavía no tiene productos.</p>
+}

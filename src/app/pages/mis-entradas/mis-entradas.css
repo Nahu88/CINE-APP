@@ -89,3 +89,59 @@
     border-top: 2px dashed var(--color-borde);
   }
 }
+/* Cada compra agrupa sus entradas */
+.compra {
+  display: grid;
+  gap: 0.85rem;
+  margin-bottom: 2rem;
+}
+
+.compra.cancelada {
+  opacity: 0.6;
+}
+
+.compra-encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.compra-encabezado h2 {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: 1.8rem;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.compra-encabezado p,
+.candy {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  color: var(--color-texto-suave);
+}
+
+.entrada-datos h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+  text-transform: capitalize;
+}
+
+.aviso-edad {
+  font-size: 0.82rem;
+  color: #f5c77e !important;
+}
+
+.etiqueta {
+  padding: 0.15rem 0.55rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+}
+
+.etiqueta-alerta {
+  color: var(--color-terciopelo);
+}

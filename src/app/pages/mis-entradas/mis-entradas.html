@@ -1,42 +1,72 @@
 <section class="contenedor mis-entradas">
   <h1>Mis entradas</h1>
-  <p class="bajada">Mostrá el QR en el ingreso a la sala, o descargá la entrada en PDF.</p>
+  <p class="bajada">Mostrá el QR en el ingreso a la sala y en el candy bar, o descargá la entrada en PDF.</p>
+
+  @if (aviso()) {
+    <p class="mensaje-exito" role="status">{{ aviso() }}</p>
+  }
+  @if (error()) {
+    <p class="mensaje-error" role="alert">{{ error() }}</p>
+  }
 
   @if (cargando()) {
     <p>Cargando…</p>
-  } @else if (error()) {
-    <p class="mensaje-error" role="alert">{{ error() }}</p>
   } @else {
-    <ul class="lista-entradas">
-      @for (d of entradas(); track d.entrada.id) {
-        <li class="entrada" [class.no-vigente]="d.entrada.estado !== 'valida'">
-          <div class="entrada-datos">
-            <h2>{{ d.pelicula }}</h2>
-            <p>{{ d.inicio | date: 'short' }}, {{ d.sala }}</p>
-            <p>{{ d.butaca }}</p>
-            <p>${{ d.entrada.precio }}</p>
-
-            @if (d.entrada.estado === 'usada') {
-              <p class="estado">Ya usada</p>
-            } @else if (d.entrada.estado === 'cancelada') {
-              <p class="estado">Cancelada</p>
-            }
-
-            <button type="button" class="boton boton-secundario" (click)="descargar(d)">
-              Descargar PDF
-            </button>
+    @for (compra of compras(); track compra.orden.id) {
+      <article class="compra" [class.cancelada]="compra.orden.estado === 'cancelada'">
+        <header class="compra-encabezado">
+          <div>
+            <h2>{{ compra.entradas[0].pelicula }}</h2>
+            <p>
+              Compra del {{ compra.orden.created_at | date: 'd/M/yy' }} · Total ${{ compra.orden.total }}
+              @if (compra.orden.credito_usado > 0) {
+                (+ ${{ compra.orden.credito_usado }} de crédito)
+              }
+            </p>
           </div>
+          @if (compra.orden.estado === 'cancelada') {
+            <span class="etiqueta etiqueta-alerta">Cancelada</span>
+          } @else if (compra.cancelable) {
+            <button type="button" class="boton boton-secundario" (click)="cancelar(compra)">Cancelar compra</button>
+          }
+        </header>
 
-          <div class="entrada-qr">
-            <img [src]="d.qr" alt="Código QR de la entrada" />
-            <code>{{ d.entrada.codigo_qr }}</code>
-          </div>
-        </li>
-      } @empty {
-        <li class="vacio">
-          Todavía no compraste entradas. <a routerLink="/home">Ver la cartelera</a>
-        </li>
-      }
-    </ul>
+        @if (compra.entradas[0].candy.length) {
+          <p class="candy">Candy: {{ compra.entradas[0].candy.join(', ') }}</p>
+        }
+
+        <ul class="lista-entradas">
+          @for (d of compra.entradas; track d.entrada.id) {
+            <li class="entrada" [class.no-vigente]="d.entrada.estado !== 'valida'">
+              <div class="entrada-datos">
+                <h3>{{ d.inicio | date: 'EEEE d/M, HH:mm' }}</h3>
+                <p>{{ d.sala }} · {{ d.butaca }}</p>
+                <p>${{ d.entrada.precio }}</p>
+                @if (d.restriccion_edad) {
+                  <p class="aviso-edad">+{{ d.restriccion_edad }}: debe asistir acompañado por un adulto.</p>
+                }
+
+                @if (d.entrada.estado === 'usada') {
+                  <p class="estado">Ya usada</p>
+                } @else if (d.entrada.estado === 'cancelada') {
+                  <p class="estado">Cancelada</p>
+                }
+
+                @if (d.entrada.estado !== 'cancelada') {
+                  <button type="button" class="boton boton-secundario" (click)="descargar(d)">Descargar PDF</button>
+                }
+              </div>
+
+              <div class="entrada-qr">
+                <img [src]="d.qr" alt="Código QR de la entrada" />
+                <code>{{ d.entrada.codigo_qr }}</code>
+              </div>
+            </li>
+          }
+        </ul>
+      </article>
+    } @empty {
+      <p class="vacio">Todavía no compraste entradas. <a routerLink="/home">Ver la cartelera</a></p>
+    }
   }
 </section>

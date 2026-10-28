@@ -68,3 +68,27 @@
   margin: 0;
   font-weight: 700;
 }
+/* Lector de QR con la cámara */
+.camara {
+  display: grid;
+  gap: 0.75rem;
+  justify-items: start;
+}
+
+#lector {
+  width: 100%;
+  max-width: 22rem;
+  overflow: hidden;
+  border-radius: var(--radio);
+}
+
+.candy ul {
+  margin: 0 0 1rem;
+  padding-left: 1.2rem;
+}
+
+.ayuda {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-texto-suave);
+}

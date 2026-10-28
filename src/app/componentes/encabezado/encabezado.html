@@ -17,20 +17,25 @@
 
       @if (auth.perfil(); as perfil) {
         <a routerLink="/mis-entradas">Mis entradas</a>
-        @if (perfil.rol === 'administrador') {
-          <a routerLink="/admin/peliculas">Películas</a>
-          <a routerLink="/admin/salas">Salas</a>
-          <a routerLink="/admin/funciones">Funciones</a>
+        @if (!perfil.invitado) {
+          <a routerLink="/mis-peliculas">Mis películas</a>
         }
-        @if (perfil.rol === 'empleado' || perfil.rol === 'administrador') {
-          <a routerLink="/empleado/validar">Validar entradas</a>
+        @if (perfil.rol === 'empleado') {
+          <a routerLink="/empleado/validar">Validar</a>
+        }
+        @if (perfil.rol === 'administrador') {
+          <a routerLink="/admin">Panel</a>
         }
       }
     </nav>
 
     <div class="acciones">
       @if (auth.perfil(); as perfil) {
-        <span class="usuario">Hola, {{ perfil.nombre }}</span>
+        @if (perfil.invitado) {
+          <span class="usuario">Invitado</span>
+        } @else {
+          <a routerLink="/perfil" class="usuario">Hola, {{ perfil.nombre }}</a>
+        }
         <button type="button" class="boton boton-secundario" (click)="cerrarSesion()">Salir</button>
       } @else {
         <a routerLink="/login" class="boton boton-secundario">Ingresar</a>

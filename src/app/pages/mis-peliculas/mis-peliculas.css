@@ -1,0 +1,57 @@
+.vistas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vista {
+  display: grid;
+  gap: 0.6rem;
+  text-decoration: none;
+}
+
+.vista img,
+.poster-vacio {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: var(--radio-chico);
+  transition: transform 0.15s;
+}
+
+.vista:hover img,
+.vista:hover .poster-vacio {
+  transform: translateY(-3px);
+}
+
+.poster-vacio {
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  font-family: var(--fuente-titulos);
+  font-size: 1.3rem;
+  text-align: center;
+  text-transform: uppercase;
+  background: var(--color-superficie-2);
+}
+
+.vista-datos {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.estrellas span {
+  color: var(--color-borde);
+}
+
+.estrellas .llena {
+  color: #f5c77e;
+}
+
+.calificar {
+  font-size: 0.85rem;
+  color: var(--color-acento);
+}

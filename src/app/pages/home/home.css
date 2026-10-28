@@ -237,3 +237,32 @@ h1 {
   border: 1px dashed var(--color-borde);
   border-radius: var(--radio);
 }
+
+/* Avisos de alertas de estreno (RF-15) */
+.avisos {
+  display: grid;
+  gap: 0.6rem;
+  padding-top: 1.25rem;
+}
+
+.aviso-estreno {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1.1rem;
+  background: rgb(62 214 205 / 0.1);
+  border: 1px solid var(--color-acento);
+  border-radius: var(--radio);
+}
+
+.aviso-acciones {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.aviso-acciones .boton {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+}

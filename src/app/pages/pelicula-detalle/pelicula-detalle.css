@@ -93,3 +93,134 @@ h2 {
   padding: 0.55rem 1.1rem;
   font-size: 0.9rem;
 }
+
+.funcion-fecha {
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.etiqueta-preventa {
+  padding: 0.15rem 0.55rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-acento);
+  border: 1px solid currentColor;
+  border-radius: 4px;
+}
+
+.boton-lugar {
+  margin-left: auto;
+}
+
+/* Puntaje promedio y estrellas */
+.puntaje {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.estrellas span,
+.elegir-estrellas button {
+  color: var(--color-borde);
+}
+
+.estrellas .llena,
+.elegir-estrellas button.llena {
+  color: #f5c77e;
+}
+
+.estreno {
+  display: grid;
+  gap: 0.6rem;
+  justify-items: start;
+  margin-top: 1.25rem;
+  padding: 1rem 1.2rem;
+  background: var(--color-superficie);
+  border: 1px dashed var(--color-borde);
+  border-radius: var(--radio);
+}
+
+.estreno p {
+  margin: 0;
+}
+
+.ayuda a,
+.estreno a {
+  color: var(--color-acento);
+}
+
+/* Reseñas */
+.resenias {
+  margin-top: 3rem;
+}
+
+.form-resenia {
+  display: grid;
+  gap: 0.6rem;
+  max-width: 36rem;
+  margin-bottom: 1.5rem;
+  padding: 1.1rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+
+.elegir-estrellas {
+  display: flex;
+  gap: 0.15rem;
+}
+
+.elegir-estrellas button {
+  padding: 0;
+  font-size: 1.8rem;
+  line-height: 1;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.elegir-estrellas button:hover {
+  transform: scale(1.15);
+}
+
+.form-resenia textarea {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  font: inherit;
+  color: var(--color-texto);
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde);
+  border-radius: calc(var(--radio) / 2);
+  resize: vertical;
+}
+
+.acciones-resenia {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.lista-resenias {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 44rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lista-resenias li {
+  padding: 0.85rem 1rem;
+  border-left: 3px solid var(--color-borde);
+}
+
+.resenia-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.lista-resenias p {
+  margin: 0.4rem 0 0;
+}

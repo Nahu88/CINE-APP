@@ -214,3 +214,338 @@ a {
 .pie-form a {
   color: var(--color-acento);
 }
+
+/* Mensaje de éxito, la contracara de .mensaje-error */
+.mensaje-exito {
+  padding: 0.75rem 1rem;
+  color: var(--color-ok);
+  background: color-mix(in srgb, var(--color-ok) 15%, transparent);
+  border-radius: calc(var(--radio) / 2);
+}
+
+/* ============================================================
+   Panel de administración y pantallas de gestión
+   Todas las pantallas del panel envuelven su contenido en
+   <section class="panel"> y comparten estos estilos.
+   ============================================================ */
+.panel {
+  display: grid;
+  gap: 1.5rem;
+  width: min(100% - 2rem, var(--ancho-maximo));
+  margin-inline: auto;
+  padding-block: 2.5rem 4rem;
+}
+
+.panel h1 {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: clamp(2.2rem, 5vw, 3rem);
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.panel h2 {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.panel h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.panel .bajada {
+  margin: 0.4rem 0 0;
+}
+
+.volver-panel {
+  font-size: 0.9rem;
+  color: var(--color-texto-suave);
+  text-decoration: none;
+}
+
+.volver-panel:hover {
+  color: var(--color-acento);
+}
+
+/* Caja de un formulario o de una sección */
+.caja {
+  display: grid;
+  gap: 1.1rem;
+  align-content: start;
+  padding: 1.5rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+
+.panel .fila {
+  display: grid;
+  gap: 1.1rem;
+}
+
+@media (min-width: 40rem) {
+  .panel .fila {
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  }
+}
+
+/* Dos columnas en pantallas anchas: formulario a la izquierda, lista a la derecha */
+.dos-columnas {
+  display: grid;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (min-width: 60rem) {
+  .dos-columnas {
+    grid-template-columns: minmax(18rem, 1fr) 2fr;
+  }
+}
+
+.campo textarea {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  font: inherit;
+  color: var(--color-texto);
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde);
+  border-radius: calc(var(--radio) / 2);
+  resize: vertical;
+}
+
+.ayuda {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-texto-suave);
+}
+
+/* Fecha y hora en varios campos, sin calendario del navegador */
+.fecha-partes {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr 6rem;
+  gap: 0.5rem;
+}
+
+.hora-partes {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Grupo de opciones tildables que se ven como pastillas */
+.pastillas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pastilla {
+  position: relative;
+  cursor: pointer;
+}
+
+.pastilla input {
+  position: absolute;
+  opacity: 0;
+}
+
+.pastilla span {
+  display: inline-block;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.85rem;
+  border: 1px solid var(--color-borde);
+  border-radius: 999px;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.pastilla input:checked + span {
+  color: var(--color-sobre-acento);
+  background: var(--color-acento);
+  border-color: var(--color-acento);
+}
+
+.pastilla input:focus-visible + span {
+  outline: 2px solid var(--color-acento);
+  outline-offset: 2px;
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.checkbox input {
+  width: 1.05rem;
+  height: 1.05rem;
+  accent-color: var(--color-acento);
+}
+
+.panel .acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* Tablas del panel: scrollean solas sin mover la página */
+.tabla-scroll {
+  overflow-x: auto;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+
+.panel table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.panel th {
+  padding: 0.85rem 1rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-align: left;
+  text-transform: uppercase;
+  color: var(--color-texto-suave);
+  border-bottom: 1px solid var(--color-borde);
+  white-space: nowrap;
+}
+
+.panel td {
+  padding: 0.85rem 1rem;
+  font-size: 0.92rem;
+  border-top: 1px solid var(--color-borde);
+}
+
+.panel tbody tr:first-child td {
+  border-top: 0;
+}
+
+.panel tr.apagada td:not(.celda-acciones) {
+  opacity: 0.5;
+}
+
+.numero {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.etiqueta {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-texto-suave);
+  border: 1px solid var(--color-borde);
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.etiqueta-acento {
+  color: var(--color-acento);
+  border-color: currentColor;
+}
+
+.etiqueta-alerta {
+  color: var(--color-terciopelo);
+  border-color: currentColor;
+}
+
+.acciones-fila {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.boton-chico {
+  padding: 0.35rem 0.75rem;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--color-texto);
+  background: transparent;
+  border: 1px solid var(--color-borde);
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.boton-chico:hover {
+  border-color: var(--color-texto-suave);
+}
+
+.boton-chico:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.boton-peligro {
+  color: var(--color-terciopelo);
+}
+
+.boton-peligro:hover {
+  border-color: currentColor;
+}
+
+.vacio {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--color-texto-suave);
+}
+
+/* Lista simple con un elemento por renglón y un botón a la derecha */
+.lista-simple {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lista-simple li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 0;
+  border-top: 1px solid var(--color-borde);
+}
+
+.lista-simple li:first-child {
+  border-top: 0;
+}
+
+/* Número grande con su explicación, para saldos y totales */
+.dato-grande {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.dato-grande strong {
+  font-family: var(--fuente-titulos);
+  font-size: 2.6rem;
+  line-height: 1;
+  color: var(--color-acento);
+}
+
+.dato-grande span {
+  font-size: 0.85rem;
+  color: var(--color-texto-suave);
+}
+
+fieldset.pastillas {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
