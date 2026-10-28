@@ -19,6 +19,8 @@ export interface EntradaDetalle {
   pelicula: string;
   inicio: string;
   sala: string;
-  butaca: string; 
-  qr: string; // imagen del QR; la completa la pantalla "Mis entradas"
+  butaca: string;
+  restriccion_edad: number | null; // si tiene, la entrada lleva el aviso de adulto acompañante
+  candy: string[]; // lo que se compró del candy en la misma orden, ej: "2 x Pochoclo grande"
+  qr: string; // imagen del QR; la completa la pantalla que la muestra
 }

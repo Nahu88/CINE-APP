@@ -14,6 +14,8 @@ export interface DatosFuncion {
   idioma: IdiomaFuncion;
   precio_normal: number;
   precio_vip: number;
+  precio_preventa: number | null; // null si no tiene preventa
+  preventa_desde: string | null; // desde cuándo se vende a precio de preventa
   creadoPor?: string;
 }
 
@@ -37,7 +39,8 @@ export class FuncionesService {
     // duracionMinutos viene de la película elegida en el formulario:
     // el componente ya la tiene cargada, así se evita un segundo pedido.
 
-    async crear(datos: DatosFuncion, duracionMinutos: number): Promise<void> {
+    // Devuelve el id de la función creada, para el registro de actividad.
+    async crear(datos: DatosFuncion, duracionMinutos: number): Promise<string> {
       const inicio = new Date(datos.inicio);
 
       // Los 30 minutos de margen entre funciones se suman acá, una sola vez.
@@ -46,7 +49,7 @@ export class FuncionesService {
       const salaId = await this.buscarSalaDisponible(inicio,fin);
       if(salaId == null)throw new Error(SIN_SALA_DISPONIBLE);
 
-      const{error} = await this.supabase.from('funciones').insert({
+      const { data, error } = await this.supabase.from('funciones').insert({
         pelicula_id: datos.pelicula_id,
         sala_id: salaId,
         inicio: inicio.toISOString(),
@@ -55,9 +58,12 @@ export class FuncionesService {
         idioma: datos.idioma,
         precio_normal: datos.precio_normal,
         precio_vip: datos.precio_vip,
+        precio_preventa: datos.precio_preventa,
+        preventa_desde: datos.preventa_desde,
         created_by: datos.creadoPor ?? null,
-      });
-      if(error)throw error;
+      }).select('id');
+      if (error) throw error;
+      return data[0].id;
     }
 
 

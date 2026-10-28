@@ -40,6 +40,12 @@ export class SalasService {
     await this.generarButacas(salaId);
   }
 
+  // RF-19: el admin puede cambiar la distribución, butaca por butaca.
+  async cambiarTipoButaca(butacaId: number, tipo: TipoButaca): Promise<void> {
+    const { error } = await this.supabase.from('butacas').update({ tipo }).eq('id', butacaId);
+    if (error) throw error;
+  }
+
   async eliminar(id: number): Promise<void> {
     const { error } = await this.supabase.from('salas').delete().eq('id', id);
     if (error) throw error;

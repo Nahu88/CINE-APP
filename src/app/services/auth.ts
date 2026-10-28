@@ -57,6 +57,38 @@ export class Auth {
     return { error: null };
   }
 
+  // Compra sin registrarse (RF-03). Supabase crea una sesión anónima: un
+  // usuario sin email. Se le guarda un perfil mínimo con la fecha de
+  // nacimiento que declaró, para poder controlar la restricción de edad.
+  // Así el invitado compra con las mismas reglas de seguridad que un cliente.
+  async ingresarComoInvitado(fechaNacimiento: string) {
+    const { data, error } = await this.supabase.auth.signInAnonymously();
+
+    if (error || !data.user) {
+      return { error };
+    }
+
+    const perfilInvitado: Partial<Perfil> = {
+      id: data.user.id,
+      rol: 'cliente',
+      nombre: 'Invitado',
+      apellido: '',
+      fecha_nacimiento: fechaNacimiento,
+      puntos: 0,
+      credito: 0,
+      cupon_bienvenida_usado: false,
+      invitado: true,
+    };
+
+    const { error: errorPerfil } = await this.supabase.from('perfiles').insert(perfilInvitado);
+    if (errorPerfil) {
+      return { error: errorPerfil };
+    }
+
+    await this.cargarPerfil();
+    return { error: null };
+  }
+
   async iniciarSesion(email: string, password: string) {
     const { error } = await this.supabase.auth.signInWithPassword({ email, password });
 

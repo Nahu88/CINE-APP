@@ -41,6 +41,17 @@ export class PeliculasService {
     return data ?? [];
   }
 
+  // RF-13: entradas vendidas por película. Sale de la vista ranking_peliculas,
+  // que cuenta en la base las entradas no canceladas de cada película.
+  async ranking(): Promise<{ pelicula_id: string; entradas_vendidas: number }[]> {
+    const { data, error } = await this.supabase
+      .from('ranking_peliculas')
+      .select('*')
+      .order('entradas_vendidas', { ascending: false });
+    if (error) throw error;
+    return data ?? [];
+  }
+
   async crear(datos: DatosPelicula): Promise<void> {
     const { error } = await this.supabase.from('peliculas').insert(datos);
     if (error) throw error;

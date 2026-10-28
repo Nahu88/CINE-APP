@@ -1,5 +1,7 @@
 import { inject, Service } from '@angular/core';
 import { Entrada, EntradaDetalle } from '../models/entrada.model';
+import { Orden } from '../models/orden.model';
+import { CandyService } from './candy';
 import { FuncionesService } from './funciones';
 import { PeliculasService } from './peliculas';
 import { SalasService } from './salas';
@@ -11,25 +13,34 @@ export class EntradasService {
   private peliculasService = inject(PeliculasService);
   private funcionesService = inject(FuncionesService);
   private salasService = inject(SalasService);
+  private candyService = inject(CandyService);
 
-  // Entradas de un usuario. primero sus órdenes y después
-  // las entradas de cada orden, una consulta atrás de la otra.
-  async listarDelUsuario(usuarioId: string): Promise<Entrada[]> {
-    const { data: ordenes, error } = await this.supabase
+  // Las compras de un usuario, la más nueva primero.
+  async listarOrdenesDelUsuario(usuarioId: string): Promise<Orden[]> {
+    const { data, error } = await this.supabase
       .from('ordenes')
       .select('*')
-      .eq('usuario_id', usuarioId);
+      .eq('usuario_id', usuarioId)
+      .order('created_at', { ascending: false });
     if (error) throw error;
+    return data ?? [];
+  }
+
+  async listarDeOrden(ordenId: string): Promise<Entrada[]> {
+    const { data, error } = await this.supabase.from('entradas').select('*').eq('orden_id', ordenId);
+    if (error) throw error;
+    return data ?? [];
+  }
+
+  // Entradas de un usuario: primero sus órdenes y después las entradas
+  // de cada orden, una consulta atrás de la otra.
+  async listarDelUsuario(usuarioId: string): Promise<Entrada[]> {
+    const ordenes = await this.listarOrdenesDelUsuario(usuarioId);
 
     const entradas: Entrada[] = [];
-    for (const orden of ordenes ?? []) {
-      const { data, error: errorEntradas } = await this.supabase
-        .from('entradas')
-        .select('*')
-        .eq('orden_id', orden.id);
-      if (errorEntradas) throw errorEntradas;
-
-      for (const entrada of data ?? []) {
+    for (const orden of ordenes) {
+      const deLaOrden = await this.listarDeOrden(orden.id);
+      for (const entrada of deLaOrden) {
         entradas.push(entrada);
       }
     }
@@ -59,13 +70,19 @@ export class EntradasService {
     if (error) throw error;
   }
 
-  // Completa cada entrada con el nombre de la película, la sala, el horario
-  // y la butaca. Los nombres se resuelven con .find() sobre los arrays ya
-  // cargados, igual que en el detalle de película y en la compra.
+  // Completa cada entrada con el nombre de la película, la sala, el horario,
+  // la butaca y el candy de su orden. Los nombres se resuelven con .find()
+  // sobre los arrays ya cargados, igual que en el resto de la app.
   async armarDetalles(entradas: Entrada[]): Promise<EntradaDetalle[]> {
     const peliculas = await this.peliculasService.listarTodas();
     const funciones = await this.funcionesService.listar();
     const salas = await this.salasService.listar();
+    const productos = await this.candyService.listarProductos();
+    const combos = await this.candyService.listarCombos();
+
+    // El candy es de la orden, no de cada entrada: se pide una vez por orden
+    // y se guarda en esta lista para no repetir la consulta.
+    const candyPorOrden: { ordenId: string; textos: string[] }[] = [];
 
     const detalles: EntradaDetalle[] = [];
     for (const entrada of entradas) {
@@ -74,12 +91,21 @@ export class EntradasService {
       const sala = salas.find((s) => s.id === funcion?.sala_id);
       const butaca = await this.textoButaca(entrada.butaca_id);
 
+      let candy = candyPorOrden.find((c) => c.ordenId === entrada.orden_id);
+      if (!candy) {
+        const items = await this.candyService.listarItemsDeOrden(entrada.orden_id);
+        candy = { ordenId: entrada.orden_id, textos: this.candyService.describirItems(items, productos, combos) };
+        candyPorOrden.push(candy);
+      }
+
       detalles.push({
         entrada: entrada,
         pelicula: pelicula?.nombre ?? '',
         inicio: funcion?.inicio ?? '',
         sala: sala?.nombre ?? '',
         butaca: butaca,
+        restriccion_edad: pelicula?.restriccion_edad ?? null,
+        candy: candy.textos,
         qr: '',
       });
     }

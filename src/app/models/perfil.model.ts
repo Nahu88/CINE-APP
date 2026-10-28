@@ -12,5 +12,6 @@ export interface Perfil {
   puntos: number;
   credito: number;
   cupon_bienvenida_usado: boolean;
+  invitado: boolean; // true si compró sin registrarse (sesión anónima)
   created_at: string;
 }
