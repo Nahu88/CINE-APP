@@ -1,0 +1,129 @@
+<section class="panel">
+  <a routerLink="/admin" class="volver-panel">&larr; Panel</a>
+  <header>
+    <h1>Candy bar: productos</h1>
+    <p class="bajada">Los productos se agrupan en categorías. Ocultá un producto para dejar de venderlo.</p>
+  </header>
+
+  @if (error()) {
+    <p class="mensaje-error" role="alert">{{ error() }}</p>
+  }
+
+  <div class="dos-columnas">
+    <div class="caja">
+      <h2>Categorías</h2>
+      <form [formGroup]="formCategoria" (ngSubmit)="crearCategoria()" class="acciones">
+        <div class="campo">
+          <label for="categoria-nueva" class="visualmente-oculto">Nueva categoría</label>
+          <input id="categoria-nueva" type="text" formControlName="nombre" placeholder="Nueva categoría" />
+        </div>
+        <button type="submit" class="boton boton-secundario">Agregar</button>
+      </form>
+
+      <ul class="lista-simple">
+        @for (categoria of categorias(); track categoria.id) {
+          <li>
+            <span>{{ categoria.nombre }}</span>
+            <button type="button" class="boton-chico boton-peligro" (click)="eliminarCategoria(categoria)">Eliminar</button>
+          </li>
+        } @empty {
+          <li class="vacio">Todavía no hay categorías.</li>
+        }
+      </ul>
+    </div>
+
+    <form [formGroup]="formProducto" (ngSubmit)="guardar()" class="caja">
+      <h2>{{ editandoId() ? 'Editar producto' : 'Nuevo producto' }}</h2>
+
+      <div class="fila">
+        <div class="campo">
+          <label for="nombre">Nombre</label>
+          <input id="nombre" type="text" formControlName="nombre" placeholder="Pochoclo grande" />
+          @if (tieneError('nombre', 'required')) {
+            <p class="error">Ingresá el nombre.</p>
+          }
+        </div>
+        <div class="campo">
+          <label for="categoria">Categoría</label>
+          <select id="categoria" formControlName="categoria_id">
+            <option value="" disabled>Elegí una</option>
+            @for (categoria of categorias(); track categoria.id) {
+              <option [value]="categoria.id">{{ categoria.nombre }}</option>
+            }
+          </select>
+          @if (tieneError('categoria_id', 'required')) {
+            <p class="error">Elegí una categoría.</p>
+          }
+        </div>
+      </div>
+
+      <div class="fila">
+        <div class="campo">
+          <label for="precio">Precio</label>
+          <input id="precio" type="number" min="1" formControlName="precio" />
+          @if (tieneError('precio', 'required')) {
+            <p class="error">Ingresá el precio.</p>
+          } @else if (tieneError('precio', 'min')) {
+            <p class="error">Tiene que ser mayor a cero.</p>
+          }
+        </div>
+        <div class="campo">
+          <label for="imagen">URL de la imagen (opcional)</label>
+          <input id="imagen" type="text" formControlName="imagen_url" placeholder="https://..." />
+        </div>
+      </div>
+
+      <div class="acciones">
+        <button type="submit" class="boton boton-primario" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando…' : editandoId() ? 'Guardar cambios' : 'Crear producto' }}
+        </button>
+        @if (editandoId()) {
+          <button type="button" class="boton boton-secundario" (click)="cancelarEdicion()">Cancelar</button>
+        }
+      </div>
+    </form>
+  </div>
+
+  <h2>Productos cargados</h2>
+  @if (cargando()) {
+    <p class="vacio">Cargando…</p>
+  } @else {
+    <div class="tabla-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Categoría</th>
+            <th>Precio</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (producto of productos(); track producto.id) {
+            <tr [class.apagada]="!producto.activo">
+              <td>{{ producto.nombre }}</td>
+              <td>{{ nombreCategoria(producto.categoria_id) }}</td>
+              <td class="numero">${{ producto.precio }}</td>
+              <td>
+                <span class="etiqueta" [class.etiqueta-acento]="producto.activo">
+                  {{ producto.activo ? 'A la venta' : 'Oculto' }}
+                </span>
+              </td>
+              <td class="celda-acciones">
+                <div class="acciones-fila">
+                  <button type="button" class="boton-chico" (click)="editar(producto)">Editar</button>
+                  <button type="button" class="boton-chico" (click)="alternarActivo(producto)">
+                    {{ producto.activo ? 'Ocultar' : 'Mostrar' }}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="5" class="vacio">Todavía no hay productos.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

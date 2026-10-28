@@ -1,0 +1,92 @@
+<section class="panel">
+  <a routerLink="/admin" class="volver-panel">&larr; Panel</a>
+  <header>
+    <h1>Candy bar: combos</h1>
+    <p class="bajada">Un combo junta varios productos a un precio fijo. Se muestran destacados en la compra.</p>
+  </header>
+
+  @if (error()) {
+    <p class="mensaje-error" role="alert">{{ error() }}</p>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="crear()" class="caja">
+    <h2>Nuevo combo</h2>
+
+    <div class="fila">
+      <div class="campo">
+        <label for="nombre">Nombre</label>
+        <input id="nombre" type="text" formControlName="nombre" placeholder="Combo pareja" />
+      </div>
+      <div class="campo">
+        <label for="precio">Precio del combo</label>
+        <input id="precio" type="number" min="1" formControlName="precio" />
+        @if (precioSuelto()) {
+          <p class="ayuda">Por separado saldría ${{ precioSuelto() }}.</p>
+        }
+      </div>
+    </div>
+
+    <div class="campo">
+      <span>Productos que incluye</span>
+      <ul class="lista-simple">
+        @for (producto of productos(); track producto.id) {
+          @if (producto.activo) {
+            <li>
+              <span>{{ producto.nombre }} <small class="ayuda">${{ producto.precio }}</small></span>
+              <span class="acciones-fila">
+                <button type="button" class="boton-chico" (click)="restar(producto)" [attr.aria-label]="'Quitar ' + producto.nombre">−</button>
+                <strong class="numero">{{ cantidadDe(producto) }}</strong>
+                <button type="button" class="boton-chico" (click)="sumar(producto)" [attr.aria-label]="'Agregar ' + producto.nombre">+</button>
+              </span>
+            </li>
+          }
+        } @empty {
+          <li class="vacio">Primero cargá productos en la sección Productos.</li>
+        }
+      </ul>
+    </div>
+
+    <div class="acciones">
+      <button type="submit" class="boton boton-primario" [disabled]="guardando()">
+        {{ guardando() ? 'Creando…' : 'Crear combo' }}
+      </button>
+    </div>
+  </form>
+
+  <h2>Combos cargados</h2>
+  @if (cargando()) {
+    <p class="vacio">Cargando…</p>
+  } @else {
+    <div class="tabla-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Combo</th>
+            <th>Incluye</th>
+            <th>Precio</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (combo of combos(); track combo.id) {
+            <tr [class.apagada]="!combo.activo">
+              <td>{{ combo.nombre }}</td>
+              <td>{{ contenido(combo) }}</td>
+              <td class="numero">${{ combo.precio }}</td>
+              <td class="celda-acciones">
+                <div class="acciones-fila">
+                  <button type="button" class="boton-chico" (click)="cambiarPrecio(combo)">Cambiar precio</button>
+                  <button type="button" class="boton-chico" (click)="alternarActivo(combo)">
+                    {{ combo.activo ? 'Ocultar' : 'Mostrar' }}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="4" class="vacio">Todavía no hay combos.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

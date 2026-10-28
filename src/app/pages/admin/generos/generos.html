@@ -1,0 +1,42 @@
+<section class="panel">
+  <a routerLink="/admin" class="volver-panel">&larr; Panel</a>
+  <header>
+    <h1>Géneros</h1>
+    <p class="bajada">La lista de géneros que se eligen al cargar una película y con la que se filtra la cartelera.</p>
+  </header>
+
+  @if (error()) {
+    <p class="mensaje-error" role="alert">{{ error() }}</p>
+  }
+
+  <div class="dos-columnas">
+    <form [formGroup]="form" (ngSubmit)="crear()" class="caja">
+      <h2>Nuevo género</h2>
+      <div class="campo">
+        <label for="nombre">Nombre</label>
+        <input id="nombre" type="text" formControlName="nombre" placeholder="Ciencia ficción" />
+      </div>
+      <div class="acciones">
+        <button type="submit" class="boton boton-primario">Agregar género</button>
+      </div>
+    </form>
+
+    <div class="caja">
+      <h2>Géneros cargados</h2>
+      @if (cargando()) {
+        <p class="vacio">Cargando…</p>
+      } @else {
+        <ul class="lista-simple">
+          @for (genero of generos(); track genero.id) {
+            <li>
+              <span>{{ genero.nombre }}</span>
+              <button type="button" class="boton-chico boton-peligro" (click)="eliminar(genero)">Eliminar</button>
+            </li>
+          } @empty {
+            <li class="vacio">Todavía no hay géneros.</li>
+          }
+        </ul>
+      }
+    </div>
+  </div>
+</section>

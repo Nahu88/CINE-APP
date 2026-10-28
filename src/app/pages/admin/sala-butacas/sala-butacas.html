@@ -1,0 +1,28 @@
+<section class="panel">
+  <a routerLink="/admin/salas" class="volver-panel">&larr; Salas</a>
+  <header>
+    <h1>Butacas de {{ salaNombre() }}</h1>
+    <p class="bajada">Elegí un tipo y tocá las butacas que querés cambiar. El cambio se guarda al instante.</p>
+  </header>
+
+  @if (error()) {
+    <p class="mensaje-error" role="alert">{{ error() }}</p>
+  }
+
+  <div class="caja">
+    <fieldset class="pastillas" aria-label="Tipo a aplicar">
+      @for (tipo of tipos; track tipo) {
+        <label class="pastilla">
+          <input type="radio" name="tipo" [checked]="tipoElegido() === tipo" (change)="tipoElegido.set(tipo)" />
+          <span>{{ tipo }} ({{ conteo()[tipo] }})</span>
+        </label>
+      }
+    </fieldset>
+
+    @if (cargando()) {
+      <p class="vacio">Cargando…</p>
+    } @else {
+      <app-mapa-butacas [butacas]="butacas()" (alternar)="cambiar($event)" />
+    }
+  </div>
+</section>

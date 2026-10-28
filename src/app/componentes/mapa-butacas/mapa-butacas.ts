@@ -10,12 +10,11 @@ import { ButacaDirective } from '../../directivas/butaca.directive';
   templateUrl: './mapa-butacas.html',
 })
 export class MapaButacas {
-  // Los datos bajan con input()...
+  // Los datos bajan con input
   butacas = input.required<Butaca[]>();
   ocupadas = input<number[]>([]);
   seleccionadas = input<number[]>([]);
-
-  // ...y los eventos suben con output().
+  // output sube el evento
   alternar = output<Butaca>();
 
   // Lista de letras de fila sin repetir: A, B, C...

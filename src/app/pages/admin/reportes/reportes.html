@@ -1,0 +1,110 @@
+<section class="panel">
+  <a routerLink="/admin" class="volver-panel">&larr; Panel</a>
+  <header>
+    <h1>Reportes</h1>
+    <p class="bajada">Se cuentan solo las compras pagadas: las canceladas no suman.</p>
+  </header>
+
+  @if (error()) {
+    <p class="mensaje-error" role="alert">{{ error() }}</p>
+  }
+
+  @if (cargando()) {
+    <p class="vacio">Cargando…</p>
+  } @else {
+    <div class="resumen">
+      <div class="caja dato-grande">
+        <strong>${{ totalFacturado() }}</strong>
+        <span>Facturado en los últimos 30 días</span>
+      </div>
+      <div class="caja dato-grande">
+        <strong>{{ totalEntradas() }}</strong>
+        <span>Entradas vendidas en los últimos 30 días</span>
+      </div>
+    </div>
+
+    <div class="caja">
+      <div class="titulo-con-acciones">
+        <h2>Facturación diaria</h2>
+        <div class="acciones-fila">
+          <button type="button" class="boton-chico" (click)="exportarPdf()" [disabled]="!facturacion().length">Exportar PDF</button>
+          <button type="button" class="boton-chico" (click)="exportarExcel()" [disabled]="!facturacion().length">Exportar Excel</button>
+        </div>
+      </div>
+      <div class="tabla-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Día</th>
+              <th>Compras</th>
+              <th>Entradas</th>
+              <th>Facturación</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (fila of facturacion(); track fila.dia) {
+              <tr>
+                <td>{{ fila.dia + 'T00:00:00' | date: 'EEEE d/M' }}</td>
+                <td class="numero">{{ fila.compras }}</td>
+                <td class="numero">{{ fila.entradas }}</td>
+                <td class="numero">${{ fila.facturacion }}</td>
+              </tr>
+            } @empty {
+              <tr><td colspan="4" class="vacio">No hubo ventas en los últimos 30 días.</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="pastillas" role="group" aria-label="Período de los rankings">
+      <label class="pastilla">
+        <input type="radio" name="periodo" [checked]="periodo() === 7" (change)="cambiarPeriodo(7)" />
+        <span>Última semana</span>
+      </label>
+      <label class="pastilla">
+        <input type="radio" name="periodo" [checked]="periodo() === 30" (change)="cambiarPeriodo(30)" />
+        <span>Último mes</span>
+      </label>
+    </div>
+
+    <div class="dos-graficos">
+      <div class="caja">
+        <h2>Películas más vistas</h2>
+        <ul class="barras">
+          @for (fila of peliculas(); track fila.nombre) {
+            <li>
+              <span class="barra-nombre">{{ fila.nombre }}</span>
+              <span class="barra-fondo">
+                <span class="barra" [style.width.%]="porcentaje(fila.cantidad, maximoPeliculas())"></span>
+              </span>
+              <span class="numero">{{ fila.cantidad }}</span>
+            </li>
+          } @empty {
+            <li class="vacio">Sin entradas vendidas en el período.</li>
+          }
+        </ul>
+      </div>
+
+      <div class="caja">
+        <h2>Lo más vendido del candy</h2>
+        @if (candy()[0]; as primero) {
+          <p class="ayuda">El producto más vendido es <strong>{{ primero.nombre }}</strong>.</p>
+        }
+        <ul class="barras">
+          @for (fila of candy(); track fila.nombre) {
+            <li>
+              <span class="barra-nombre">{{ fila.nombre }}</span>
+              <span class="barra-fondo">
+                <span class="barra barra-candy" [style.width.%]="porcentaje(fila.cantidad, maximoCandy())"></span>
+              </span>
+              <span class="numero">{{ fila.cantidad }}</span>
+            </li>
+          } @empty {
+            <li class="vacio">Sin ventas del candy en el período.</li>
+          }
+        </ul>
+      </div>
+    </div>
+  }
+</section>

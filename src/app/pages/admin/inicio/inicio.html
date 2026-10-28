@@ -1,0 +1,22 @@
+<section class="panel">
+  <header>
+    <h1>Panel de administración</h1>
+    <p class="bajada">Elegí qué querés gestionar.</p>
+  </header>
+
+  @for (grupo of grupos; track grupo.titulo) {
+    <div class="grupo">
+      <h2>{{ grupo.titulo }}</h2>
+      <ul class="tarjetas">
+        @for (seccion of grupo.secciones; track seccion.ruta) {
+          <li>
+            <a [routerLink]="seccion.ruta" class="tarjeta-seccion">
+              <strong>{{ seccion.nombre }}</strong>
+              <span>{{ seccion.detalle }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </div>
+  }
+</section>

@@ -1,0 +1,50 @@
+<section class="panel">
+  <a routerLink="/admin" class="volver-panel">&larr; Panel</a>
+  <header>
+    <h1>Registro de actividad</h1>
+    <p class="bajada">Quién creó cada función, quién cambió un precio, quién validó un QR, con fecha y hora.</p>
+  </header>
+
+  @if (error()) {
+    <p class="mensaje-error" role="alert">{{ error() }}</p>
+  }
+
+  <div class="campo filtro">
+    <label for="filtro">Mostrar</label>
+    <select id="filtro" (change)="filtrar($event)">
+      <option value="">Todas las acciones</option>
+      @for (accion of acciones(); track accion) {
+        <option [value]="accion">{{ nombreAccion(accion) }}</option>
+      }
+    </select>
+  </div>
+
+  @if (cargando()) {
+    <p class="vacio">Cargando…</p>
+  } @else {
+    <div class="tabla-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha y hora</th>
+            <th>Quién</th>
+            <th>Acción</th>
+            <th>Detalle</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (registro of filtrados(); track registro.id) {
+            <tr>
+              <td class="numero">{{ registro.created_at | date: 'dd/MM/yy HH:mm' }}</td>
+              <td>{{ registro.usuario_nombre }}</td>
+              <td>{{ nombreAccion(registro.accion) }}</td>
+              <td class="ayuda">{{ registro.detalle }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="4" class="vacio">Todavía no hay actividad registrada.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

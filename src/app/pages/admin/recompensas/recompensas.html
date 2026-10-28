@@ -1,0 +1,77 @@
+<section class="panel">
+  <a routerLink="/admin" class="volver-panel">&larr; Panel</a>
+  <header>
+    <h1>Recompensas</h1>
+    <p class="bajada">Los clientes suman 1 punto por cada peso que pagan y los canjean al comprar.</p>
+  </header>
+
+  @if (error()) {
+    <p class="mensaje-error" role="alert">{{ error() }}</p>
+  }
+
+  <div class="dos-columnas">
+    <form [formGroup]="form" (ngSubmit)="crear()" class="caja">
+      <h2>Nueva recompensa</h2>
+
+      <div class="campo">
+        <label for="descripcion">Descripción</label>
+        <input id="descripcion" type="text" formControlName="descripcion" placeholder="Pochoclo mediano gratis" />
+      </div>
+
+      <div class="campo">
+        <label for="premio">Qué se lleva</label>
+        <select id="premio" formControlName="premio">
+          <option value="entrada">Una entrada gratis</option>
+          @for (producto of productos(); track producto.id) {
+            <option [value]="producto.id">{{ producto.nombre }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="campo">
+        <label for="puntos">Puntos que cuesta</label>
+        <input id="puntos" type="number" min="1" formControlName="puntos" />
+      </div>
+
+      <div class="acciones">
+        <button type="submit" class="boton boton-primario">Crear recompensa</button>
+      </div>
+    </form>
+
+    <div class="tabla-scroll">
+      @if (cargando()) {
+        <p class="vacio">Cargando…</p>
+      } @else {
+        <table>
+          <thead>
+            <tr>
+              <th>Recompensa</th>
+              <th>Qué se lleva</th>
+              <th>Puntos</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (recompensa of recompensas(); track recompensa.id) {
+              <tr [class.apagada]="!recompensa.activa">
+                <td>{{ recompensa.descripcion }}</td>
+                <td>{{ queSeLleva(recompensa) }}</td>
+                <td class="numero">{{ recompensa.puntos_requeridos }}</td>
+                <td class="celda-acciones">
+                  <div class="acciones-fila">
+                    <button type="button" class="boton-chico" (click)="cambiarPuntos(recompensa)">Cambiar puntos</button>
+                    <button type="button" class="boton-chico" (click)="alternarActiva(recompensa)">
+                      {{ recompensa.activa ? 'Pausar' : 'Activar' }}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr><td colspan="4" class="vacio">Todavía no hay recompensas.</td></tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  </div>
+</section>

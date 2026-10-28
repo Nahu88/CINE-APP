@@ -1,106 +1,195 @@
-<header class="abm-encabezado">
-  <h1>Programar funciones</h1>
-  <p class="bajada">La sala se asigna sola: buscamos la primera libre para ese horario.</p>
-</header>
+<section class="panel">
+  <a routerLink="/admin" class="volver-panel">&larr; Panel</a>
+  <header>
+    <h1>Programar funciones</h1>
+    <p class="bajada">La sala se asigna sola: buscamos la primera libre para cada horario.</p>
+  </header>
 
-@if (error()) {
-  <p class="mensaje-error" role="alert">{{ error() }}</p>
-}
+  @if (error()) {
+    <p class="mensaje-error" role="alert">{{ error() }}</p>
+  }
+  @if (resultado()) {
+    <p class="mensaje-exito" role="status">{{ resultado() }}</p>
+  }
 
-<form [formGroup]="form" (ngSubmit)="crear()" class="form-funcion">
-  <div class="campo">
-    <label for="pelicula">Película</label>
-    <select id="pelicula" formControlName="pelicula_id">
-      <option value="" disabled>Elegí una película</option>
-      @for (pelicula of peliculas(); track pelicula.id) {
-        <option [value]="pelicula.id">{{ pelicula.nombre }} ({{ pelicula.duracion_minutos }} min)</option>
+  <form [formGroup]="form" (ngSubmit)="crear()" class="caja">
+    <div class="campo">
+      <label for="pelicula">Película</label>
+      <select id="pelicula" formControlName="pelicula_id" (change)="elegirPelicula($event)">
+        <option value="" disabled>Elegí una película</option>
+        @for (pelicula of peliculas(); track pelicula.id) {
+          <option [value]="pelicula.id">{{ pelicula.nombre }} ({{ pelicula.duracion_minutos }} min)</option>
+        }
+      </select>
+      @if (tieneError('pelicula_id', 'required')) {
+        <p class="error">Elegí una película.</p>
       }
-    </select>
-  </div>
+    </div>
 
-  <div class="fila">
-    <div class="campo">
-      <label for="fecha">Fecha</label>
-      <input id="fecha" type="date" formControlName="fecha" />
-    </div>
-    <div class="campo">
-      <label for="hora">Hora</label>
-      <input id="hora" type="time" formControlName="hora" />
-    </div>
-  </div>
+    <div class="fila">
+      <div class="campo">
+        <label for="fecha-dia">Fecha (o primera fecha)</label>
+        <div class="fecha-partes" formGroupName="fecha">
+          <select id="fecha-dia" aria-label="Día" formControlName="dia">
+            <option value="" disabled>Día</option>
+            @for (dia of dias; track dia) {
+              <option [value]="dia">{{ dia }}</option>
+            }
+          </select>
+          <select aria-label="Mes" formControlName="mes">
+            <option value="" disabled>Mes</option>
+            @for (mes of meses; track mes; let i = $index) {
+              <option [value]="i + 1">{{ mes }}</option>
+            }
+          </select>
+          <select aria-label="Año" formControlName="anio">
+            @for (anio of anios; track anio) {
+              <option [value]="anio">{{ anio }}</option>
+            }
+          </select>
+        </div>
+        @if (tieneError('fecha', 'fechaInexistente')) {
+          <p class="error">Esa fecha no existe.</p>
+        } @else if (tieneError('fecha', 'fechaPasada')) {
+          <p class="error">La fecha ya pasó.</p>
+        } @else if (tieneError('fecha.dia', 'required') || tieneError('fecha.mes', 'required')) {
+          <p class="error">Completá día y mes.</p>
+        }
+      </div>
 
-  <div class="fila">
-    <div class="campo">
-      <label for="formato">Formato</label>
-      <select id="formato" formControlName="formato">
-        <option value="2D">2D</option>
-        <option value="3D">3D</option>
-        <option value="4D">4D</option>
-        <option value="5D">5D</option>
-      </select>
+      <div class="campo">
+        <label for="hora">Hora</label>
+        <div class="hora-partes">
+          <select id="hora" aria-label="Hora" formControlName="hora">
+            @for (hora of horas; track hora) {
+              <option [value]="hora">{{ dosDigitos(hora) }}</option>
+            }
+          </select>
+          <span>:</span>
+          <select aria-label="Minutos" formControlName="minutos">
+            @for (minuto of minutos; track minuto) {
+              <option [value]="minuto">{{ dosDigitos(minuto) }}</option>
+            }
+          </select>
+        </div>
+      </div>
     </div>
-    <div class="campo">
-      <label for="idioma">Idioma</label>
-      <select id="idioma" formControlName="idioma">
-        <option value="castellano">Castellano</option>
-        <option value="subtitulada">Subtitulada</option>
-      </select>
-    </div>
-  </div>
 
-  <div class="fila">
     <div class="campo">
-      <label for="precioNormal">Precio normal</label>
-      <input id="precioNormal" type="number" min="1" formControlName="precio_normal" />
+      <span>Repetir los días (opcional)</span>
+      <div class="pastillas">
+        @for (dia of diasSemana; track dia.numero) {
+          <label class="pastilla">
+            <input type="checkbox" [checked]="diasElegidos().includes(dia.numero)" (change)="alternarDia(dia.numero)" />
+            <span>{{ dia.nombre }}</span>
+          </label>
+        }
+      </div>
+      @if (diasElegidos().length) {
+        <div class="fila">
+          <div class="campo">
+            <label for="semanas">Durante</label>
+            <select id="semanas" formControlName="semanas">
+              <option value="1">1 semana</option>
+              <option value="2">2 semanas</option>
+              <option value="3">3 semanas</option>
+              <option value="4">4 semanas</option>
+            </select>
+          </div>
+        </div>
+        <p class="ayuda">Se crea una función por cada día elegido, a la misma hora, desde la fecha de arriba.</p>
+      }
     </div>
-    <div class="campo">
-      <label for="precioVip">Precio VIP</label>
-      <input id="precioVip" type="number" min="1" formControlName="precio_vip" />
+
+    <div class="fila">
+      <div class="campo">
+        <label for="formato">Formato</label>
+        <select id="formato" formControlName="formato">
+          <option value="2D">2D</option>
+          <option value="3D">3D</option>
+          <option value="4D">4D</option>
+          <option value="5D">5D</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label for="idioma">Idioma</label>
+        <select id="idioma" formControlName="idioma">
+          <option value="castellano">Castellano</option>
+          <option value="subtitulada">Subtitulada</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label for="precioNormal">Precio normal</label>
+        <input id="precioNormal" type="number" min="1" formControlName="precio_normal" />
+      </div>
+      <div class="campo">
+        <label for="precioVip">Precio VIP</label>
+        <input id="precioVip" type="number" min="1" formControlName="precio_vip" />
+      </div>
     </div>
-  </div>
 
-  <button type="submit" class="boton boton-primario" [disabled]="guardando()">
-    {{ guardando() ? 'Buscando sala…' : 'Crear función' }}
-  </button>
-</form>
+    @if (admitePreventa()) {
+      <div class="fila">
+        <label class="checkbox">
+          <input type="checkbox" formControlName="con_preventa" />
+          <span>Habilitar preventa (desde 7 días antes del estreno)</span>
+        </label>
+        @if (form.controls.con_preventa.value) {
+          <div class="campo">
+            <label for="precioPreventa">Precio de preventa</label>
+            <input id="precioPreventa" type="number" min="1" formControlName="precio_preventa" />
+          </div>
+        }
+      </div>
+    }
 
-<section class="listado">
+    <div class="acciones">
+      <button type="submit" class="boton boton-primario" [disabled]="guardando()">
+        {{ guardando() ? 'Buscando salas…' : 'Crear función' }}
+      </button>
+    </div>
+  </form>
+
   <h2>Funciones programadas</h2>
-
   @if (cargando()) {
     <p class="vacio">Cargando…</p>
   } @else {
-    <table>
-      <thead>
-        <tr>
-          <th>Película</th>
-          <th>Sala</th>
-          <th>Inicio</th>
-          <th>Fin</th>
-          <th>Formato</th>
-          <th>Idioma</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (funcion of funciones(); track funcion.id) {
+    <div class="tabla-scroll">
+      <table>
+        <thead>
           <tr>
-            <td>{{ nombrePelicula(funcion.pelicula_id) }}</td>
-            <td>{{ nombreSala(funcion.sala_id) }}</td>
-            <td>{{ funcion.inicio | date: 'short' }}</td>
-            <td>{{ funcion.fin | date: 'short' }}</td>
-            <td>{{ funcion.formato }}</td>
-            <td>{{ funcion.idioma }}</td>
-            <td>
-              <button type="button" class="boton-chico boton-peligro" (click)="eliminar(funcion)">
-                Eliminar
-              </button>
-            </td>
+            <th>Película</th>
+            <th>Sala</th>
+            <th>Inicio</th>
+            <th>Fin</th>
+            <th>Formato</th>
+            <th>Precios</th>
+            <th>Acciones</th>
           </tr>
-        } @empty {
-          <tr><td colspan="7" class="vacio">Todavía no hay funciones programadas.</td></tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @for (funcion of funciones(); track funcion.id) {
+            <tr>
+              <td>{{ nombrePelicula(funcion.pelicula_id) }}</td>
+              <td>{{ nombreSala(funcion.sala_id) }}</td>
+              <td class="numero">{{ funcion.inicio | date: 'short' }}</td>
+              <td class="numero">{{ funcion.fin | date: 'shortTime' }}</td>
+              <td>{{ funcion.formato }} {{ funcion.idioma }}</td>
+              <td class="numero">
+                ${{ funcion.precio_normal }} / VIP ${{ funcion.precio_vip }}
+                @if (funcion.precio_preventa) {
+                  <span class="etiqueta etiqueta-acento">Preventa ${{ funcion.precio_preventa }}</span>
+                }
+              </td>
+              <td class="celda-acciones">
+                <button type="button" class="boton-chico boton-peligro" (click)="eliminar(funcion)">Eliminar</button>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="7" class="vacio">Todavía no hay funciones programadas.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
   }
 </section>

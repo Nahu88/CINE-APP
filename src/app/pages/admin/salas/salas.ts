@@ -1,16 +1,19 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { Sala } from '../../../models/sala.model';
+import { ActividadService } from '../../../services/actividad';
 import { SalasService } from '../../../services/salas';
 
 @Component({
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   selector: 'app-salas',
   styleUrl: './salas.css',
   templateUrl: './salas.html',
 })
 export class Salas implements OnInit {
   private salasService = inject(SalasService);
+  private actividad = inject(ActividadService);
 
   salas = signal<Sala[]>([]);
   cargando = signal(true);
@@ -46,7 +49,9 @@ export class Salas implements OnInit {
     this.guardando.set(true);
     this.error.set(null);
     try {
-      await this.salasService.crear(this.form.getRawValue());
+      const nombre = this.form.getRawValue().nombre;
+      await this.salasService.crear({ nombre });
+      await this.actividad.registrar('crear_sala', 'salas', null, 'Sala: ' + nombre);
       this.form.reset({ nombre: '' });
       await this.cargarSalas();
     } catch {
@@ -64,6 +69,7 @@ export class Salas implements OnInit {
 
     try {
       await this.salasService.eliminar(sala.id);
+      await this.actividad.registrar('eliminar_sala', 'salas', sala.id, 'Sala: ' + sala.nombre);
       await this.cargarSalas();
     } catch {
       this.error.set('No se pudo eliminar la sala. Puede que ya tenga funciones cargadas.');

@@ -1,0 +1,85 @@
+<section class="panel">
+  <a routerLink="/admin" class="volver-panel">&larr; Panel</a>
+  <header>
+    <h1>Cupones</h1>
+    <p class="bajada">
+      Se aplican solos en la compra a quien le corresponden. En cada compra se usa un solo cupón: el de mayor descuento.
+    </p>
+  </header>
+
+  @if (error()) {
+    <p class="mensaje-error" role="alert">{{ error() }}</p>
+  }
+
+  <div class="dos-columnas">
+    <form [formGroup]="form" (ngSubmit)="crear()" class="caja">
+      <h2>Nuevo cupón</h2>
+
+      <div class="campo">
+        <label for="tipo">Para quién</label>
+        <select id="tipo" formControlName="tipo">
+          <option value="mayores_50">Mayores de 50 años</option>
+          <option value="general">Todos los clientes</option>
+        </select>
+      </div>
+
+      <div class="campo">
+        <label for="nombre">Nombre</label>
+        <input id="nombre" type="text" formControlName="nombre" placeholder="Jubilados" />
+        @if (tieneError('nombre', 'required')) {
+          <p class="error">Ponele un nombre.</p>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="porcentaje">Descuento (%)</label>
+        <input id="porcentaje" type="number" min="1" max="100" formControlName="porcentaje" />
+        @if (tieneError('porcentaje', 'required')) {
+          <p class="error">Ingresá el porcentaje.</p>
+        } @else if (tieneError('porcentaje', 'min') || tieneError('porcentaje', 'max')) {
+          <p class="error">Tiene que estar entre 1 y 100.</p>
+        }
+      </div>
+
+      <div class="acciones">
+        <button type="submit" class="boton boton-primario">Crear cupón</button>
+      </div>
+    </form>
+
+    <div class="tabla-scroll">
+      @if (cargando()) {
+        <p class="vacio">Cargando…</p>
+      } @else {
+        <table>
+          <thead>
+            <tr>
+              <th>Cupón</th>
+              <th>Para quién</th>
+              <th>Descuento</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (cupon of cupones(); track cupon.id) {
+              <tr [class.apagada]="!cupon.activo">
+                <td>{{ cupon.nombre ?? cupon.tipo }}</td>
+                <td>{{ paraQuien(cupon.tipo) }}</td>
+                <td class="numero">{{ cupon.porcentaje }}%</td>
+                <td class="celda-acciones">
+                  <div class="acciones-fila">
+                    <button type="button" class="boton-chico" (click)="cambiarPorcentaje(cupon)">Cambiar %</button>
+                    <button type="button" class="boton-chico" (click)="alternarActivo(cupon)">
+                      {{ cupon.activo ? 'Pausar' : 'Activar' }}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr><td colspan="4" class="vacio">No hay cupones.</td></tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  </div>
+</section>

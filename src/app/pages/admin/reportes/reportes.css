@@ -1,0 +1,70 @@
+.resumen,
+.dos-graficos {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 45rem) {
+  .resumen,
+  .dos-graficos {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.titulo-con-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+td:first-child {
+  text-transform: capitalize;
+}
+
+/* Gráfico de barras hecho con CSS: el ancho de cada barra es su porcentaje */
+.barras {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.barras li {
+  display: grid;
+  grid-template-columns: minmax(6rem, 10rem) 1fr 2.5rem;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.barra-nombre {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barra-fondo {
+  height: 0.75rem;
+  background: var(--color-fondo);
+  border-radius: 999px;
+}
+
+.barra {
+  display: block;
+  height: 100%;
+  min-width: 0.5rem;
+  background: var(--color-acento);
+  border-radius: 999px;
+  transition: width 0.3s;
+}
+
+.barra-candy {
+  background: var(--color-terciopelo);
+}
+
+.barras .numero {
+  text-align: right;
+}

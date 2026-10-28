@@ -1,3 +1,4 @@
+<a routerLink="/admin" class="volver-panel">&larr; Panel</a>
 <header class="abm-encabezado">
   <h1>Administrar películas</h1>
   <p class="bajada">Cargá las películas y elegí cuáles se muestran en la cartelera.</p>
@@ -52,15 +53,47 @@
 
   <div class="fila">
     <div class="campo">
-      <label for="estreno">Fecha de estreno</label>
-      <input id="estreno" type="date" formControlName="fecha_estreno" />
-      <p class="ayuda">Dejala vacía si ya está en cartelera.</p>
+      <label for="estreno-dia">Fecha de estreno</label>
+      <div class="fecha-partes" formGroupName="fecha_estreno">
+        <select id="estreno-dia" aria-label="Día" formControlName="dia">
+          <option value="">Día</option>
+          @for (dia of dias; track dia) {
+            <option [value]="dia">{{ dia }}</option>
+          }
+        </select>
+        <select aria-label="Mes" formControlName="mes">
+          <option value="">Mes</option>
+          @for (mes of meses; track mes; let i = $index) {
+            <option [value]="i + 1">{{ mes }}</option>
+          }
+        </select>
+        <select aria-label="Año" formControlName="anio">
+          <option value="">Año</option>
+          @for (anio of anios; track anio) {
+            <option [value]="anio">{{ anio }}</option>
+          }
+        </select>
+      </div>
+      @if (tieneError('fecha_estreno', 'fechaIncompleta')) {
+        <p class="error">Completá día, mes y año, o dejá los tres vacíos.</p>
+      } @else if (tieneError('fecha_estreno', 'fechaInexistente')) {
+        <p class="error">Esa fecha no existe.</p>
+      } @else {
+        <p class="ayuda">Dejala vacía si ya está en cartelera. Si es futura, aparece en "Próximamente".</p>
+      }
     </div>
 
     <div class="campo">
-      <label for="generos">Géneros</label>
-      <input id="generos" type="text" formControlName="generos" placeholder="Acción, Drama" />
-      <p class="ayuda">Separados por coma.</p>
+      <span>Géneros</span>
+      <div class="pastillas">
+        @for (genero of opcionesGeneros(); track genero) {
+          <label class="pastilla">
+            <input type="checkbox" [checked]="generosElegidos().includes(genero)" (change)="alternarGenero(genero)" />
+            <span>{{ genero }}</span>
+          </label>
+        }
+      </div>
+      <p class="ayuda">La lista se edita en <a routerLink="/admin/generos">Géneros</a>.</p>
     </div>
   </div>
 
