@@ -28,6 +28,70 @@
         <a routerLink="/mis-peliculas" class="boton boton-secundario">Mis películas</a>
       </nav>
 
+      <div class="caja propuestas">
+        <h2>Proponé una película</h2>
+        <p class="ayuda">¿Querés ver una película que no está en la cartelera? Contanos cuál y por qué.</p>
+
+        @if (perfil.invitado) {
+          <p class="ayuda">Para proponer películas necesitás una cuenta registrada.</p>
+        } @else if (tienePendiente()) {
+          <p class="aviso">Ya tenés una propuesta en revisión. Cuando el cine la responda, podés enviar otra.</p>
+        } @else {
+          <form [formGroup]="formPropuesta" (ngSubmit)="enviarPropuesta()">
+            <div class="campo">
+              <label for="prop-titulo">Título</label>
+              <input id="prop-titulo" type="text" formControlName="titulo" />
+              @if (tieneErrorPropuesta('titulo', 'required')) {
+                <p class="error">Ingresá el título.</p>
+              } @else if (tieneErrorPropuesta('titulo', 'yaEnCartelera')) {
+                <p class="error">Esa película ya está en la cartelera.</p>
+              } @else if (tieneErrorPropuesta('titulo', 'maxlength')) {
+                <p class="error">Máximo 100 caracteres.</p>
+              }
+            </div>
+            <div class="campo">
+              <label for="prop-descripcion">Descripción</label>
+              <textarea id="prop-descripcion" rows="3" formControlName="descripcion"></textarea>
+              @if (tieneErrorPropuesta('descripcion', 'required')) {
+                <p class="error">Contanos de qué trata.</p>
+              }
+            </div>
+            <div class="campo">
+              <label for="prop-motivo">¿Por qué la querés en el cine?</label>
+              <textarea id="prop-motivo" rows="3" formControlName="motivo"></textarea>
+              @if (tieneErrorPropuesta('motivo', 'required')) {
+                <p class="error">Contanos por qué.</p>
+              }
+            </div>
+            <button type="submit" class="boton boton-primario" [disabled]="enviando()">
+              {{ enviando() ? 'Enviando…' : 'Enviar propuesta' }}
+            </button>
+          </form>
+        }
+
+        @if (errorPropuesta()) {
+          <p class="mensaje-error" role="alert">{{ errorPropuesta() }}</p>
+        }
+        @if (exitoPropuesta()) {
+          <p class="mensaje-exito" role="status">Propuesta enviada. El cine la va a revisar.</p>
+        }
+
+        @if (propuestas().length) {
+          <h3>Mis propuestas</h3>
+          <ul class="lista-simple">
+            @for (propuesta of propuestas(); track propuesta.id) {
+              <li>
+                <span>{{ propuesta.titulo }} <small class="ayuda">{{ propuesta.created_at | date: 'd/M/yy' }}</small></span>
+                <span class="etiqueta" [class.etiqueta-acento]="propuesta.estado === 'aceptada'"
+                      [class.etiqueta-alerta]="propuesta.estado === 'rechazada'">
+                  {{ propuesta.estado }}
+                </span>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+
       <div class="historiales">
         <div class="caja">
           <h2>Historial de canjes</h2>

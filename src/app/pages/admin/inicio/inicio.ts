@@ -16,6 +16,7 @@ export class AdminInicio {
       secciones: [
         { ruta: '/admin/peliculas', nombre: 'Películas', detalle: 'Alta, edición y visibilidad' },
         { ruta: '/admin/generos', nombre: 'Géneros', detalle: 'La lista para clasificar películas' },
+        { ruta: '/admin/propuestas', nombre: 'Propuestas', detalle: 'Películas que piden los clientes' },
         { ruta: '/admin/funciones', nombre: 'Funciones', detalle: 'Programación con sala automática' },
         { ruta: '/admin/salas', nombre: 'Salas y butacas', detalle: 'Salas y su distribución' },
       ],

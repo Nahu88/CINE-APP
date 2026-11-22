@@ -30,3 +30,13 @@
 .numero.negativo {
   color: var(--color-terciopelo);
 }
+
+.propuestas {
+  margin-block: 1.5rem;
+}
+
+.propuestas form {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 36rem;
+}

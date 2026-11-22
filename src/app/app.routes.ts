@@ -71,6 +71,11 @@ export const routes: Routes = [
     canActivate: [rolGuard(['administrador'])],
   },
   {
+    path: 'admin/propuestas',
+    loadComponent: () => import('./pages/admin/propuestas/propuestas').then((m) => m.AdminPropuestas),
+    canActivate: [rolGuard(['administrador'])],
+  },
+  {
     path: 'admin/salas',
     loadComponent: () => import('./pages/admin/salas/salas').then((m) => m.Salas),
     canActivate: [rolGuard(['administrador'])],

@@ -1,0 +1,53 @@
+<section class="panel">
+  <a routerLink="/admin" class="volver-panel">&larr; Panel</a>
+  <header>
+    <h1>Propuestas de películas</h1>
+    <p class="bajada">Películas que los clientes quieren ver. Al aceptar una, se abre el alta con sus datos.</p>
+  </header>
+
+  @if (error()) {
+    <p class="mensaje-error" role="alert">{{ error() }}</p>
+  }
+
+  @if (cargando()) {
+    <p class="vacio">Cargando…</p>
+  } @else {
+    <div class="caja">
+      <h2>Pendientes ({{ pendientes().length }})</h2>
+      <ul class="lista-simple">
+        @for (propuesta of pendientes(); track propuesta.id) {
+          <li>
+            <div>
+              <strong>{{ propuesta.titulo }}</strong>
+              <p>{{ propuesta.descripcion }}</p>
+              <p class="ayuda">«{{ propuesta.motivo }}» — {{ propuesta.autor }}, {{ propuesta.created_at | date: 'd/M/yy' }}</p>
+            </div>
+            <div class="acciones-fila">
+              <button type="button" class="boton-chico boton-primario" (click)="aceptar(propuesta)">Aceptar</button>
+              <button type="button" class="boton-chico boton-peligro" (click)="rechazar(propuesta)">Rechazar</button>
+            </div>
+          </li>
+        } @empty {
+          <li class="vacio">No hay propuestas para responder.</li>
+        }
+      </ul>
+    </div>
+
+    @if (respondidas().length) {
+      <div class="caja">
+        <h2>Respondidas</h2>
+        <ul class="lista-simple">
+          @for (propuesta of respondidas(); track propuesta.id) {
+            <li>
+              <span>{{ propuesta.titulo }} <small class="ayuda">{{ propuesta.autor }}</small></span>
+              <span class="etiqueta" [class.etiqueta-acento]="propuesta.estado === 'aceptada'"
+                    [class.etiqueta-alerta]="propuesta.estado === 'rechazada'">
+                {{ propuesta.estado }}
+              </span>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  }
+</section>

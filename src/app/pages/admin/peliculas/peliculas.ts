@@ -1,6 +1,6 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Pelicula } from '../../../models/pelicula.model';
 import { DuracionPipe } from '../../../pipes/duracion.pipe';
 import { ActividadService } from '../../../services/actividad';
@@ -19,6 +19,7 @@ export class Peliculas implements OnInit {
   private peliculasService = inject(PeliculasService);
   private generosService = inject(GenerosService);
   private actividad = inject(ActividadService);
+  private route = inject(ActivatedRoute);
 
   peliculas = signal<Pelicula[]>([]);
   generos = signal<Genero[]>([]);
@@ -70,6 +71,20 @@ export class Peliculas implements OnInit {
 
   async ngOnInit() {
     await this.cargarPeliculas();
+    this.precargarDesdePropuesta();
+  }
+
+  // Extra 1: al aceptar una propuesta se llega acá con ?nombre=...&sinopsis=...
+  // Se leen una sola vez con snapshot y se cargan en el formulario de alta.
+  private precargarDesdePropuesta() {
+    const parametros = this.route.snapshot.queryParamMap;
+    const nombre = parametros.get('nombre');
+    if (!nombre) return;
+
+    this.form.patchValue({
+      nombre: nombre,
+      sinopsis: parametros.get('sinopsis') ?? '',
+    });
   }
 
   // Muestra el error solo si el usuario ya pasó por el campo
