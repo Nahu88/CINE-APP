@@ -17,6 +17,12 @@
 
       @if (auth.perfil(); as perfil) {
         <a routerLink="/mis-entradas">Mis entradas</a>
+        <a routerLink="/notificaciones" class="link-avisos">
+          Avisos
+          @if (notificaciones.sinLeer() > 0) {
+            <span class="contador" aria-label="sin leer">{{ notificaciones.sinLeer() }}</span>
+          }
+        </a>
         @if (!perfil.invitado) {
           <a routerLink="/mis-peliculas">Mis películas</a>
         }

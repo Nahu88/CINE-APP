@@ -29,6 +29,14 @@ export class FuncionesService {
     return data ?? [];
   }
 
+  // La función cancelar_funcion de la base acredita a todos en una sola transacción.
+  // Devuelve cuántas compras se acreditaron.
+  async cancelar(id: string): Promise<number> {
+    const { data, error } = await this.supabase.rpc('cancelar_funcion', { p_funcion_id: id });
+    if (error) throw error;
+    return data ?? 0;
+  }
+
   async eliminar(id: string): Promise<void> {
     const { error } = await this.supabase.from('funciones').delete().eq('id', id);
     if (error) throw error;
@@ -65,7 +73,7 @@ export class FuncionesService {
     const { data: salas, error: errorSalas } = await this.supabase.from('salas').select('id');
     if (errorSalas) throw errorSalas;
 
-    const { data: funciones, error: errorFunciones } = await this.supabase .from('funciones').select('sala_id, inicio, fin');
+    const { data: funciones, error: errorFunciones } = await this.supabase .from('funciones').select('sala_id, inicio, fin').eq('cancelada', false); // una cancelada deja la sala libre
     if (errorFunciones) throw errorFunciones;
 
     for (const sala of salas ?? []) {

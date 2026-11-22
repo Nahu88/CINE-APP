@@ -169,8 +169,13 @@
         </thead>
         <tbody>
           @for (funcion of funciones(); track funcion.id) {
-            <tr>
-              <td>{{ nombrePelicula(funcion.pelicula_id) }}</td>
+            <tr [class.fila-cancelada]="funcion.cancelada">
+              <td>
+                {{ nombrePelicula(funcion.pelicula_id) }}
+                @if (funcion.cancelada) {
+                  <span class="etiqueta etiqueta-alerta">Cancelada</span>
+                }
+              </td>
               <td>{{ nombreSala(funcion.sala_id) }}</td>
               <td class="numero">{{ funcion.inicio | date: 'short' }}</td>
               <td class="numero">{{ funcion.fin | date: 'shortTime' }}</td>
@@ -182,6 +187,9 @@
                 }
               </td>
               <td class="celda-acciones">
+                @if (sePuedeCancelar(funcion)) {
+                  <button type="button" class="boton-chico boton-secundario" (click)="cancelarFuncion(funcion)">Cancelar función</button>
+                }
                 <button type="button" class="boton-chico boton-peligro" (click)="eliminar(funcion)">Eliminar</button>
               </td>
             </tr>

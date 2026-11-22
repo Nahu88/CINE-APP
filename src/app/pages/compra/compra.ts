@@ -141,6 +141,10 @@ export class Compra implements OnInit, OnDestroy {
         this.error.set('Función no encontrada.');
         return;
       }
+      if (funcion.cancelada) {
+        this.error.set('Esta función fue cancelada. Elegí otra función de la película.');
+        return;
+      }
       this.funcion.set(funcion);
 
       const peliculas = await this.peliculasService.listarTodas();

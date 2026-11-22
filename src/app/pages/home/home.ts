@@ -123,7 +123,7 @@ export class Home implements OnInit {
     for (const pelicula of todas) {
       if (!ids.includes(pelicula.id)) continue;
 
-      const deLaPelicula = funciones.filter((f) => f.pelicula_id === pelicula.id);
+      const deLaPelicula = funciones.filter((f) => f.pelicula_id === pelicula.id && !f.cancelada);
       const algunaALaVenta =
         deLaPelicula.filter((f) => this.comprasService.estaALaVenta(f, pelicula)).length > 0;
       if (algunaALaVenta) avisos.push(pelicula);

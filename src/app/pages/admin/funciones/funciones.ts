@@ -229,6 +229,35 @@ export class Funciones implements OnInit {
     this.guardando.set(false);
   }
 
+  async cancelarFuncion(funcion: Funcion) {
+    const descripcion = this.nombrePelicula(funcion.pelicula_id) + ', ' + new Date(funcion.inicio).toLocaleString('es-AR');
+    const confirmado = confirm(
+      `¿Cancelar la función de ${descripcion}? A cada comprador se le acredita todo lo que pagó y recibe un aviso. No se puede deshacer.`
+    );
+    if (!confirmado) return;
+
+    this.error.set(null);
+    this.resultado.set(null);
+    try {
+      const afectadas = await this.funcionesService.cancelar(funcion.id);
+      await this.actividad.registrar('cancelar_funcion', 'funciones', funcion.id, descripcion + ' (' + afectadas + ' compras acreditadas)');
+      this.resultado.set(
+        afectadas === 0
+          ? 'Función cancelada. No tenía entradas vendidas.'
+          : `Función cancelada. Se acreditó el total a ${afectadas} ${afectadas === 1 ? 'compra' : 'compras'} y se avisó a cada comprador.`
+      );
+      await this.cargarTodo();
+    } catch (error) {
+      console.error('No se pudo cancelar la función:', error);
+      // Si falla, la transacción se deshace entera: nadie queda acreditado a medias.
+      this.error.set('No se pudo cancelar la función. No se acreditó a nadie; probá de nuevo.');
+    }
+  }
+
+  sePuedeCancelar(funcion: Funcion): boolean {
+    return !funcion.cancelada && new Date(funcion.inicio) > new Date();
+  }
+
   async eliminar(funcion: Funcion) {
     if (!confirm('¿Eliminar esta función?')) return;
 

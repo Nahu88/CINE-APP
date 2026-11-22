@@ -13,6 +13,7 @@ export interface Funcion {
   precio_vip: number;
   preventa_desde?: string;
   precio_preventa?: number;
+  cancelada: boolean;
   created_at: string;
   created_by?: string;
 }

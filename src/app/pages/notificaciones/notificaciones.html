@@ -1,0 +1,28 @@
+<section class="panel">
+  <header>
+    <h1>Avisos</h1>
+    <p class="bajada">Cambios en tus compras y novedades del cine.</p>
+  </header>
+
+  @if (!permiso()) {
+    <div class="aviso aviso-navegador">
+      <p>Activá los avisos del navegador para enterarte aunque estés en otra pestaña.</p>
+      <button type="button" class="boton boton-secundario" (click)="activarAvisos()">Activar avisos</button>
+    </div>
+  }
+
+  <ul class="lista-avisos">
+    @for (aviso of notificaciones.lista(); track aviso.id) {
+      <li class="caja">
+        <strong>{{ aviso.titulo }}</strong>
+        <small class="ayuda">{{ aviso.created_at | date: 'd/M/yy HH:mm' }}</small>
+        <p>{{ aviso.mensaje }}</p>
+        @if (aviso.link) {
+          <a [routerLink]="aviso.link" class="boton boton-primario">Elegir otra función</a>
+        }
+      </li>
+    } @empty {
+      <li class="vacio">No tenés avisos.</li>
+    }
+  </ul>
+</section>

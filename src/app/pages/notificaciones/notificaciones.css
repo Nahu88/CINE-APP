@@ -1,0 +1,21 @@
+.aviso-navegador {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.lista-avisos {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 40rem;
+  padding: 0;
+  list-style: none;
+}
+
+.lista-avisos li {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: start;
+}

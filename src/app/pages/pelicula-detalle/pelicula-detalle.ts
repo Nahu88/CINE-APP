@@ -90,7 +90,7 @@ export class PeliculaDetalle implements OnInit {
 
       const funciones = await this.funcionesService.listar();
       const ahora = new Date();
-      this.funciones.set(funciones.filter((f) => f.pelicula_id === id && new Date(f.inicio) > ahora));
+      this.funciones.set(funciones.filter((f) => f.pelicula_id === id && !f.cancelada && new Date(f.inicio) > ahora));
 
       this.salas.set(await this.salasService.listar());
       this.resenias.set(await this.reseniasService.listarDePelicula(id));

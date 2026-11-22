@@ -41,6 +41,11 @@ export const routes: Routes = [
     canActivate: [rolGuard(['cliente', 'empleado', 'administrador'])],
   },
   {
+    path: 'notificaciones',
+    loadComponent: () => import('./pages/notificaciones/notificaciones').then((m) => m.NotificacionesPagina),
+    canActivate: [rolGuard(['cliente', 'empleado', 'administrador'])],
+  },
+  {
     path: 'perfil',
     loadComponent: () => import('./pages/perfil/perfil').then((m) => m.PerfilPagina),
     canActivate: [rolGuard(['cliente', 'empleado', 'administrador'])],
