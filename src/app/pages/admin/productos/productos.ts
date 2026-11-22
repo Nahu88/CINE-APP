@@ -20,7 +20,7 @@ export class Productos implements OnInit {
   guardando = signal(false);
   error = signal<string | null>(null);
 
-  // null = creando uno nuevo; con un id = editando ese producto.
+  // null = creando; con id = editando.
   editandoId = signal<string | null>(null);
 
   formCategoria = new FormGroup({
@@ -60,8 +60,6 @@ export class Productos implements OnInit {
     return this.categorias().find((c) => c.id === id)?.nombre ?? 'Sin categoría';
   }
 
-  // ---------- Categorías ----------
-
   async crearCategoria() {
     if (this.formCategoria.invalid) {
       this.formCategoria.markAllAsTouched();
@@ -87,8 +85,6 @@ export class Productos implements OnInit {
       this.error.set('No se puede eliminar: hay productos en esa categoría.');
     }
   }
-
-  // ---------- Productos ----------
 
   editar(producto: Producto) {
     this.editandoId.set(producto.id);
@@ -129,7 +125,6 @@ export class Productos implements OnInit {
         datos.activo = anterior?.activo ?? true;
         await this.candyService.actualizarProducto(id, datos);
 
-        // RF-63: queda registrado quién cambió un precio.
         if (anterior && Number(anterior.precio) !== datos.precio) {
           await this.actividad.registrar('modificar_precio', 'productos', id, datos.nombre + ': de $' + anterior.precio + ' a $' + datos.precio);
         }

@@ -8,14 +8,12 @@ import { FuncionesService } from '../../services/funciones';
 import { PeliculasService } from '../../services/peliculas';
 import { ReseniasService } from '../../services/resenias';
 
-// Una película que el usuario vio, con la fecha y su calificación.
 interface PeliculaVista {
   pelicula: Pelicula;
   fecha: string;
-  estrellas: number | null; // null si todavía no la calificó
+  estrellas: number | null; // null si no la calificó
 }
 
-// RF-58: historial visual de lo que el usuario vio.
 @Component({
   imports: [RouterLink, DatePipe],
   selector: 'app-mis-peliculas',
@@ -51,13 +49,11 @@ export class MisPeliculas implements OnInit {
         const funcion = funciones.find((f) => f.id === entrada.funcion_id);
         if (!funcion) continue;
 
-        // Cuenta como vista si la validaron en la puerta, o si la función
-        // ya pasó y la entrada no se canceló.
+        // Vista = validada en la puerta, o función pasada y no cancelada.
         const yaPaso = new Date(funcion.inicio) < ahora;
         const laVio = entrada.estado === 'usada' || (yaPaso && entrada.estado !== 'cancelada');
         if (!laVio) continue;
 
-        // Si vio la misma película dos veces, aparece una sola vez.
         if (vistas.find((v) => v.pelicula.id === funcion.pelicula_id)) continue;
 
         const pelicula = peliculas.find((p) => p.id === funcion.pelicula_id);
@@ -67,7 +63,7 @@ export class MisPeliculas implements OnInit {
         vistas.push({ pelicula: pelicula, fecha: funcion.inicio, estrellas: resenia?.estrellas ?? null });
       }
 
-      // La más reciente primero: las fechas en texto ISO se pueden comparar con < y >.
+      // Las fechas ISO se pueden comparar como texto.
       vistas.sort((a, b) => (a.fecha < b.fecha ? 1 : -1));
       this.vistas.set(vistas);
     } catch {

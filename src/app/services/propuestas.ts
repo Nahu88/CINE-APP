@@ -14,7 +14,6 @@ export interface DatosPropuesta {
 export class PropuestasService {
   private supabase = inject(SupabaseService).client;
 
-  // Las propuestas de un cliente, la más nueva primero.
   async listarDelUsuario(usuarioId: string): Promise<Propuesta[]> {
     const { data, error } = await this.supabase
       .from('propuestas')
@@ -25,7 +24,7 @@ export class PropuestasService {
     return data ?? [];
   }
 
-  // Para el admin: todas, la más vieja primero (se atienden en orden de llegada).
+  // La más vieja primero: se atienden en orden de llegada.
   async listarTodas(): Promise<Propuesta[]> {
     const { data, error } = await this.supabase
       .from('propuestas')

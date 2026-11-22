@@ -6,8 +6,7 @@ export interface Genero {
   nombre: string;
 }
 
-// El catálogo de géneros. Las películas guardan los nombres en su
-// propio array `generos`; esta tabla es la lista de donde se eligen.
+// Catálogo de géneros; las películas guardan los nombres en su propio array.
 @Service()
 export class GenerosService {
   private supabase = inject(SupabaseService).client;

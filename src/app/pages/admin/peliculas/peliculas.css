@@ -110,7 +110,7 @@ textarea {
   color: var(--color-texto-suave);
 }
 
-/* La tabla es lo único que puede pasarse de ancho: scrollea sola, sin mover la página */
+/* La tabla scrollea sola sin mover la página */
 .tabla-scroll {
   overflow-x: auto;
   background: var(--color-superficie);
@@ -154,7 +154,6 @@ tbody tr:first-child td {
   font-variant-numeric: tabular-nums;
 }
 
-/* Las ocultas se ven apagadas, pero sus botones siguen legibles */
 tr.oculta td:not(.celda-acciones) {
   opacity: 0.55;
 }

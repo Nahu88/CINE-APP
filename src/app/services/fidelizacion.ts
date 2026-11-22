@@ -23,12 +23,9 @@ export interface DatosRecompensa {
   producto_id: string | null; // null = entrada gratis
 }
 
-// Cupones, puntos, recompensas y crédito: todo lo que le descuenta plata al cliente.
 @Service()
 export class FidelizacionService {
   private supabase = inject(SupabaseService).client;
-
-  // ---------- Cupones ----------
 
   async listarCupones(): Promise<Cupon[]> {
     const { data, error } = await this.supabase.from('cupones').select('*').order('tipo');
@@ -51,8 +48,7 @@ export class FidelizacionService {
     if (error) throw error;
   }
 
-  // RN-07: el cupón de bienvenida se usa una sola vez. Se fija si el
-  // usuario ya tiene alguna compra (no cancelada) hecha con ese cupón.
+  // El cupón de bienvenida se usa una sola vez.
   async yaUsoCupon(usuarioId: string, cuponId: string): Promise<boolean> {
     const { data, error } = await this.supabase
       .from('ordenes')
@@ -64,7 +60,7 @@ export class FidelizacionService {
     return data.length > 0;
   }
 
-  // Qué cupones puede usar este cliente. Un invitado no tiene cupones.
+  // Un invitado no tiene cupones.
   cuponesPara(perfil: Perfil, cupones: Cupon[], yaUsoBienvenida: boolean): Cupon[] {
     if (perfil.invitado) return [];
 
@@ -82,8 +78,6 @@ export class FidelizacionService {
     }
     return disponibles;
   }
-
-  // ---------- Recompensas ----------
 
   async listarRecompensas(): Promise<Recompensa[]> {
     const { data, error } = await this.supabase
@@ -119,8 +113,6 @@ export class FidelizacionService {
     return data ?? [];
   }
 
-  // ---------- Puntos ----------
-
   async movimientosPuntos(usuarioId: string): Promise<MovimientoPuntos[]> {
     const { data, error } = await this.supabase
       .from('puntos_movimientos')
@@ -140,8 +132,6 @@ export class FidelizacionService {
     }
     return saldo;
   }
-
-  // ---------- Crédito ----------
 
   async movimientosCredito(usuarioId: string): Promise<MovimientoCredito[]> {
     const { data, error } = await this.supabase

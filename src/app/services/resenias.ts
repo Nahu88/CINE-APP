@@ -41,7 +41,6 @@ export class ReseniasService {
     if (error) throw error;
   }
 
-  // RF-57: el promedio se calcula acá, sumando y dividiendo.
   promedio(resenias: Resenia[]): number {
     if (resenias.length === 0) return 0;
     let suma = 0;

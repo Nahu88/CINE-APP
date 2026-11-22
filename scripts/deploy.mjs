@@ -1,9 +1,5 @@
-// Publica la app en Firebase siguiendo el método de la cátedra:
 // build -> copiar dist/browser a public/ -> firebase deploy.
-//
-// Uso:
-//   npm run deploy               hace todo y publica
-//   npm run deploy -- --sin-deploy   prepara public/ pero NO publica
+// `npm run deploy -- --sin-deploy` prepara public/ sin publicar.
 import { execSync } from 'node:child_process';
 import { cpSync, readdirSync, rmSync } from 'node:fs';
 import { join } from 'node:path';

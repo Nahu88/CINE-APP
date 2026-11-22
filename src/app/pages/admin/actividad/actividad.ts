@@ -17,7 +17,6 @@ export class Actividad implements OnInit {
   cargando = signal(true);
   error = signal<string | null>(null);
 
-  // Cómo se lee cada acción en pantalla.
   readonly nombres = [
     { accion: 'crear_funcion', texto: 'Creó una función' },
     { accion: 'eliminar_funcion', texto: 'Eliminó una función' },
@@ -36,7 +35,6 @@ export class Actividad implements OnInit {
     { accion: 'entregar_candy', texto: 'Entregó candy' },
   ];
 
-  // Las acciones distintas que aparecen, para el filtro.
   acciones = computed(() => {
     const lista: string[] = [];
     for (const registro of this.registros()) {

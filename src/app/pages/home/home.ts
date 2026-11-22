@@ -27,16 +27,13 @@ export class Home implements OnInit {
   private alertasService = inject(AlertasService);
   private auth = inject(Auth);
 
-  // Películas que el usuario pidió que le avisen y que ya salieron a la venta.
   avisos = signal<PeliculaConGeneros[]>([]);
 
   cargando = signal(true);
   error = signal<string | null>(null);
 
-  // Se llenan una vez, cuando responde Supabase.
   cartelera: PeliculaConGeneros[] = [];
   proximamente: PeliculaConGeneros[] = [];
-  // Puede no haber ninguna: si solo hay estrenos futuros, el hero no se muestra.
   destacada?: PeliculaConGeneros;
   masVistas: PeliculaConGeneros[] = [];
   generos: string[] = [];
@@ -59,7 +56,7 @@ export class Home implements OnInit {
     try {
       const todas = await this.peliculasService.listarCartelera();
 
-      // Cartelera actual = sin fecha de estreno futura. Próximamente = con ella.
+      // Próximamente = con fecha de estreno futura.
       this.cartelera = todas.filter((p) => !this.esFutura(p.fecha_estreno));
       this.proximamente = todas.filter((p) => this.esFutura(p.fecha_estreno));
 
@@ -79,7 +76,6 @@ export class Home implements OnInit {
     }
   }
 
-  // Los géneros de todas las películas de la cartelera, sin repetir y ordenados.
   private generosDeLaCartelera(): string[] {
     const generos: string[] = [];
     for (const pelicula of this.cartelera) {
@@ -90,7 +86,6 @@ export class Home implements OnInit {
     return generos.sort();
   }
 
-  // RF-13: las tres películas de la cartelera con más entradas vendidas.
   private async calcularMasVistas(): Promise<PeliculaConGeneros[]> {
     // Si el ranking no se puede leer, la home igual se muestra con las primeras tres.
     let ranking: { pelicula_id: string; entradas_vendidas: number }[] = [];
@@ -100,7 +95,6 @@ export class Home implements OnInit {
       return this.cartelera.slice(0, 3);
     }
 
-    // Cada película de la cartelera con sus ventas (0 si no vendió nada todavía).
     const conVentas = this.cartelera.map((pelicula) => ({
       pelicula: pelicula,
       vendidas: ranking.find((r) => r.pelicula_id === pelicula.id)?.entradas_vendidas ?? 0,
@@ -110,10 +104,8 @@ export class Home implements OnInit {
     return conVentas.slice(0, 3).map((c) => c.pelicula);
   }
 
-  // RF-15: si el usuario activó alertas, se fija cuáles de esas películas
-  // ya se pueden comprar (estrenadas o en preventa) para avisarle.
   private async cargarAvisos(todas: PeliculaConGeneros[]) {
-    // Si se entra directo a la home, el perfil puede no estar cargado todavía.
+    // El perfil puede no estar cargado si se entra directo a la home.
     const perfil = this.auth.perfil() ?? (await this.auth.cargarPerfil());
     if (!perfil || perfil.invitado) return;
 
@@ -139,7 +131,6 @@ export class Home implements OnInit {
     this.avisos.set(avisos);
   }
 
-  // "Listo": se borra la alerta, así no vuelve a aparecer.
   async descartarAviso(pelicula: PeliculaConGeneros) {
     const perfil = this.auth.perfil();
     if (!perfil) return;

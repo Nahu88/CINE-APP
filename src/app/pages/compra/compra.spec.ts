@@ -8,7 +8,6 @@ describe('Compra', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      // La página usa RouterLink y ActivatedRoute: el router de prueba los provee.
       providers: [provideRouter([])],
       imports: [Compra],
     }).compileComponents();

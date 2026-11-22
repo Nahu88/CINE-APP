@@ -5,8 +5,8 @@ export interface Funcion {
   id: string;
   pelicula_id: string;
   sala_id: number;
-  inicio: string; // 
-  fin: string; //  — inicio + duración de la película + 30 min
+  inicio: string;
+  fin: string; // inicio + duración + 30 min
   formato: FormatoFuncion;
   idioma: IdiomaFuncion;
   precio_normal: number;

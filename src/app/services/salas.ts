@@ -6,8 +6,7 @@ export interface DatosSala {
   nombre: string;
 }
 
-
-// FILAS J Y K SON ACCESIBLES, R/S/T son VIP, el resto normales.
+// Filas J y K accesibles, R, S y T VIP, el resto normales.
 
 const FILAS = 'ABCDEFGHIJKLMNOPQRST'.split('');
 const FILAS_ACCESIBLES = ['J', 'K'];
@@ -34,13 +33,10 @@ export class SalasService {
     const { data, error } = await this.supabase.from('salas').insert(datos).select('id');
     if (error) throw error;
 
-    
-    // El insert devuelve un array de una fila; tomamos el id de esa primera fila.
     const salaId = data[0].id;
     await this.generarButacas(salaId);
   }
 
-  // RF-19: el admin puede cambiar la distribución, butaca por butaca.
   async cambiarTipoButaca(butacaId: number, tipo: TipoButaca): Promise<void> {
     const { error } = await this.supabase.from('butacas').update({ tipo }).eq('id', butacaId);
     if (error) throw error;
@@ -51,11 +47,7 @@ export class SalasService {
     if (error) throw error;
   }
 
-
-  
-  // Genera las butacas de una sala recién creada: 18 filas normales/VIP
-  // de 28 butacas (4+20+4) y 2 filas accesibles de 14 (2+10+2).
-  // Toda sala nueva tiene siempre exactamente 532 butacas.
+  // 18 filas de 28 butacas (4+20+4) y 2 accesibles de 14 (2+10+2): 532 en total.
   private async generarButacas(salaId: number): Promise<void> {
     const butacas: ButacaNueva[] = [];
  

@@ -35,10 +35,10 @@ export class Funciones implements OnInit {
   error = signal<string | null>(null);
   resultado = signal<string | null>(null);
 
-  // RF-24: días de la semana en que se repite la función (vacío = solo la fecha elegida).
+  // Días en que se repite la función (vacío = solo la fecha elegida).
   diasElegidos = signal<number[]>([]);
 
-  // Opciones de los <select> de fecha y hora (RNF-07: sin calendario del navegador).
+  // Sin calendario del navegador (RNF-07).
   readonly meses = MESES;
   readonly diasSemana = DIAS_SEMANA;
   readonly dias = numeros(1, 31);
@@ -84,7 +84,6 @@ export class Funciones implements OnInit {
     this.cargando.set(true);
     this.error.set(null);
     try {
-      // Una consulta atrás de la otra, no todas juntas: más simple de leer.
       const peliculas = await this.peliculasService.listarTodas();
       const salas = await this.salasService.listar();
       const funciones = await this.funcionesService.listar();
@@ -99,8 +98,6 @@ export class Funciones implements OnInit {
     }
   }
 
-  // Para mostrar nombres en la tabla sin pedirle un join a Supabase:
-  // se buscan en los arrays que ya están cargados en memoria.
   nombrePelicula(id: string): string {
     return this.peliculas().find((p) => p.id === id)?.nombre ?? '(película eliminada)';
   }
@@ -123,9 +120,7 @@ export class Funciones implements OnInit {
     return !!control && control.touched && control.hasError(error);
   }
 
-  // Todas las fechas en que hay que crear la función. Sin días elegidos es
-  // solo la fecha del formulario; con días, se recorren las semanas pedidas
-  // día por día y se guardan los que coinciden.
+  // Una fecha por cada día elegido dentro de las semanas pedidas.
   private fechasACrear(): Date[] {
     const valores = this.form.getRawValue();
     const primera = new Date(
@@ -166,13 +161,13 @@ export class Funciones implements OnInit {
       return;
     }
 
-    // RN-11: la butaca VIP siempre cuesta más que la normal.
+    // La VIP siempre cuesta más que la normal.
     if (Number(valores.precio_vip) <= Number(valores.precio_normal)) {
       this.error.set('El precio VIP tiene que ser mayor que el precio normal.');
       return;
     }
 
-    // RF-53: la preventa arranca 7 días antes del estreno.
+    // La preventa arranca 7 días antes del estreno.
     let preventaDesde: string | null = null;
     let precioPreventa: number | null = null;
     if (valores.con_preventa && this.admitePreventa()) {

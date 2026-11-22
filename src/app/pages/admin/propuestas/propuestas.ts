@@ -5,7 +5,6 @@ import { Propuesta } from '../../../models/propuesta.model';
 import { ActividadService } from '../../../services/actividad';
 import { PropuestasService } from '../../../services/propuestas';
 
-// Extra 1: el admin ve las películas que propusieron los clientes y las acepta o rechaza.
 @Component({
   imports: [RouterLink, DatePipe],
   selector: 'app-admin-propuestas',
@@ -20,7 +19,6 @@ export class AdminPropuestas implements OnInit {
   cargando = signal(true);
   error = signal<string | null>(null);
 
-  // Arriba las que hay que responder; abajo el historial.
   pendientes = computed(() => this.propuestas().filter((p) => p.estado === 'pendiente'));
   respondidas = computed(() => this.propuestas().filter((p) => p.estado !== 'pendiente'));
 
@@ -41,8 +39,6 @@ export class AdminPropuestas implements OnInit {
     }
   }
 
-  // Al aceptar, se marca como aceptada y se abre el alta de película con los
-  // datos de la propuesta, pasados como parámetros de consulta (queryParams).
   async aceptar(propuesta: Propuesta) {
     this.error.set(null);
     try {

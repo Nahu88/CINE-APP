@@ -19,8 +19,6 @@ export interface DatosCombo {
 export class CandyService {
   private supabase = inject(SupabaseService).client;
 
-  // ---------- Categorías ----------
-
   async listarCategorias(): Promise<Categoria[]> {
     const { data, error } = await this.supabase.from('categorias_productos').select('*').order('nombre');
     if (error) throw error;
@@ -36,8 +34,6 @@ export class CandyService {
     const { error } = await this.supabase.from('categorias_productos').delete().eq('id', id);
     if (error) throw error;
   }
-
-  // ---------- Productos ----------
 
   async listarProductos(): Promise<Producto[]> {
     const { data, error } = await this.supabase.from('productos').select('*').order('nombre');
@@ -56,13 +52,11 @@ export class CandyService {
     if (error) throw error;
   }
 
-  // Baja lógica, igual que las películas: deja de ofrecerse pero no se pierde.
+  // Baja lógica: deja de ofrecerse pero no se pierde.
   async cambiarActivoProducto(id: string, activo: boolean): Promise<void> {
     const { error } = await this.supabase.from('productos').update({ activo }).eq('id', id);
     if (error) throw error;
   }
-
-  // ---------- Combos ----------
 
   async listarCombos(): Promise<Combo[]> {
     const { data, error } = await this.supabase.from('combos').select('*').order('nombre');
@@ -70,14 +64,12 @@ export class CandyService {
     return data ?? [];
   }
 
-  // Todos los productos de todos los combos: después cada pantalla filtra por combo_id.
   async listarItemsDeCombos(): Promise<ComboItem[]> {
     const { data, error } = await this.supabase.from('combo_items').select('*');
     if (error) throw error;
     return data ?? [];
   }
 
-  // Primero el combo y después sus productos, con el id que devolvió el insert.
   async crearCombo(datos: DatosCombo, items: { producto_id: string; cantidad: number }[]): Promise<string> {
     const { data, error } = await this.supabase.from('combos').insert(datos).select('id');
     if (error) throw error;
@@ -107,15 +99,12 @@ export class CandyService {
     if (error) throw error;
   }
 
-  // ---------- Lo que se compró en una orden ----------
-
   async listarItemsDeOrden(ordenId: string): Promise<OrdenItem[]> {
     const { data, error } = await this.supabase.from('orden_items').select('*').eq('orden_id', ordenId);
     if (error) throw error;
     return data ?? [];
   }
 
-  // El empleado entrega todo el candy de la orden de una sola vez.
   async marcarEntregados(ordenId: string, empleadoId: string): Promise<void> {
     const { error } = await this.supabase
       .from('orden_items')
@@ -125,7 +114,6 @@ export class CandyService {
     if (error) throw error;
   }
 
-  // Convierte los items de una orden en textos: "2 x Pochoclo grande".
   describirItems(items: OrdenItem[], productos: Producto[], combos: Combo[]): string[] {
     const textos: string[] = [];
     for (const item of items) {
@@ -137,7 +125,6 @@ export class CandyService {
     return textos;
   }
 
-  // Texto con lo que trae un combo: "2 x Pochoclo grande, 1 x Gaseosa".
   contenidoDeCombo(comboId: string, itemsDeCombos: ComboItem[], productos: Producto[]): string {
     const partes: string[] = [];
     for (const item of itemsDeCombos) {

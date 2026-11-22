@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-// Página de entrada al panel: una tarjeta por sección. Así el
-// encabezado tiene un solo link "Panel" en vez de once.
 @Component({
   imports: [RouterLink],
   selector: 'app-admin-inicio',

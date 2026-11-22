@@ -55,7 +55,6 @@ h2 small {
     grid-template-columns: 1fr 22rem;
   }
 
-  /* El resumen acompaña el scroll mientras se elige */
   .resumen {
     position: sticky;
     top: 5rem;
@@ -85,7 +84,6 @@ h2 small {
   margin: 0;
 }
 
-/* Recompensas para canjear */
 .recompensas {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
@@ -124,7 +122,6 @@ h2 small {
   cursor: not-allowed;
 }
 
-/* Resumen */
 .lineas {
   display: grid;
   gap: 0.45rem;

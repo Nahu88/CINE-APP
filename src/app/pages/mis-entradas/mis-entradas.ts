@@ -8,7 +8,6 @@ import { ComprasService } from '../../services/compra';
 import { EntradasService } from '../../services/entradas';
 import { QrPdfService } from '../../services/qr-pdf';
 
-// Una compra con sus entradas, lista para mostrar.
 interface CompraVista {
   orden: Orden;
   entradas: EntradaDetalle[];
@@ -37,7 +36,6 @@ export class MisEntradas implements OnInit {
   }
 
   async cargar() {
-    // El guard de la ruta ya cargó el perfil antes de entrar acá.
     const perfil = this.auth.perfil();
     if (!perfil) {
       this.cargando.set(false);
@@ -48,7 +46,6 @@ export class MisEntradas implements OnInit {
     try {
       const ordenes = await this.entradasService.listarOrdenesDelUsuario(perfil.id);
 
-      // Todas las entradas juntas, para armar los detalles de una sola vez.
       const entradas: Entrada[] = [];
       for (const orden of ordenes) {
         const deLaOrden = await this.entradasService.listarDeOrden(orden.id);
@@ -56,12 +53,10 @@ export class MisEntradas implements OnInit {
       }
       const detalles = await this.entradasService.armarDetalles(entradas);
 
-      // A cada entrada se le dibuja su QR a partir de codigo_qr.
       for (const detalle of detalles) {
         detalle.qr = await this.qrPdf.generarQr(detalle.entrada.codigo_qr);
       }
 
-      // Se agrupan por compra.
       const compras: CompraVista[] = [];
       for (const orden of ordenes) {
         const deLaOrden = detalles.filter((d) => d.entrada.orden_id === orden.id);
@@ -71,8 +66,7 @@ export class MisEntradas implements OnInit {
         compras.push({
           orden: orden,
           entradas: deLaOrden,
-          // RN-09: más de 2 horas antes, sin entradas usadas. Un invitado no
-          // tiene cuenta donde recibir el crédito, así que no puede cancelar.
+          // Más de 2 horas antes y sin entradas usadas; un invitado no puede cancelar.
           cancelable:
             !perfil.invitado && !algunaUsada && this.comprasService.sePuedeCancelar(orden, deLaOrden[0].inicio),
         });

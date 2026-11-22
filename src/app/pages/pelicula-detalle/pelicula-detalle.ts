@@ -42,17 +42,15 @@ export class PeliculaDetalle implements OnInit {
 
   readonly estrellas = [1, 2, 3, 4, 5];
 
-  // RF-57: el promedio se recalcula solo cuando cambian las reseñas.
   promedio = computed(() => this.reseniasService.promedio(this.resenias()));
 
-  // La reseña del usuario logueado, si ya escribió una.
   miResenia = computed(() => {
     const perfil = this.auth.perfil();
     if (!perfil) return null;
     return this.resenias().find((r) => r.usuario_id === perfil.id) ?? null;
   });
 
-  // Solo un cliente registrado puede reseñar y pedir alertas (no un invitado).
+  // Un invitado no puede reseñar ni pedir alertas.
   esClienteRegistrado = computed(() => {
     const perfil = this.auth.perfil();
     return !!perfil && !perfil.invitado;
@@ -78,7 +76,7 @@ export class PeliculaDetalle implements OnInit {
     }
 
     try {
-      // Se puede entrar directo por link: si hace falta, se carga el perfil.
+      // Si se entra por link, el perfil puede no estar cargado.
       if (!this.auth.perfil()) await this.auth.cargarPerfil();
 
       const todas = await this.peliculasService.listarCartelera();
@@ -90,7 +88,6 @@ export class PeliculaDetalle implements OnInit {
       }
       this.pelicula.set(pelicula);
 
-      // Sin join: se filtran acá las funciones de esta película que todavía no pasaron.
       const funciones = await this.funcionesService.listar();
       const ahora = new Date();
       this.funciones.set(funciones.filter((f) => f.pelicula_id === id && new Date(f.inicio) > ahora));
@@ -128,8 +125,6 @@ export class PeliculaDetalle implements OnInit {
     const pelicula = this.pelicula();
     return !!pelicula && this.comprasService.estaEnPreventa(funcion, pelicula);
   }
-
-  // ---------- Reseñas ----------
 
   elegirEstrellas(cantidad: number) {
     this.formResenia.controls.estrellas.setValue(cantidad);
@@ -175,8 +170,6 @@ export class PeliculaDetalle implements OnInit {
       this.errorResenia.set('No se pudo borrar tu reseña.');
     }
   }
-
-  // ---------- Alerta de estreno (RF-15) ----------
 
   async alternarAlerta() {
     const perfil = this.auth.perfil();

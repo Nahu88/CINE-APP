@@ -5,13 +5,13 @@ export interface Perfil {
   rol: RolUsuario;
   nombre: string;
   apellido: string;
-  fecha_nacimiento: string; // formato ISO: 'YYYY-MM-DD'
+  fecha_nacimiento: string;
   tipo_sangre?: string;
   color_ojos?: string;
   dias_vacaciones?: number;
   puntos: number;
   credito: number;
   cupon_bienvenida_usado: boolean;
-  invitado: boolean; // true si compró sin registrarse (sesión anónima)
+  invitado: boolean; // compró sin registrarse (sesión anónima)
   created_at: string;
 }

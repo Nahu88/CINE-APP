@@ -5,7 +5,6 @@ import { Combo, ComboItem, Producto } from '../../../models/candy.model';
 import { ActividadService } from '../../../services/actividad';
 import { CandyService } from '../../../services/candy';
 
-// Un producto elegido para el combo nuevo, con su cantidad.
 interface ItemNuevo {
   producto_id: string;
   nombre: string;
@@ -28,10 +27,8 @@ export class Combos implements OnInit {
   guardando = signal(false);
   error = signal<string | null>(null);
 
-  // Lo que se va armando para el combo nuevo.
   itemsNuevos = signal<ItemNuevo[]>([]);
 
-  // Cuánto saldrían los productos por separado, para comparar con el precio del combo.
   precioSuelto = computed(() => {
     let total = 0;
     for (const item of this.itemsNuevos()) {
@@ -71,8 +68,6 @@ export class Combos implements OnInit {
     return this.itemsNuevos().find((i) => i.producto_id === producto.id)?.cantidad ?? 0;
   }
 
-  // Suma uno: arma la lista de nuevo, y al que coincide le suma uno.
-  // Si no estaba, lo agrega al final con cantidad 1.
   sumar(producto: Producto) {
     const nueva: ItemNuevo[] = [];
     let estaba = false;
@@ -90,7 +85,6 @@ export class Combos implements OnInit {
     this.itemsNuevos.set(nueva);
   }
 
-  // Resta uno: al que coincide le resta uno, y si tenía 1, no lo copia.
   restar(producto: Producto) {
     const nueva: ItemNuevo[] = [];
     for (const item of this.itemsNuevos()) {
@@ -132,7 +126,6 @@ export class Combos implements OnInit {
     }
   }
 
-  // RF-43: el precio del combo se puede cambiar en cualquier momento.
   async cambiarPrecio(combo: Combo) {
     const respuesta = prompt('Nuevo precio para "' + combo.nombre + '"', String(combo.precio));
     if (respuesta === null) return;

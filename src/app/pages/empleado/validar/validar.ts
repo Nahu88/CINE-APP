@@ -29,19 +29,16 @@ export class Validar implements OnDestroy {
     }),
   });
 
-  // La entrada encontrada, o null si todavía no se buscó ninguna.
   detalle = signal<EntradaDetalle | null>(null);
-  // El candy de la misma compra: se retira con el mismo QR (RF-38).
   itemsCandy = signal<OrdenItem[]>([]);
   buscando = signal(false);
   error = signal<string | null>(null);
   exito = signal<string | null>(null);
 
-  // Lector de QR con la cámara (RF-37). La librería dibuja el video dentro del div #lector.
+  // html5-qrcode dibuja el video dentro del div #lector.
   leyendo = signal(false);
   private lector: Html5Qrcode | null = null;
 
-  // Se recalculan solos cada vez que cambia `detalle` o `itemsCandy`.
   esValida = computed(() => this.detalle()?.entrada.estado === 'valida');
   candyPendiente = computed(() => this.itemsCandy().filter((i) => !i.entregado).length > 0);
   candyEntregadoEl = computed(() => this.itemsCandy().find((i) => i.entregado)?.entregado_at ?? null);
@@ -60,8 +57,6 @@ export class Validar implements OnDestroy {
     await this.cargarEntrada(this.form.getRawValue().codigo.trim());
   }
 
-  // Busca la entrada y el candy de su compra. Se vuelve a llamar después de
-  // cada acción para mostrar el estado actualizado.
   private async cargarEntrada(codigo: string) {
     this.buscando.set(true);
     this.error.set(null);
@@ -100,7 +95,6 @@ export class Validar implements OnDestroy {
     }
   }
 
-  // RN-05: el candy también se entrega una sola vez.
   async entregarCandy() {
     const detalle = this.detalle();
     const perfil = this.auth.perfil();
@@ -124,19 +118,17 @@ export class Validar implements OnDestroy {
     this.form.reset({ codigo: '' });
   }
 
-  // ---------- Cámara ----------
-
   async abrirCamara() {
     this.error.set(null);
     this.leyendo.set(true);
     try {
       this.lector = new Html5Qrcode('lector');
-      // facingMode 'environment' = la cámara de atrás del celular.
+      // 'environment' = cámara trasera del celular.
       await this.lector.start(
         { facingMode: 'environment' },
         { fps: 10, qrbox: 220 },
         (textoLeido) => this.alLeer(textoLeido),
-        () => {} // se llama en cada cuadro sin QR: no hace falta hacer nada
+        () => {} // cuadros sin QR: se ignoran
       );
     } catch {
       this.leyendo.set(false);
@@ -145,7 +137,6 @@ export class Validar implements OnDestroy {
     }
   }
 
-  // Cuando la cámara lee un QR: se apaga, se pone el código en el campo y se busca.
   private async alLeer(texto: string) {
     await this.cerrarCamara();
     this.form.setValue({ codigo: texto });
@@ -160,7 +151,6 @@ export class Validar implements OnDestroy {
     this.leyendo.set(false);
   }
 
-  // Si el empleado sale de la pantalla con la cámara prendida, se apaga.
   ngOnDestroy() {
     this.cerrarCamara();
   }

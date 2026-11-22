@@ -10,7 +10,7 @@ import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { routes } from './app.routes';
 import { provideServiceWorker } from '@angular/service-worker';
 
-// Fechas, números y moneda en formato argentino (ej: "2 oct", "$ 1.500,00").
+// Formato argentino para fechas, números y moneda.
 registerLocaleData(localeEsAr);
 
 export const appConfig: ApplicationConfig = {

@@ -3,7 +3,7 @@
   <p class="bajada">Escaneá el QR con la cámara, o escribí el código que figura debajo del QR.</p>
 
   <div class="camara">
-    <!-- La librería dibuja el video de la cámara adentro de este div (vacío no ocupa lugar). -->
+    <!-- html5-qrcode dibuja el video de la cámara acá -->
     <div id="lector"></div>
     @if (leyendo()) {
       <button type="button" class="boton boton-secundario" (click)="cerrarCamara()">Cerrar cámara</button>

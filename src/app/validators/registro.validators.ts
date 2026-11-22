@@ -26,7 +26,7 @@ export function soloLetrasValidator(): ValidatorFn {
   };
 }
 
-// De grupo porque solo con día, mes y año juntos se sabe si la fecha existe .
+// De grupo: solo con día, mes y año juntos se sabe si la fecha existe.
 export function fechaNacimientoValidator(edadMaxima = 120): ValidatorFn {
   return (grupo: AbstractControl): ValidationErrors | null => {
     const diaTexto: string = grupo.get('dia')?.value ?? '';

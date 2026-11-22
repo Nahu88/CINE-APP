@@ -2,11 +2,10 @@ import { inject, Service } from '@angular/core';
 import { Funcion, FormatoFuncion, IdiomaFuncion } from '../models/funcion.model';
 import { SupabaseService } from './supabase';
 
-
-// se tira un Error con este mensaje para poder distinguirlo en el catch del componente
+// Mensaje del Error, para distinguirlo en el catch del componente.
 export const SIN_SALA_DISPONIBLE = 'SIN_SALA_DISPONIBLE';
 
-// Lo que manda el formulario. sala_id y fin no están porque los calcula el servicio.
+// sala_id y fin los calcula el servicio.
 export interface DatosFuncion {
   pelicula_id: string;
   inicio: string;
@@ -15,7 +14,7 @@ export interface DatosFuncion {
   precio_normal: number;
   precio_vip: number;
   precio_preventa: number | null; // null si no tiene preventa
-  preventa_desde: string | null; // desde cuándo se vende a precio de preventa
+  preventa_desde: string | null;
   creadoPor?: string;
 }
 
@@ -35,15 +34,9 @@ export class FuncionesService {
     if (error) throw error;
   }
 
-
-    // duracionMinutos viene de la película elegida en el formulario:
-    // el componente ya la tiene cargada, así se evita un segundo pedido.
-
-    // Devuelve el id de la función creada, para el registro de actividad.
     async crear(datos: DatosFuncion, duracionMinutos: number): Promise<string> {
       const inicio = new Date(datos.inicio);
 
-      // Los 30 minutos de margen entre funciones se suman acá, una sola vez.
       const fin = new Date(inicio.getTime() + (duracionMinutos + 30) * 60_000);
 
       const salaId = await this.buscarSalaDisponible(inicio,fin);
@@ -66,11 +59,7 @@ export class FuncionesService {
       return data[0].id;
     }
 
-
-  // La asignación automática: recorre las salas una por una, y para
-  // cada una recorre las funciones ya cargadas buscando si alguna
-  // choca en el horario. La primera sala sin ningún choque es la que
-  // se usa,salas y funciones se piden por separado.
+  // La primera sala sin superposición de horario es la que se usa.
 
   private async buscarSalaDisponible(inicio: Date, fin: Date): Promise<number | null> {
     const { data: salas, error: errorSalas } = await this.supabase.from('salas').select('id');
@@ -88,7 +77,7 @@ export class FuncionesService {
         const inicioExistente = new Date(funcion.inicio);
         const finExistente = new Date(funcion.fin);
 
-         // entre los 2 se superponen si cada uno empieza antes de que el otro termine.
+         // Se superponen si cada uno empieza antes de que el otro termine.
         if (inicio < finExistente && inicioExistente < fin) {
           seSuperpone = true;
           break;

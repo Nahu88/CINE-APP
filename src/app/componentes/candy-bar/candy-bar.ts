@@ -2,9 +2,6 @@ import { Component, inject, input, OnInit, output, signal } from '@angular/core'
 import { Categoria, Combo, ComboItem, ItemCarrito, Producto } from '../../models/candy.model';
 import { CandyService } from '../../services/candy';
 
-// El candy de la pantalla de compra, separado en su propio componente
-// (mismo molde que el mapa de butacas): el padre le pasa el carrito con
-// input() y el hijo le devuelve el carrito actualizado con output().
 @Component({
   selector: 'app-candy-bar',
   styleUrl: './candy-bar.css',
@@ -13,10 +10,8 @@ import { CandyService } from '../../services/candy';
 export class CandyBar implements OnInit {
   private candyService = inject(CandyService);
 
-  // Los datos bajan con input()...
   carrito = input<ItemCarrito[]>([]);
 
-  // ...y los cambios suben con output().
   carritoCambio = output<ItemCarrito[]>();
 
   categorias = signal<Categoria[]>([]);
@@ -24,7 +19,6 @@ export class CandyBar implements OnInit {
   combos = signal<Combo[]>([]);
   itemsDeCombos = signal<ComboItem[]>([]);
 
-  // El catálogo lo carga el propio componente: el padre no lo necesita.
   async ngOnInit() {
     this.categorias.set(await this.candyService.listarCategorias());
     const productos = await this.candyService.listarProductos();
@@ -42,7 +36,6 @@ export class CandyBar implements OnInit {
     return this.candyService.contenidoDeCombo(combo.id, this.itemsDeCombos(), this.productos());
   }
 
-  // Cuántos hay en el carrito de este producto o combo.
   cantidad(productoId: string | null, comboId: string | null): number {
     const item = this.carrito().find((i) => i.producto_id === productoId && i.combo_id === comboId);
     return item ? item.cantidad : 0;
@@ -56,8 +49,6 @@ export class CandyBar implements OnInit {
     this.sumar(null, combo.id, 'Combo ' + combo.nombre, Number(combo.precio));
   }
 
-  // Arma un carrito nuevo: copia los items y al que coincide le suma uno.
-  // Si no estaba, lo agrega al final con cantidad 1.
   private sumar(productoId: string | null, comboId: string | null, nombre: string, precio: number) {
     const nuevo: ItemCarrito[] = [];
     let estaba = false;
@@ -77,7 +68,6 @@ export class CandyBar implements OnInit {
     this.carritoCambio.emit(nuevo);
   }
 
-  // Arma un carrito nuevo: al que coincide le resta uno, y si tenía 1, no lo copia.
   quitar(productoId: string | null, comboId: string | null) {
     const nuevo: ItemCarrito[] = [];
 

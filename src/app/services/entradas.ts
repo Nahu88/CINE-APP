@@ -15,7 +15,6 @@ export class EntradasService {
   private salasService = inject(SalasService);
   private candyService = inject(CandyService);
 
-  // Las compras de un usuario, la más nueva primero.
   async listarOrdenesDelUsuario(usuarioId: string): Promise<Orden[]> {
     const { data, error } = await this.supabase
       .from('ordenes')
@@ -32,8 +31,6 @@ export class EntradasService {
     return data ?? [];
   }
 
-  // Entradas de un usuario: primero sus órdenes y después las entradas
-  // de cada orden, una consulta atrás de la otra.
   async listarDelUsuario(usuarioId: string): Promise<Entrada[]> {
     const ordenes = await this.listarOrdenesDelUsuario(usuarioId);
 
@@ -47,7 +44,6 @@ export class EntradasService {
     return entradas;
   }
 
-  // Lo usa el empleado. Devuelve la entrada, o null si el código no existe.
   async buscarPorCodigo(codigo: string): Promise<Entrada | null> {
     const { data, error } = await this.supabase.from('entradas').select('*').eq('codigo_qr', codigo);
     if (error) throw error;
@@ -70,9 +66,6 @@ export class EntradasService {
     if (error) throw error;
   }
 
-  // Completa cada entrada con el nombre de la película, la sala, el horario,
-  // la butaca y el candy de su orden. Los nombres se resuelven con .find()
-  // sobre los arrays ya cargados, igual que en el resto de la app.
   async armarDetalles(entradas: Entrada[]): Promise<EntradaDetalle[]> {
     const peliculas = await this.peliculasService.listarTodas();
     const funciones = await this.funcionesService.listar();
@@ -80,8 +73,7 @@ export class EntradasService {
     const productos = await this.candyService.listarProductos();
     const combos = await this.candyService.listarCombos();
 
-    // El candy es de la orden, no de cada entrada: se pide una vez por orden
-    // y se guarda en esta lista para no repetir la consulta.
+    // El candy es de la orden: se pide una vez por orden y se guarda acá.
     const candyPorOrden: { ordenId: string; textos: string[] }[] = [];
 
     const detalles: EntradaDetalle[] = [];
@@ -112,7 +104,6 @@ export class EntradasService {
     return detalles;
   }
 
-  // Busca una butaca por id y devuelve el texto "Fila F, butaca 12".
   private async textoButaca(butacaId: number): Promise<string> {
     const { data, error } = await this.supabase.from('butacas').select('*').eq('id', butacaId);
     if (error) throw error;

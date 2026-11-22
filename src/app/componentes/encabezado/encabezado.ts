@@ -9,7 +9,6 @@ import { Auth } from '../../services/auth';
   templateUrl: './encabezado.html',
 })
 export class Encabezado {
-  // El template lee auth.perfil() para saber si mostrar "Ingresar" o el nombre del usuario.
   protected auth = inject(Auth);
   private router = inject(Router);
 

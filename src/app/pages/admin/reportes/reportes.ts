@@ -17,7 +17,7 @@ export class Reportes implements OnInit {
   facturacion = signal<FilaFacturacion[]>([]);
   peliculas = signal<FilaRanking[]>([]);
   candy = signal<FilaRanking[]>([]);
-  // 7 = la última semana, 30 = el último mes.
+  // 7 = última semana, 30 = último mes.
   periodo = signal(7);
   cargando = signal(true);
   error = signal<string | null>(null);
@@ -34,7 +34,6 @@ export class Reportes implements OnInit {
     return total;
   });
 
-  // El máximo de cada ranking, para calcular el largo de las barras del gráfico.
   maximoPeliculas = computed(() => this.peliculas()[0]?.cantidad ?? 0);
   maximoCandy = computed(() => this.candy()[0]?.cantidad ?? 0);
 
@@ -62,13 +61,12 @@ export class Reportes implements OnInit {
     await this.cargar();
   }
 
-  // Largo de la barra en porcentaje: la más vendida ocupa el 100 %.
+  // La más vendida ocupa el 100 %.
   porcentaje(cantidad: number, maximo: number): number {
     if (maximo === 0) return 0;
     return Math.round((cantidad / maximo) * 100);
   }
 
-  // Las filas de la facturación como texto, para exportarlas.
   private filasParaExportar(): string[][] {
     const filas: string[][] = [];
     for (const fila of this.facturacion()) {

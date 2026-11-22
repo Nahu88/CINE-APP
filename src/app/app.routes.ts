@@ -25,8 +25,7 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/registro/registro').then((m) => m.Registro),
   },
 
-  // ---------- Cliente ----------
-  // La compra no tiene guard: un visitante puede comprar sin registrarse (RF-03).
+  // Sin guard: se puede comprar sin cuenta.
   {
     path: 'compra/:funcionId',
     loadComponent: () => import('./pages/compra/compra').then((m) => m.Compra),
@@ -47,14 +46,12 @@ export const routes: Routes = [
     canActivate: [rolGuard(['cliente', 'empleado', 'administrador'])],
   },
 
-  // ---------- Empleado ----------
   {
     path: 'empleado/validar',
     loadComponent: () => import('./pages/empleado/validar/validar').then((m) => m.Validar),
     canActivate: [rolGuard(['empleado', 'administrador'])],
   },
 
-  // ---------- Administrador ----------
   {
     path: 'admin',
     loadComponent: () => import('./pages/admin/inicio/inicio').then((m) => m.AdminInicio),

@@ -42,7 +42,6 @@
 
 .poster-generado span {
   font-family: var(--fuente-titulos);
-  /* Proporcional al ancho de la card, así el título entra en pósters chicos */
   font-size: clamp(1rem, 16cqi, 2.2rem);
   font-weight: 800;
   line-height: 0.92;

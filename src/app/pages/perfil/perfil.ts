@@ -10,7 +10,6 @@ import { PeliculasService } from '../../services/peliculas';
 import { PropuestasService } from '../../services/propuestas';
 import { tituloNuevoValidator } from '../../validators/propuesta.validators';
 
-// RF-06 y RF-51: datos del cliente, sus puntos, su historial de canjes y su crédito.
 @Component({
   imports: [RouterLink, DatePipe, ReactiveFormsModule],
   selector: 'app-perfil',
@@ -32,14 +31,12 @@ export class PerfilPagina implements OnInit {
   cargando = signal(true);
   error = signal<string | null>(null);
 
-  // ---------- Extra 1: propuestas de películas ----------
   propuestas = signal<Propuesta[]>([]);
   titulosCartelera = signal<string[]>([]);
   enviando = signal(false);
   errorPropuesta = signal<string | null>(null);
   exitoPropuesta = signal(false);
 
-  // Una propuesta a la vez: si hay una pendiente, no se muestra el formulario.
   tienePendiente = computed(() => this.propuestas().some((p) => p.estado === 'pendiente'));
 
   formPropuesta = new FormGroup({
@@ -60,7 +57,6 @@ export class PerfilPagina implements OnInit {
     if (!perfil) return;
 
     try {
-      // El saldo es la suma de los movimientos: se piden una vez y se suman acá.
       const puntos = await this.fidelizacion.movimientosPuntos(perfil.id);
       const credito = await this.fidelizacion.movimientosCredito(perfil.id);
       this.movimientosPuntos.set(puntos);
@@ -77,7 +73,6 @@ export class PerfilPagina implements OnInit {
       this.canjes.set(await this.fidelizacion.listarCanjes(perfil.id));
       this.recompensas.set(await this.fidelizacion.listarRecompensas());
 
-      // Propuestas del cliente y títulos de la cartelera (para el validador).
       this.propuestas.set(await this.propuestasService.listarDelUsuario(perfil.id));
       const cartelera = await this.peliculasService.listarCartelera();
       this.titulosCartelera.set(cartelera.map((p) => p.nombre));
@@ -124,7 +119,7 @@ export class PerfilPagina implements OnInit {
       this.propuestas.set(await this.propuestasService.listarDelUsuario(perfil.id));
     } catch (error) {
       console.error('No se pudo enviar la propuesta:', error);
-      // 23505 = el índice único de la base: ya tiene una propuesta pendiente.
+      // 23505: el índice único solo permite una propuesta pendiente.
       const codigo = (error as { code?: string }).code;
       this.errorPropuesta.set(
         codigo === '23505'

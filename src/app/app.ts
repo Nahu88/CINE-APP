@@ -13,7 +13,6 @@ export class App {
   private auth = inject(Auth);
 
   constructor() {
-    // La sesión queda guardada en el navegador: al abrir la app recuperamos el perfil.
     void this.auth.cargarPerfil();
   }
 }

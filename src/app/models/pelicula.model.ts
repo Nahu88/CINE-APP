@@ -7,10 +7,10 @@ export interface Pelicula {
   restriccion_edad?: number; // null, 13 o 18
   fecha_estreno?: string;
   destacada: boolean;
-  activa: boolean; // si aparece o no en la cartelera pública
-  generos: string[]; // guardado directo en la película, sin tabla aparte
+  activa: boolean;
+  generos: string[];
   created_at: string;
 }
 
-// Alias para no tener que renombrar en los componentes que se usaban PeliculaConGeneros (card-pelicula, home).
+// Alias que usan card-pelicula y home.
 export type PeliculaConGeneros = Pelicula;

@@ -24,10 +24,9 @@ export class Peliculas implements OnInit {
   peliculas = signal<Pelicula[]>([]);
   generos = signal<Genero[]>([]);
 
-  // Los géneros tildados en el formulario.
   generosElegidos = signal<string[]>([]);
 
-  // Los del catálogo más los que tenga la película y ya no estén en el catálogo.
+  // Catálogo más los géneros de la película que ya no están en él.
   opcionesGeneros = computed(() => {
     const nombres: string[] = [];
     for (const genero of this.generos()) nombres.push(genero.nombre);
@@ -37,7 +36,6 @@ export class Peliculas implements OnInit {
     return nombres;
   });
 
-  // Opciones de la fecha de estreno (RNF-07: sin calendario del navegador).
   readonly meses = MESES;
   readonly dias = numeros(1, 31);
   readonly anios = numeros(new Date().getFullYear() - 5, new Date().getFullYear() + 2);
@@ -45,7 +43,7 @@ export class Peliculas implements OnInit {
   guardando = signal(false);
   error = signal<string | null>(null);
 
-  // null = está creando una nueva y con valor = está editando esa película.
+  // null = creando; con id = editando.
   editandoId = signal<string | null>(null);
 
   form = new FormGroup({
@@ -56,7 +54,7 @@ export class Peliculas implements OnInit {
       validators: [Validators.required, Validators.min(1)],
     }),
     restriccion_edad: new FormControl<string>('sin_restriccion', { nonNullable: true }),
-    // Vacía = ya está en cartelera. Tres campos en vez del calendario del navegador.
+    // Vacía = ya está en cartelera.
     fecha_estreno: new FormGroup(
       {
         dia: new FormControl('', { nonNullable: true }),
@@ -74,8 +72,7 @@ export class Peliculas implements OnInit {
     this.precargarDesdePropuesta();
   }
 
-  // Extra 1: al aceptar una propuesta se llega acá con ?nombre=...&sinopsis=...
-  // Se leen una sola vez con snapshot y se cargan en el formulario de alta.
+  // Al aceptar una propuesta se llega con ?nombre=...&sinopsis=...
   private precargarDesdePropuesta() {
     const parametros = this.route.snapshot.queryParamMap;
     const nombre = parametros.get('nombre');
@@ -87,7 +84,6 @@ export class Peliculas implements OnInit {
     });
   }
 
-  // Muestra el error solo si el usuario ya pasó por el campo
   tieneError(campo: string, error: string): boolean {
     const control = this.form.get(campo);
     return !!control && control.touched && control.hasError(error);
@@ -162,7 +158,6 @@ export class Peliculas implements OnInit {
     const valores = this.form.getRawValue();
     const estreno = valores.fecha_estreno;
     const datos: DatosPelicula = {
-      // trim para los espacios en nombres
       nombre: valores.nombre.trim(),
       sinopsis: valores.sinopsis.trim(),
       imagen_url: valores.imagen_url.trim(),
@@ -219,7 +214,7 @@ export class Peliculas implements OnInit {
     } catch (error) {
       console.error('No se pudo eliminar la película:', error);
 
-      // 23503 = la base rechaza el borrado porque hay funciones que apuntan a esta película.
+      // 23503: la película tiene funciones que la referencian.
       const codigo = (error as { code?: string }).code;
       this.error.set(
         codigo === '23503'

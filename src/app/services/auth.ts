@@ -15,14 +15,10 @@ export interface DatosRegistro {
 
 @Service()
 export class Auth {
-  // Cliente compartido para que toda la app use la misma sesión.
   private supabase = inject(SupabaseService).client;
 
-  // Perfil del usuario logueado, o null si no hay sesión.
-  // El encabezado y el guard leen esta señal.
   perfil = signal<Perfil | null>(null);
 
-  // Registra un nuevo usuario en la cuenta y el perfil.
   async registrar(datos: DatosRegistro) {
     const { data, error } = await this.supabase.auth.signUp({
       email: datos.email,
@@ -35,7 +31,7 @@ export class Auth {
 
     const nuevoPerfil: Partial<Perfil> = {
       id: data.user.id,
-      rol: 'cliente', // fijo acá: nadie puede registrarse como administrador
+      rol: 'cliente', // nadie puede registrarse como administrador
       nombre: datos.nombre,
       apellido: datos.apellido,
       fecha_nacimiento: datos.fecha_nacimiento,
@@ -57,10 +53,8 @@ export class Auth {
     return { error: null };
   }
 
-  // Compra sin registrarse (RF-03). Supabase crea una sesión anónima: un
-  // usuario sin email. Se le guarda un perfil mínimo con la fecha de
-  // nacimiento que declaró, para poder controlar la restricción de edad.
-  // Así el invitado compra con las mismas reglas de seguridad que un cliente.
+  // Sesión anónima (usuario sin email) con un perfil mínimo, para comprar con las
+  // mismas reglas de seguridad que un cliente.
   async ingresarComoInvitado(fechaNacimiento: string) {
     const { data, error } = await this.supabase.auth.signInAnonymously();
 
@@ -103,7 +97,6 @@ export class Auth {
     this.perfil.set(null);
   }
 
-  // Se llama al entrar, al registrarse y al abrir la app, porque la sesión queda en el navegador.
   async cargarPerfil(): Promise<Perfil | null> {
     const { data } = await this.supabase.auth.getUser();
 

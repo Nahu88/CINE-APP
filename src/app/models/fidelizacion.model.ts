@@ -26,8 +26,7 @@ export interface Canje {
   created_at: string;
 }
 
-// Puntos y crédito se guardan como movimientos: positivo si suma,
-// negativo si se usa. El saldo es la suma de todos.
+// Positivo si suma, negativo si se usa. El saldo es la suma de todos.
 export interface MovimientoPuntos {
   id: string;
   usuario_id: string;

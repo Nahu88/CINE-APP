@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Butaca } from '../../models/sala.model';
 import { MapaButacas } from './mapa-butacas';
 
-// Tres butacas de prueba: dos en la fila A y una en la B.
 const butacas: Butaca[] = [
   { id: 1, sala_id: 1, fila: 'A', numero: 1, tipo: 'normal' },
   { id: 2, sala_id: 1, fila: 'A', numero: 2, tipo: 'normal' },
@@ -20,7 +19,7 @@ describe('MapaButacas', () => {
 
     fixture = TestBed.createComponent(MapaButacas);
     component = fixture.componentInstance;
-    // butacas es input.required(): hay que dárselo antes de dibujar.
+    // input.required: hay que darlo antes de dibujar.
     fixture.componentRef.setInput('butacas', butacas);
     fixture.componentRef.setInput('ocupadas', [2]);
     await fixture.whenStable();

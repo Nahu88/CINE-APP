@@ -71,7 +71,6 @@ export class Recompensas implements OnInit {
     }
   }
 
-  // RF-50: el admin configura cuántos puntos cuesta cada recompensa.
   async cambiarPuntos(recompensa: Recompensa) {
     const respuesta = prompt('¿Cuántos puntos cuesta "' + recompensa.descripcion + '"?', String(recompensa.puntos_requeridos));
     if (respuesta === null) return;

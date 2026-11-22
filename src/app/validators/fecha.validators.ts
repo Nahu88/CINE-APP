@@ -1,11 +1,9 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
-// Validadores de grupo para una fecha cargada en tres campos: dia, mes y anio.
-// Van sobre el FormGroup porque un campo solo no sabe si la fecha existe.
+// Validadores de grupo: un campo solo no sabe si la fecha existe.
 
-// Arma la fecha y compara: new Date(2026, 1, 31) no da error, se convierte
-// en 3 de marzo. Si el día, mes o año que quedó no es el que se escribió,
-// la fecha no existe.
+// new Date(2026, 1, 31) no falla, da 3 de marzo: si no coincide con lo
+// escrito, la fecha no existe.
 function existe(dia: number, mes: number, anio: number): boolean {
   const fecha = new Date(anio, mes - 1, dia);
   return fecha.getFullYear() === anio && fecha.getMonth() === mes - 1 && fecha.getDate() === dia;
@@ -34,8 +32,7 @@ export function fechaFuturaValidator(): ValidatorFn {
   };
 }
 
-// Para la fecha de estreno: es opcional, pero si se completa algo, tiene
-// que estar completa y existir.
+// Fecha de estreno: opcional, pero si se completa algo tiene que existir.
 export function fechaOpcionalValidator(): ValidatorFn {
   return (grupo: AbstractControl): ValidationErrors | null => {
     const dia = Number(grupo.get('dia')?.value);

@@ -17,8 +17,6 @@ export interface FilaRanking {
   cantidad: number;
 }
 
-// Reportes del administrador (RF-59 a RF-62). Se traen las filas de la
-// base y se agrupan acá, recorriéndolas con un for.
 @Service()
 export class ReportesService {
   private supabase = inject(SupabaseService).client;
@@ -26,8 +24,7 @@ export class ReportesService {
   private funcionesService = inject(FuncionesService);
   private candyService = inject(CandyService);
 
-  // Las compras pagadas de los últimos `dias` días. Se traen todas las
-  // pagadas y la fecha se filtra acá, con un filter.
+  // La fecha se filtra acá, no en la consulta.
   private async ordenesPagadas(dias: number) {
     const { data, error } = await this.supabase
       .from('ordenes')
@@ -40,7 +37,6 @@ export class ReportesService {
     return (data ?? []).filter((orden) => new Date(orden.created_at) >= desde);
   }
 
-  // Las entradas no canceladas que pertenecen a esas compras.
   private async entradasDe(ordenes: { id: string }[]) {
     const { data, error } = await this.supabase.from('entradas').select('orden_id, funcion_id, estado');
     if (error) throw error;
@@ -50,7 +46,6 @@ export class ReportesService {
     );
   }
 
-  // RF-59: facturación y entradas vendidas por día.
   async facturacionDiaria(dias: number): Promise<FilaFacturacion[]> {
     const ordenes = await this.ordenesPagadas(dias);
     const entradas = await this.entradasDe(ordenes);
@@ -75,13 +70,11 @@ export class ReportesService {
       if (fila) fila.entradas++;
     }
 
-    // El día más reciente arriba: las fechas 'YYYY-MM-DD' se pueden comparar con < y >.
+    // Las fechas 'YYYY-MM-DD' se pueden comparar como texto.
     filas.sort((a, b) => (a.dia < b.dia ? 1 : -1));
     return filas;
   }
 
-  // RF-61: películas con más entradas vendidas en los últimos `dias` días
-  // (7 para la semana, 30 para el mes).
   async peliculasMasVistas(dias: number): Promise<FilaRanking[]> {
     const ordenes = await this.ordenesPagadas(dias);
     const entradas = await this.entradasDe(ordenes);
@@ -107,11 +100,9 @@ export class ReportesService {
     return filas;
   }
 
-  // RF-62: productos y combos del candy más vendidos, sumando las cantidades.
   async candyMasVendido(dias: number): Promise<FilaRanking[]> {
     const ordenes = await this.ordenesPagadas(dias);
 
-    // Todos los items del candy, y se quedan solo los de esas compras.
     const { data, error } = await this.supabase.from('orden_items').select('*');
     if (error) throw error;
     const items = (data ?? []).filter((item) => ordenes.find((o) => o.id === item.orden_id));
@@ -137,9 +128,8 @@ export class ReportesService {
     return filas;
   }
 
-  // RF-60: exportar a Excel. Se arma un archivo CSV, que Excel abre directo,
-  // sin agregar otra librería. El ';' separa columnas como espera Excel en
-  // español, y el '﻿' del principio hace que respete las tildes.
+  // CSV para Excel: ';' separa columnas en Excel en español
+  // y el BOM del principio hace que respete las tildes.
   descargarCsv(nombreArchivo: string, encabezados: string[], filas: string[][]) {
     const lineas: string[] = [encabezados.join(';')];
     for (const fila of filas) {
@@ -147,7 +137,6 @@ export class ReportesService {
     }
     const archivo = new Blob(['﻿' + lineas.join('\n')], { type: 'text/csv;charset=utf-8' });
 
-    // Se crea un link invisible apuntando al archivo y se le hace clic.
     const link = document.createElement('a');
     link.href = URL.createObjectURL(archivo);
     link.download = nombreArchivo;

@@ -28,8 +28,7 @@
   }
 }
 
-/* La caja manda, no la imagen: todos los pósters ocupan lo mismo aunque vengan
-   de archivos de distinto tamaño. cover los recorta en vez de deformarlos. */
+/* Todos los pósters ocupan lo mismo; cover recorta en vez de deformar. */
 .detalle-cabecera img {
   width: 100%;
   max-width: 16rem;
@@ -112,7 +111,6 @@ h2 {
   margin-left: auto;
 }
 
-/* Puntaje promedio y estrellas */
 .puntaje {
   display: flex;
   align-items: center;
@@ -149,7 +147,6 @@ h2 {
   color: var(--color-acento);
 }
 
-/* Reseñas */
 .resenias {
   margin-top: 3rem;
 }

@@ -23,7 +23,7 @@ td:first-child {
   text-transform: capitalize;
 }
 
-/* Gráfico de barras hecho con CSS: el ancho de cada barra es su porcentaje */
+/* Barras en CSS: el ancho es el porcentaje */
 .barras {
   display: grid;
   gap: 0.6rem;

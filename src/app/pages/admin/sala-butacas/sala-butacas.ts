@@ -6,9 +6,7 @@ import { ActividadService } from '../../../services/actividad';
 import { ComprasService } from '../../../services/compra';
 import { SalasService } from '../../../services/salas';
 
-// RF-19: el admin cambia la distribución de una sala tocando butacas.
-// Reutiliza el mismo mapa de la compra: el mapa solo avisa qué butaca se
-// tocó (output), y esta página decide qué hacer con ese aviso.
+// Reutiliza el mapa de la compra: el mapa avisa qué butaca se tocó y esta página le cambia el tipo.
 @Component({
   imports: [RouterLink, MapaButacas],
   selector: 'app-sala-butacas',
@@ -28,7 +26,6 @@ export class SalaButacas implements OnInit {
 
   readonly tipos: TipoButaca[] = ['normal', 'accesible', 'vip'];
 
-  // Cuántas butacas hay de cada tipo, para mostrarlo arriba del mapa.
   conteo = computed(() => {
     const conteo = { normal: 0, accesible: 0, vip: 0 };
     for (const butaca of this.butacas()) {
@@ -53,7 +50,6 @@ export class SalaButacas implements OnInit {
     }
   }
 
-  // Lo llama el mapa con su output(): le pone a la butaca el tipo elegido.
   async cambiar(butaca: Butaca) {
     const tipo = this.tipoElegido();
     if (butaca.tipo === tipo) return;
@@ -62,8 +58,7 @@ export class SalaButacas implements OnInit {
     try {
       await this.salasService.cambiarTipoButaca(butaca.id, tipo);
 
-      // Se vuelve a pedir la lista: el mapa se redibuja y la directiva
-      // vuelve a pintar el borde gracias a ngOnChanges.
+      // Al recargar, la directiva repinta el borde en ngOnChanges.
       this.butacas.set(await this.comprasService.listarButacas(this.salaId));
 
       await this.actividad.registrar('cambiar_butaca', 'butacas', butaca.id, this.salaNombre() + ', butaca ' + butaca.fila + butaca.numero + ': de ' + butaca.tipo + ' a ' + tipo);

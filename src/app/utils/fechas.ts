@@ -1,6 +1,4 @@
-// Ayudas para cargar fechas y horas sin el calendario del navegador
-// (el cliente lo pidió expresamente: RNF-07). Las usan los formularios
-// de películas y funciones.
+// Fechas y horas sin el calendario del navegador (RNF-07).
 
 export const MESES = [
   'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',

@@ -33,7 +33,6 @@ export class Compra implements OnInit, OnDestroy {
   private salasService = inject(SalasService);
   private fidelizacion = inject(FidelizacionService);
 
-  // ---------- Función y butacas ----------
   funcion = signal<Funcion | null>(null);
   pelicula = signal<Pelicula | null>(null);
   salaNombre = signal('');
@@ -41,10 +40,8 @@ export class Compra implements OnInit, OnDestroy {
   ocupadas = signal<number[]>([]);
   seleccionadas = signal<Butaca[]>([]);
 
-  // ---------- Candy: lo maneja el componente hijo y nos devuelve el carrito ----------
   carrito = signal<ItemCarrito[]>([]);
 
-  // ---------- Beneficios del cliente registrado ----------
   cupones = signal<Cupon[]>([]);
   recompensas = signal<Recompensa[]>([]);
   puntos = signal(0);
@@ -59,7 +56,7 @@ export class Compra implements OnInit, OnDestroy {
 
   readonly meses = MESES;
 
-  // Si compra sin cuenta, se le pide la fecha de nacimiento (supuesto 5 del documento).
+  // Fecha de nacimiento del que compra sin cuenta, para controlar la edad.
   formInvitado = new FormGroup(
     {
       dia: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
@@ -69,7 +66,6 @@ export class Compra implements OnInit, OnDestroy {
     { validators: [fechaNacimientoValidator()] }
   );
 
-  // El mapa solo necesita los ids de las seleccionadas.
   idsSeleccionados = computed(() => this.seleccionadas().map((b) => b.id));
 
   hayVip = computed(() => this.seleccionadas().filter((b) => b.tipo === 'vip').length > 0);
@@ -88,8 +84,6 @@ export class Compra implements OnInit, OnDestroy {
     return this.comprasService.estaEnPreventa(funcion, pelicula);
   });
 
-  // ---------- El total, paso a paso: cada cuenta usa la anterior ----------
-
   subtotal = computed(() => {
     let total = 0;
     for (const butaca of this.seleccionadas()) total += this.precioDe(butaca);
@@ -97,7 +91,7 @@ export class Compra implements OnInit, OnDestroy {
     return total;
   });
 
-  // Canje de "entrada gratis": descuenta la butaca más barata de las elegidas.
+  // Entrada gratis: descuenta la butaca más barata.
   descuentoCanje = computed(() => {
     const recompensa = this.recompensaElegida();
     if (!recompensa || recompensa.producto_id || this.seleccionadas().length === 0) return 0;
@@ -109,7 +103,7 @@ export class Compra implements OnInit, OnDestroy {
     return masBarata;
   });
 
-  // Se aplica un solo cupón: el de mayor porcentaje entre los que le corresponden.
+  // Un solo cupón: el de mayor porcentaje.
   cuponAplicado = computed(() => {
     let mejor: Cupon | null = null;
     for (const cupon of this.cupones()) {
@@ -126,7 +120,6 @@ export class Compra implements OnInit, OnDestroy {
 
   descuento = computed(() => this.descuentoCanje() + this.descuentoCupon());
 
-  // El crédito cubre como mucho lo que falta pagar.
   creditoUsado = computed(() => {
     if (!this.usarCredito()) return 0;
     const falta = this.subtotal() - this.descuento();
@@ -139,8 +132,7 @@ export class Compra implements OnInit, OnDestroy {
   async ngOnInit() {
     const funcionId = this.route.snapshot.paramMap.get('funcionId');
     try {
-      // Esta ruta no tiene guard (se puede comprar sin cuenta), así que el
-      // perfil puede no estar cargado todavía: se pide si hace falta.
+      // La ruta no tiene guard, así que el perfil puede no estar cargado.
       if (!this.auth.perfil()) await this.auth.cargarPerfil();
 
       const funciones = await this.funcionesService.listar();
@@ -162,7 +154,6 @@ export class Compra implements OnInit, OnDestroy {
 
       await this.cargarBeneficios();
 
-      // Realtime: cada vez que cambia la tabla `entradas`, se actualiza el mapa.
       this.comprasService.escucharEntradas(() => this.actualizarOcupadas());
     } catch {
       this.error.set('No se pudo cargar la función.');
@@ -171,12 +162,10 @@ export class Compra implements OnInit, OnDestroy {
     }
   }
 
-  // Al salir de la pantalla se cierra el canal de realtime.
   ngOnDestroy() {
     this.comprasService.dejarDeEscuchar();
   }
 
-  // Cupones, puntos, recompensas y crédito: solo para clientes registrados.
   private async cargarBeneficios() {
     const perfil = this.auth.perfil();
     if (!perfil || perfil.invitado) return;
@@ -192,7 +181,6 @@ export class Compra implements OnInit, OnDestroy {
     this.creditoDisponible.set(await this.fidelizacion.saldoCredito(perfil.id));
   }
 
-  // Vuelve a pedir las butacas vendidas y saca de la selección las que ya no están libres.
   private async actualizarOcupadas() {
     const funcion = this.funcion();
     if (!funcion) return;
@@ -209,7 +197,6 @@ export class Compra implements OnInit, OnDestroy {
     return this.comprasService.precioDe(funcion, butaca, pelicula);
   }
 
-  // Lo llama el mapa con su output(): si ya estaba elegida la saca, si no la agrega.
   alternarButaca(butaca: Butaca) {
     this.exito.set(false);
     this.seleccionadas.update((actual) =>
@@ -219,7 +206,6 @@ export class Compra implements OnInit, OnDestroy {
     );
   }
 
-  // Tocar la misma recompensa otra vez la deselecciona.
   elegirRecompensa(recompensa: Recompensa) {
     this.recompensaElegida.update((actual) => (actual?.id === recompensa.id ? null : recompensa));
   }
@@ -238,7 +224,6 @@ export class Compra implements OnInit, OnDestroy {
       return;
     }
 
-    // Sin sesión: se valida la fecha declarada antes de crear la sesión de invitado.
     let perfil = this.auth.perfil();
     let fechaNacimiento = perfil?.fecha_nacimiento ?? '';
     if (!perfil) {
@@ -251,7 +236,7 @@ export class Compra implements OnInit, OnDestroy {
       fechaNacimiento = aFechaIso(valores.dia, valores.mes, valores.anio);
     }
 
-    // RN-06: la edad se controla antes de guardar nada.
+    // La edad se controla antes de guardar nada.
     if (pelicula.restriccion_edad && edadDe(fechaNacimiento) < pelicula.restriccion_edad) {
       this.error.set(`Esta película es para mayores de ${pelicula.restriccion_edad} años.`);
       return;
@@ -291,7 +276,7 @@ export class Compra implements OnInit, OnDestroy {
       this.exito.set(true);
       await this.cargarBeneficios();
     } catch (error) {
-      // 23505 = la base rechazó una butaca repetida.
+      // 23505: otra persona compró una de esas butacas.
       const codigo = (error as { code?: string }).code;
       this.error.set(
         codigo === '23505'

@@ -28,7 +28,6 @@
   border-radius: calc(var(--radio) / 2);
 }
 
-/* Verde si puede pasar; con la clase .rechazada el mismo bloque se pone rojo. */
 .resultado {
   padding: 1.25rem;
   background: var(--color-superficie);
@@ -68,7 +67,6 @@
   margin: 0;
   font-weight: 700;
 }
-/* Lector de QR con la cámara */
 .camara {
   display: grid;
   gap: 0.75rem;

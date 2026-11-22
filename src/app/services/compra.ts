@@ -8,7 +8,6 @@ import { Pelicula } from '../models/pelicula.model';
 import { Butaca } from '../models/sala.model';
 import { SupabaseService } from './supabase';
 
-// Todo lo que la pantalla de compra ya calculó y hay que guardar.
 export interface DatosCompra {
   usuarioId: string;
   esInvitado: boolean;
@@ -28,7 +27,6 @@ export interface DatosCompra {
 export class ComprasService {
   private supabase = inject(SupabaseService).client;
 
-  // El canal de realtime abierto, o null si no hay ninguno.
   private canal: RealtimeChannel | null = null;
 
   async listarButacas(salaId: number): Promise<Butaca[]> {
@@ -42,9 +40,7 @@ export class ComprasService {
     return data ?? [];
   }
 
-  // Devuelve solo los ids de las butacas ya vendidas para esta función.
-  // Lee la vista butacas_vendidas, que no tiene los códigos QR: así la
-  // puede consultar también un visitante sin cuenta.
+  // Lee la vista sin códigos QR, así también la puede consultar un visitante.
   async listarOcupadas(funcionId: string): Promise<number[]> {
     const { data, error } = await this.supabase
       .from('butacas_vendidas')
@@ -59,8 +55,6 @@ export class ComprasService {
     return ids;
   }
 
-  // Realtime: abre un canal que avisa cada vez que cambia la tabla `entradas`.
-  // `alCambiar` es la función que se ejecuta con cada aviso.
   escucharEntradas(alCambiar: () => void) {
     this.canal = this.supabase
       .channel('entradas-realtime')
@@ -70,7 +64,6 @@ export class ComprasService {
       .subscribe();
   }
 
-  // Cierra el canal para no dejar la conexión abierta al salir de la compra.
   dejarDeEscuchar() {
     if (this.canal) {
       this.supabase.removeChannel(this.canal);
@@ -78,11 +71,7 @@ export class ComprasService {
     }
   }
 
-  // ---------- Preventa (RF-53 y RF-54) ----------
-
-  // Una película con estreno futuro está en preventa desde `preventa_desde`
-  // hasta el día del estreno. Después el precio vuelve solo al normal,
-  // porque esta función deja de dar true.
+  // Al llegar el estreno deja de dar true y el precio vuelve solo al normal.
   estaEnPreventa(funcion: Funcion, pelicula: Pelicula): boolean {
     if (!funcion.preventa_desde || !funcion.precio_preventa || !pelicula.fecha_estreno) {
       return false;
@@ -92,26 +81,20 @@ export class ComprasService {
     return ahora >= new Date(funcion.preventa_desde) && ahora < estreno;
   }
 
-  // Se puede comprar si la película ya se estrenó o si está en preventa.
   estaALaVenta(funcion: Funcion, pelicula: Pelicula): boolean {
     if (!pelicula.fecha_estreno) return true;
     const estreno = new Date(pelicula.fecha_estreno + 'T00:00:00');
     return new Date() >= estreno || this.estaEnPreventa(funcion, pelicula);
   }
 
-  // La VIP mantiene su precio (siempre es mayor, RN-11); las demás usan
-  // el precio de preventa mientras dure.
+  // La VIP mantiene su precio; las demás usan el de preventa mientras dure.
   precioDe(funcion: Funcion, butaca: Butaca, pelicula: Pelicula): number {
     if (butaca.tipo === 'vip') return Number(funcion.precio_vip);
     if (this.estaEnPreventa(funcion, pelicula)) return Number(funcion.precio_preventa);
     return Number(funcion.precio_normal);
   }
 
-  // ---------- Confirmar la compra ----------
-
-  // Pago simulado. Se guarda en este orden: la orden, las entradas, el
-  // candy, y por último los movimientos de puntos y crédito.
-  // Devuelve los códigos de las entradas (el invitado los ve en pantalla).
+  // Pago simulado. Devuelve los códigos de las entradas.
   async confirmar(datos: DatosCompra): Promise<string[]> {
     const { data, error } = await this.supabase
       .from('ordenes')
@@ -128,7 +111,6 @@ export class ComprasService {
     if (error) throw error;
     const ordenId = data[0].id;
 
-    // Una entrada por butaca, cada una con su código único.
     const entradas = [];
     const codigos: string[] = [];
     for (const butaca of datos.butacas) {
@@ -145,12 +127,11 @@ export class ComprasService {
 
     const { error: errorEntradas } = await this.supabase.from('entradas').insert(entradas);
     if (errorEntradas) {
-      // Si alguna butaca ya estaba vendida, se borra la orden para no dejarla vacía.
+      // Butaca ya vendida: se borra la orden para no dejarla vacía.
       await this.supabase.from('ordenes').delete().eq('id', ordenId);
       throw errorEntradas;
     }
 
-    // El candy elegido, más el producto gratis si se canjeó uno.
     const items = [];
     for (const item of datos.candy) {
       items.push({
@@ -188,7 +169,7 @@ export class ComprasService {
       await this.moverCredito(datos.usuarioId, ordenId, -datos.creditoUsado, 'Usado en una compra');
     }
 
-    // RN-08: 1 punto por cada peso pagado.
+    // 1 punto por cada peso pagado.
     const puntosGanados = Math.floor(datos.total);
     if (puntosGanados > 0) {
       await this.moverPuntos(datos.usuarioId, ordenId, puntosGanados, 'Compra');
@@ -228,18 +209,14 @@ export class ComprasService {
     if (error) throw error;
   }
 
-  // ---------- Cancelar una compra (RF-33, RF-34, RN-09, RN-10) ----------
-
-  // RN-09: solo si faltan más de 2 horas para la función.
+  // Solo si faltan más de 2 horas para la función.
   sePuedeCancelar(orden: Orden, inicioFuncion: string): boolean {
     if (orden.estado !== 'pagada') return false;
     const dosHoras = 2 * 60 * 60 * 1000;
     return new Date(inicioFuncion).getTime() - Date.now() > dosHoras;
   }
 
-  // La orden y sus entradas pasan a 'cancelada' (eso libera las butacas),
-  // se devuelve como crédito todo lo pagado (en plata y en crédito) y se
-  // revierten los puntos de esa compra.
+  // Pasar las entradas a 'cancelada' libera las butacas.
   async cancelar(orden: Orden, usuarioId: string): Promise<number> {
     const { error } = await this.supabase.from('ordenes').update({ estado: 'cancelada' }).eq('id', orden.id);
     if (error) throw error;
@@ -250,13 +227,13 @@ export class ComprasService {
       .eq('orden_id', orden.id);
     if (errorEntradas) throw errorEntradas;
 
-    // RN-10: nunca se devuelve plata, solo crédito.
+    // Nunca se devuelve plata, solo crédito.
     const reintegro = Number(orden.total) + Number(orden.credito_usado);
     if (reintegro > 0) {
       await this.moverCredito(usuarioId, orden.id, reintegro, 'Cancelación de compra');
     }
 
-    // Se deshacen los puntos de esta compra: los ganados se restan y los canjeados vuelven.
+    // Se invierten los movimientos: los puntos ganados se restan y los canjeados vuelven.
     const { data: movimientos, error: errorPuntos } = await this.supabase
       .from('puntos_movimientos')
       .select('*')

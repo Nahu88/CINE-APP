@@ -1,4 +1,4 @@
-/* Tokens de diseño: la paleta y tipografía de toda la app se cambian desde acá */
+/* Paleta y tipografía de toda la app */
 :root {
   --color-fondo: #0b1020;
   --color-superficie: #141c33;
@@ -123,7 +123,7 @@ a {
   }
 }
 
-/* Formularios (login y registro): los estilos comunes viven acá para no repetirlos */
+/* Formularios (login y registro) */
 .pagina-form {
   display: grid;
   place-items: center;
@@ -215,7 +215,6 @@ a {
   color: var(--color-acento);
 }
 
-/* Mensaje de éxito, la contracara de .mensaje-error */
 .mensaje-exito {
   padding: 0.75rem 1rem;
   color: var(--color-ok);
@@ -223,11 +222,7 @@ a {
   border-radius: calc(var(--radio) / 2);
 }
 
-/* ============================================================
-   Panel de administración y pantallas de gestión
-   Todas las pantallas del panel envuelven su contenido en
-   <section class="panel"> y comparten estos estilos.
-   ============================================================ */
+/* Panel de administración: todas sus pantallas usan <section class="panel"> */
 .panel {
   display: grid;
   gap: 1.5rem;
@@ -273,7 +268,6 @@ a {
   color: var(--color-acento);
 }
 
-/* Caja de un formulario o de una sección */
 .caja {
   display: grid;
   gap: 1.1rem;

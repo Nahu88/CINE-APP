@@ -18,7 +18,6 @@ export class Cupones implements OnInit {
   cargando = signal(true);
   error = signal<string | null>(null);
 
-  // Para quién es cada tipo de cupón, como texto para la tabla.
   paraQuien(tipo: TipoCupon): string {
     if (tipo === 'bienvenida') return 'Primera compra de cada cliente registrado';
     if (tipo === 'mayores_50') return 'Clientes de 50 años o más';
@@ -74,7 +73,6 @@ export class Cupones implements OnInit {
     }
   }
 
-  // RF-46: el porcentaje se puede cambiar en cualquier momento.
   async cambiarPorcentaje(cupon: Cupon) {
     const respuesta = prompt('Nuevo porcentaje de descuento (1 a 100)', String(cupon.porcentaje));
     if (respuesta === null) return;

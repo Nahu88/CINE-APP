@@ -10,14 +10,11 @@ import { ButacaDirective } from '../../directivas/butaca.directive';
   templateUrl: './mapa-butacas.html',
 })
 export class MapaButacas {
-  // Los datos bajan con input
   butacas = input.required<Butaca[]>();
   ocupadas = input<number[]>([]);
   seleccionadas = input<number[]>([]);
-  // output sube el evento
   alternar = output<Butaca>();
 
-  // Lista de letras de fila sin repetir: A, B, C...
   filas = computed(() => {
     const filas: string[] = [];
     for (const butaca of this.butacas()) {
@@ -38,7 +35,7 @@ export class MapaButacas {
     return this.seleccionadas().includes(butaca.id);
   }
 
-  // Deja un pasillo después de cada bloque: 4+20+4, o 2+10+2 en las accesibles.
+  // Pasillo después de cada bloque: 4+20+4, o 2+10+2 en las accesibles.
   esPasillo(butaca: Butaca): boolean {
     if (butaca.tipo === 'accesible') return butaca.numero === 2 || butaca.numero === 12;
     return butaca.numero === 4 || butaca.numero === 24;

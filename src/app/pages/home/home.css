@@ -207,7 +207,7 @@ h1 {
   border-color: var(--color-acento);
 }
 
-/* En celular los géneros van en una sola fila deslizable para no sumar scroll vertical */
+/* En celular los géneros van en una fila deslizable */
 @media (max-width: 40rem) {
   .filtros {
     flex-wrap: nowrap;
@@ -238,7 +238,6 @@ h1 {
   border-radius: var(--radio);
 }
 
-/* Avisos de alertas de estreno (RF-15) */
 .avisos {
   display: grid;
   gap: 0.6rem;

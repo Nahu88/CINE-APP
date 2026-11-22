@@ -9,7 +9,7 @@
   list-style: none;
 }
 
-/* Cada entrada se ve como un ticket: datos a la izquierda, talón con el QR a la derecha. */
+/* Ticket: datos a la izquierda, talón con el QR a la derecha */
 .entrada {
   display: flex;
   flex-wrap: wrap;
@@ -45,7 +45,6 @@
   color: var(--color-error);
 }
 
-/* La línea punteada es el troquel del ticket. */
 .entrada-qr {
   flex: 0 0 13rem;
   display: grid;
@@ -69,7 +68,7 @@
   color: var(--color-texto-suave);
 }
 
-/* Entrada usada o cancelada: el QR se apaga para que no se confunda con una vigente. */
+/* Usada o cancelada: el QR se apaga */
 .no-vigente .entrada-qr img {
   opacity: 0.25;
 }
@@ -89,7 +88,6 @@
     border-top: 2px dashed var(--color-borde);
   }
 }
-/* Cada compra agrupa sus entradas */
 .compra {
   display: grid;
   gap: 0.85rem;

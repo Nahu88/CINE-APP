@@ -20,7 +20,7 @@ function perfilDePrueba(rol: RolUsuario): Perfil {
   };
 }
 
-// Es un Auth falso: reemplazo al real para no depender de Supabase, despeus veo bien.
+// Auth falso para no depender de Supabase.
 class AuthFalso {
   perfil = signal<Perfil | null>(null);
   async cargarPerfil() {

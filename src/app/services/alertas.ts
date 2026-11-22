@@ -1,14 +1,11 @@
 import { inject, Service } from '@angular/core';
 import { SupabaseService } from './supabase';
 
-// Alertas de estreno (RF-15): el cliente pide que le avisen cuando una
-// película de "Próximamente" sale a la venta. El aviso se muestra dentro
-// de la app, en la página principal (supuesto 4 del documento).
+// El aviso se muestra dentro de la app, en la página principal.
 @Service()
 export class AlertasService {
   private supabase = inject(SupabaseService).client;
 
-  // Devuelve los ids de las películas que el usuario quiere que le avisen.
   async listarDelUsuario(usuarioId: string): Promise<string[]> {
     const { data, error } = await this.supabase
       .from('alertas_estreno')
