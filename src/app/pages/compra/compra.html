@@ -23,6 +23,31 @@
       } @else {
         <div class="compra-columnas">
           <div class="compra-principal">
+            @if (tengoTurno()) {
+              <p class="aviso aviso-turno" role="status">
+                ¡Es tu turno de la lista de espera! Tenés hasta las {{ finDeMiTurno() | date: 'HH:mm' }} para comprar.
+              </p>
+            } @else if (agotada()) {
+              <div class="aviso aviso-agotada">
+                <strong>Función agotada.</strong>
+                @if (miLista(); as lista) {
+                  <span>Estás en la lista de espera, en el lugar {{ lista.posicion }}. Te avisamos si se libera una butaca.</span>
+                  <button type="button" class="boton-chico boton-secundario" (click)="salirDeEspera()">Salir de la lista</button>
+                } @else if (auth.perfil(); as perfil) {
+                  @if (perfil.invitado) {
+                    <span>Para anotarte en la lista de espera necesitás una cuenta registrada.</span>
+                  } @else {
+                    <span>Anotate y te avisamos si alguien cancela: vas a tener 15 minutos para comprar.</span>
+                    <button type="button" class="boton-chico boton-primario" [disabled]="anotando()" (click)="anotarseEnEspera()">
+                      Anotarme en la lista de espera
+                    </button>
+                  }
+                } @else {
+                  <span><a routerLink="/login">Ingresá</a> para anotarte en la lista de espera.</span>
+                }
+              </div>
+            }
+
             <div class="bloque">
               <h2>1. Elegí tus butacas</h2>
               <app-mapa-butacas

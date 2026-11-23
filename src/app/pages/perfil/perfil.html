@@ -28,6 +28,32 @@
         <a routerLink="/mis-peliculas" class="boton boton-secundario">Mis películas</a>
       </nav>
 
+      <div class="caja listas-espera">
+        <h2>Mis listas de espera</h2>
+        <ul class="lista-simple">
+          @for (lista of misListas(); track lista.id) {
+            <li>
+              <span>
+                {{ nombrePelicula(lista) }}
+                <small class="ayuda">{{ funcionDe(lista)?.inicio | date: 'd/M HH:mm' }}</small>
+              </span>
+              @if (lista.estado === 'notificado') {
+                <a [routerLink]="['/compra', lista.funcion_id]" class="boton-chico boton-primario">
+                  ¡Es tu turno! Comprá hasta las {{ listaEspera.finDelTurno(lista) | date: 'HH:mm' }}
+                </a>
+              } @else {
+                <span class="acciones-fila">
+                  <span class="etiqueta">Lugar {{ lista.posicion }}</span>
+                  <button type="button" class="boton-chico boton-secundario" (click)="salirDeLista(lista)">Salir</button>
+                </span>
+              }
+            </li>
+          } @empty {
+            <li class="ayuda">Si una función está agotada, podés anotarte desde la compra y te avisamos si se libera una butaca.</li>
+          }
+        </ul>
+      </div>
+
       <div class="caja propuestas">
         <h2>Proponé una película</h2>
         <p class="ayuda">¿Querés ver una película que no está en la cartelera? Contanos cuál y por qué.</p>

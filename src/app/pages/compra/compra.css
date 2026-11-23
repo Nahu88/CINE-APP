@@ -190,3 +190,13 @@ h2 small {
   border: 1px solid var(--color-borde);
   border-radius: calc(var(--radio) / 2);
 }
+
+.aviso-agotada,
+.aviso-turno {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 1rem;
+  background: color-mix(in srgb, var(--color-acento) 12%, transparent);
+}

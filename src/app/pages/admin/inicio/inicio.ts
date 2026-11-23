@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SECCIONES_PANEL, SeccionPanel } from '../../../models/rol.model';
+import { Auth } from '../../../services/auth';
 
 @Component({
   imports: [RouterLink],
@@ -8,38 +10,30 @@ import { RouterLink } from '@angular/router';
   templateUrl: './inicio.html',
 })
 export class AdminInicio {
-  readonly grupos = [
-    {
-      titulo: 'Cartelera',
-      secciones: [
-        { ruta: '/admin/peliculas', nombre: 'Películas', detalle: 'Alta, edición y visibilidad' },
-        { ruta: '/admin/generos', nombre: 'Géneros', detalle: 'La lista para clasificar películas' },
-        { ruta: '/admin/propuestas', nombre: 'Propuestas', detalle: 'Películas que piden los clientes' },
-        { ruta: '/admin/funciones', nombre: 'Funciones', detalle: 'Programación con sala automática' },
-        { ruta: '/admin/salas', nombre: 'Salas y butacas', detalle: 'Salas y su distribución' },
-      ],
-    },
-    {
-      titulo: 'Candy bar',
-      secciones: [
-        { ruta: '/admin/productos', nombre: 'Productos', detalle: 'Productos y categorías' },
-        { ruta: '/admin/combos', nombre: 'Combos', detalle: 'Combos con precio fijo' },
-      ],
-    },
-    {
-      titulo: 'Beneficios',
-      secciones: [
-        { ruta: '/admin/cupones', nombre: 'Cupones', detalle: 'Bienvenida, mayores de 50 y generales' },
-        { ruta: '/admin/recompensas', nombre: 'Recompensas', detalle: 'Qué se canjea con puntos' },
-      ],
-    },
-    {
-      titulo: 'Control',
-      secciones: [
-        { ruta: '/admin/reportes', nombre: 'Reportes', detalle: 'Facturación, ranking y exportación' },
-        { ruta: '/admin/actividad', nombre: 'Actividad', detalle: 'Quién hizo qué y cuándo' },
-        { ruta: '/empleado/validar', nombre: 'Validar entradas', detalle: 'Ingreso a sala y candy' },
-      ],
-    },
-  ];
+  private auth = inject(Auth);
+
+  // Solo las secciones que el usuario puede usar, agrupadas como en SECCIONES_PANEL.
+  grupos = computed(() => {
+    const grupos: { titulo: string; secciones: SeccionPanel[] }[] = [];
+    for (const seccion of SECCIONES_PANEL) {
+      if (!this.auth.tienePermiso(seccion.clave)) continue;
+      let grupo = grupos.find((g) => g.titulo === seccion.grupo);
+      if (!grupo) {
+        grupo = { titulo: seccion.grupo, secciones: [] };
+        grupos.push(grupo);
+      }
+      grupo.secciones.push(seccion);
+    }
+
+    if (this.auth.perfil()?.rol === 'administrador') {
+      grupos.find((g) => g.titulo === 'Control')?.secciones.push({
+        clave: 'roles',
+        nombre: 'Roles',
+        ruta: '/admin/roles',
+        detalle: 'Permisos del panel por usuario',
+        grupo: 'Control',
+      });
+    }
+    return grupos;
+  });
 }

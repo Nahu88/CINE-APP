@@ -19,6 +19,9 @@ export class Auth {
 
   perfil = signal<Perfil | null>(null);
 
+  // Las secciones del panel que habilita el rol configurable del usuario.
+  permisos = signal<string[]>([]);
+
   async registrar(datos: DatosRegistro) {
     const { data, error } = await this.supabase.auth.signUp({
       email: datos.email,
@@ -95,6 +98,18 @@ export class Auth {
   async cerrarSesion() {
     await this.supabase.auth.signOut();
     this.perfil.set(null);
+    this.permisos.set([]);
+  }
+
+  // Misma regla que la función tiene_permiso de la base, que es la que protege los datos.
+  // 'panel' = tiene al menos una sección, para mostrar el link al panel.
+  tienePermiso(seccion: string): boolean {
+    const perfil = this.perfil();
+    if (!perfil) return false;
+    if (perfil.rol === 'administrador') return true;
+    if (seccion === 'validar' && perfil.rol === 'empleado') return true;
+    if (seccion === 'panel') return this.permisos().length > 0;
+    return this.permisos().includes(seccion);
   }
 
   async cargarPerfil(): Promise<Perfil | null> {
@@ -102,6 +117,7 @@ export class Auth {
 
     if (!data.user) {
       this.perfil.set(null);
+      this.permisos.set([]);
       return null;
     }
 
@@ -116,6 +132,17 @@ export class Auth {
       this.perfil.set(null);
       return null;
     }
+
+    // Los permisos se cargan antes que el perfil, así el guard ya los encuentra.
+    let permisos: string[] = [];
+    if (perfil.rol_personalizado_id) {
+      const { data: roles } = await this.supabase
+        .from('roles')
+        .select('permisos')
+        .eq('id', perfil.rol_personalizado_id);
+      if (roles && roles.length > 0) permisos = roles[0].permisos;
+    }
+    this.permisos.set(permisos);
 
     this.perfil.set(perfil);
     return perfil;

@@ -164,6 +164,7 @@
             <th>Fin</th>
             <th>Formato</th>
             <th>Precios</th>
+            <th>En espera</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -186,6 +187,7 @@
                   <span class="etiqueta etiqueta-acento">Preventa ${{ funcion.precio_preventa }}</span>
                 }
               </td>
+              <td class="numero">{{ enEspera(funcion) || '—' }}</td>
               <td class="celda-acciones">
                 @if (sePuedeCancelar(funcion)) {
                   <button type="button" class="boton-chico boton-secundario" (click)="cancelarFuncion(funcion)">Cancelar función</button>
@@ -194,7 +196,7 @@
               </td>
             </tr>
           } @empty {
-            <tr><td colspan="7" class="vacio">Todavía no hay funciones programadas.</td></tr>
+            <tr><td colspan="8" class="vacio">Todavía no hay funciones programadas.</td></tr>
           }
         </tbody>
       </table>

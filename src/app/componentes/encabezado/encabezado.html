@@ -29,7 +29,7 @@
         @if (perfil.rol === 'empleado') {
           <a routerLink="/empleado/validar">Validar</a>
         }
-        @if (perfil.rol === 'administrador') {
+        @if (auth.tienePermiso('panel')) {
           <a routerLink="/admin">Panel</a>
         }
       }

@@ -7,12 +7,14 @@ import { MapaButacas } from '../../componentes/mapa-butacas/mapa-butacas';
 import { ItemCarrito } from '../../models/candy.model';
 import { Cupon, Recompensa } from '../../models/fidelizacion.model';
 import { Funcion } from '../../models/funcion.model';
+import { MiListaEspera } from '../../models/lista-espera.model';
 import { Pelicula } from '../../models/pelicula.model';
 import { Butaca } from '../../models/sala.model';
 import { Auth } from '../../services/auth';
 import { ComprasService } from '../../services/compra';
 import { FidelizacionService } from '../../services/fidelizacion';
 import { FuncionesService } from '../../services/funciones';
+import { ListaEsperaService } from '../../services/lista-espera';
 import { PeliculasService } from '../../services/peliculas';
 import { SalasService } from '../../services/salas';
 import { aFechaIso, edadDe, MESES } from '../../utils/fechas';
@@ -32,6 +34,7 @@ export class Compra implements OnInit, OnDestroy {
   private peliculasService = inject(PeliculasService);
   private salasService = inject(SalasService);
   private fidelizacion = inject(FidelizacionService);
+  private listaEspera = inject(ListaEsperaService);
 
   funcion = signal<Funcion | null>(null);
   pelicula = signal<Pelicula | null>(null);
@@ -39,6 +42,22 @@ export class Compra implements OnInit, OnDestroy {
   butacas = signal<Butaca[]>([]);
   ocupadas = signal<number[]>([]);
   seleccionadas = signal<Butaca[]>([]);
+
+  turnosAjenos = signal(0); // butacas libres reservadas para el turno de otro
+  miLista = signal<MiListaEspera | null>(null);
+  anotando = signal(false);
+
+  tengoTurno = computed(() => this.miLista()?.estado === 'notificado');
+
+  // Las libres menos las guardadas para el turno de alguien de la lista de espera.
+  cupo = computed(() => this.butacas().length - this.ocupadas().length - this.turnosAjenos());
+
+  agotada = computed(() => this.butacas().length > 0 && this.cupo() <= 0);
+
+  finDeMiTurno = computed(() => {
+    const lista = this.miLista();
+    return lista ? this.listaEspera.finDelTurno(lista) : null;
+  });
 
   carrito = signal<ItemCarrito[]>([]);
 
@@ -155,6 +174,7 @@ export class Compra implements OnInit, OnDestroy {
 
       this.butacas.set(await this.comprasService.listarButacas(funcion.sala_id));
       this.ocupadas.set(await this.comprasService.listarOcupadas(funcion.id));
+      await this.cargarListaEspera();
 
       await this.cargarBeneficios();
 
@@ -192,6 +212,63 @@ export class Compra implements OnInit, OnDestroy {
     const ocupadas = await this.comprasService.listarOcupadas(funcion.id);
     this.ocupadas.set(ocupadas);
     this.seleccionadas.update((actual) => actual.filter((b) => !ocupadas.includes(b.id)));
+    await this.cargarListaEspera();
+  }
+
+  // Si falla, la compra se puede hacer igual.
+  private async cargarListaEspera() {
+    const funcion = this.funcion();
+    if (!funcion) return;
+    try {
+      const perfil = this.auth.perfil();
+      // Primero se aplican las reglas en la base: turnos vencidos y siguiente turno.
+      if (perfil) await this.listaEspera.revisar(funcion.id);
+
+      const porFuncion = await this.listaEspera.porFuncion();
+      const conTurno = porFuncion.find((e) => e.funcion_id === funcion.id)?.con_turno ?? 0;
+
+      let mia: MiListaEspera | null = null;
+      if (perfil && !perfil.invitado) {
+        const mias = await this.listaEspera.misListas();
+        mia = mias.find((l) => l.funcion_id === funcion.id) ?? null;
+      }
+      this.miLista.set(mia);
+
+      // Si el turno es mío, esa butaca reservada la puedo elegir yo.
+      this.turnosAjenos.set(mia?.estado === 'notificado' ? conTurno - 1 : conTurno);
+    } catch (error) {
+      console.error('No se pudo cargar la lista de espera:', error);
+    }
+  }
+
+  async anotarseEnEspera() {
+    const funcion = this.funcion();
+    const perfil = this.auth.perfil();
+    if (!funcion || !perfil) return;
+
+    this.anotando.set(true);
+    this.error.set(null);
+    try {
+      await this.listaEspera.anotarse(funcion.id, perfil.id);
+      await this.cargarListaEspera();
+    } catch (error) {
+      console.error('No se pudo anotar en la lista de espera:', error);
+      this.error.set('No se pudo anotarte en la lista de espera.');
+    } finally {
+      this.anotando.set(false);
+    }
+  }
+
+  async salirDeEspera() {
+    const lista = this.miLista();
+    if (!lista) return;
+    try {
+      await this.listaEspera.salir(lista.id);
+      await this.cargarListaEspera();
+    } catch (error) {
+      console.error('No se pudo salir de la lista de espera:', error);
+      this.error.set('No se pudo salir de la lista de espera.');
+    }
   }
 
   precioDe(butaca: Butaca): number {
@@ -203,6 +280,17 @@ export class Compra implements OnInit, OnDestroy {
 
   alternarButaca(butaca: Butaca) {
     this.exito.set(false);
+    const yaElegida = this.seleccionadas().find((b) => b.id === butaca.id);
+
+    if (!yaElegida && this.seleccionadas().length >= this.cupo()) {
+      this.error.set(
+        this.turnosAjenos() > 0
+          ? 'Las butacas libres están reservadas para la lista de espera.'
+          : 'No quedan más butacas libres.'
+      );
+      return;
+    }
+    this.error.set(null);
     this.seleccionadas.update((actual) =>
       actual.find((b) => b.id === butaca.id)
         ? actual.filter((b) => b.id !== butaca.id)
@@ -278,6 +366,13 @@ export class Compra implements OnInit, OnDestroy {
       this.recompensaElegida.set(null);
       this.usarCredito.set(false);
       this.exito.set(true);
+
+      // Si compró con su turno de la lista de espera, el turno queda usado.
+      const lista = this.miLista();
+      if (lista && lista.estado === 'notificado') {
+        await this.listaEspera.marcarCompra(lista.id);
+      }
+
       await this.cargarBeneficios();
     } catch (error) {
       // 23505: otra persona compró una de esas butacas.
@@ -290,6 +385,7 @@ export class Compra implements OnInit, OnDestroy {
       this.seleccionadas.set([]);
     } finally {
       this.ocupadas.set(await this.comprasService.listarOcupadas(funcion.id));
+      await this.cargarListaEspera();
       this.confirmando.set(false);
     }
   }

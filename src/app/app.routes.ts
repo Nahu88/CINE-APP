@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { permisoGuard } from './guards/permiso.guard';
 import { rolGuard } from './guards/rol.guard';
 
 export const routes: Routes = [
@@ -54,72 +55,79 @@ export const routes: Routes = [
   {
     path: 'empleado/validar',
     loadComponent: () => import('./pages/empleado/validar/validar').then((m) => m.Validar),
-    canActivate: [rolGuard(['empleado', 'administrador'])],
+    canActivate: [permisoGuard('validar')],
   },
 
+  // El panel se protege por permiso: el administrador entra a todo y un rol configurable, a sus secciones.
   {
     path: 'admin',
     loadComponent: () => import('./pages/admin/inicio/inicio').then((m) => m.AdminInicio),
-    canActivate: [rolGuard(['administrador'])],
+    canActivate: [permisoGuard('panel')],
   },
   {
     path: 'admin/peliculas',
     loadComponent: () => import('./pages/admin/peliculas/peliculas').then((m) => m.Peliculas),
-    canActivate: [rolGuard(['administrador'])],
+    canActivate: [permisoGuard('peliculas')],
   },
   {
     path: 'admin/generos',
     loadComponent: () => import('./pages/admin/generos/generos').then((m) => m.Generos),
-    canActivate: [rolGuard(['administrador'])],
+    canActivate: [permisoGuard('generos')],
   },
   {
     path: 'admin/propuestas',
     loadComponent: () => import('./pages/admin/propuestas/propuestas').then((m) => m.AdminPropuestas),
-    canActivate: [rolGuard(['administrador'])],
+    canActivate: [permisoGuard('propuestas')],
   },
   {
     path: 'admin/salas',
     loadComponent: () => import('./pages/admin/salas/salas').then((m) => m.Salas),
-    canActivate: [rolGuard(['administrador'])],
+    canActivate: [permisoGuard('salas')],
   },
   {
     path: 'admin/salas/:id',
     loadComponent: () => import('./pages/admin/sala-butacas/sala-butacas').then((m) => m.SalaButacas),
-    canActivate: [rolGuard(['administrador'])],
+    canActivate: [permisoGuard('salas')],
   },
   {
     path: 'admin/funciones',
     loadComponent: () => import('./pages/admin/funciones/funciones').then((m) => m.Funciones),
-    canActivate: [rolGuard(['administrador'])],
+    canActivate: [permisoGuard('funciones')],
   },
   {
     path: 'admin/productos',
     loadComponent: () => import('./pages/admin/productos/productos').then((m) => m.Productos),
-    canActivate: [rolGuard(['administrador'])],
+    canActivate: [permisoGuard('productos')],
   },
   {
     path: 'admin/combos',
     loadComponent: () => import('./pages/admin/combos/combos').then((m) => m.Combos),
-    canActivate: [rolGuard(['administrador'])],
+    canActivate: [permisoGuard('combos')],
   },
   {
     path: 'admin/cupones',
     loadComponent: () => import('./pages/admin/cupones/cupones').then((m) => m.Cupones),
-    canActivate: [rolGuard(['administrador'])],
+    canActivate: [permisoGuard('cupones')],
   },
   {
     path: 'admin/recompensas',
     loadComponent: () => import('./pages/admin/recompensas/recompensas').then((m) => m.Recompensas),
-    canActivate: [rolGuard(['administrador'])],
+    canActivate: [permisoGuard('recompensas')],
   },
   {
     path: 'admin/reportes',
     loadComponent: () => import('./pages/admin/reportes/reportes').then((m) => m.Reportes),
-    canActivate: [rolGuard(['administrador'])],
+    canActivate: [permisoGuard('reportes')],
   },
   {
     path: 'admin/actividad',
     loadComponent: () => import('./pages/admin/actividad/actividad').then((m) => m.Actividad),
+    canActivate: [permisoGuard('actividad')],
+  },
+  // Los roles los maneja solo el administrador.
+  {
+    path: 'admin/roles',
+    loadComponent: () => import('./pages/admin/roles/roles').then((m) => m.AdminRoles),
     canActivate: [rolGuard(['administrador'])],
   },
 

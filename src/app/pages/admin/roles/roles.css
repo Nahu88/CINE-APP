@@ -1,0 +1,12 @@
+.permisos {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.permisos legend {
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+}

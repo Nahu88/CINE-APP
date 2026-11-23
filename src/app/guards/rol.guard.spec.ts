@@ -15,6 +15,7 @@ function perfilDePrueba(rol: RolUsuario): Perfil {
     puntos: 0,
     credito: 0,
     cupon_bienvenida_usado: false,
+    rol_personalizado_id: null,
     invitado: false,
     created_at: '2026-01-01',
   };

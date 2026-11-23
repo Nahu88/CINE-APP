@@ -4,7 +4,7 @@
     <p class="bajada">Elegí qué querés gestionar.</p>
   </header>
 
-  @for (grupo of grupos; track grupo.titulo) {
+  @for (grupo of grupos(); track grupo.titulo) {
     <div class="grupo">
       <h2>{{ grupo.titulo }}</h2>
       <ul class="tarjetas">

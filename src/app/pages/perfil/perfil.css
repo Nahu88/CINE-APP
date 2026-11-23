@@ -40,3 +40,12 @@
   gap: 0.75rem;
   max-width: 36rem;
 }
+
+.propuestas .aviso,
+.listas-espera .aviso {
+  background: color-mix(in srgb, var(--color-acento) 12%, transparent);
+}
+
+.listas-espera {
+  margin-block: 1.5rem;
+}

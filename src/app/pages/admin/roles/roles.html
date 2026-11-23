@@ -1,0 +1,104 @@
+<section class="panel">
+  <a routerLink="/admin" class="volver-panel">&larr; Panel</a>
+  <header>
+    <h1>Roles</h1>
+    <p class="bajada">Creá roles que habiliten solo algunas secciones del panel y asignáselos a un usuario.</p>
+  </header>
+
+  @if (error()) {
+    <p class="mensaje-error" role="alert">{{ error() }}</p>
+  }
+  @if (exito()) {
+    <p class="mensaje-exito" role="status">{{ exito() }}</p>
+  }
+
+  <div class="dos-columnas">
+    <form [formGroup]="form" (ngSubmit)="guardar()" class="caja">
+      <h2>{{ editandoId() ? 'Editar rol' : 'Nuevo rol' }}</h2>
+
+      <div class="campo">
+        <label for="nombre">Nombre</label>
+        <input id="nombre" type="text" formControlName="nombre" placeholder="Contador" />
+        @if (form.controls.nombre.touched && form.controls.nombre.hasError('required')) {
+          <p class="error">Ingresá un nombre.</p>
+        }
+      </div>
+
+      <fieldset class="campo permisos">
+        <legend>Secciones que puede usar</legend>
+        @for (seccion of secciones; track seccion.clave) {
+          <label class="checkbox">
+            <input
+              type="checkbox"
+              [checked]="permisosElegidos().includes(seccion.clave)"
+              (change)="alternarPermiso(seccion.clave)"
+            />
+            {{ seccion.nombre }} <small class="ayuda">{{ seccion.grupo }}</small>
+          </label>
+        }
+      </fieldset>
+
+      <div class="acciones-fila">
+        <button type="submit" class="boton boton-primario" [disabled]="guardando()">
+          {{ editandoId() ? 'Guardar cambios' : 'Crear rol' }}
+        </button>
+        @if (editandoId()) {
+          <button type="button" class="boton boton-secundario" (click)="cancelarEdicion()">Cancelar</button>
+        }
+      </div>
+    </form>
+
+    <div class="caja">
+      <h2>Roles creados</h2>
+      @if (cargando()) {
+        <p class="vacio">Cargando…</p>
+      } @else {
+        <ul class="lista-simple">
+          @for (rol of roles(); track rol.id) {
+            <li>
+              <span><strong>{{ rol.nombre }}</strong> <small class="ayuda">{{ nombresPermisos(rol) }}</small></span>
+              <span class="acciones-fila">
+                <button type="button" class="boton-chico boton-secundario" (click)="editar(rol)">Editar</button>
+                <button type="button" class="boton-chico boton-peligro" (click)="eliminar(rol)">Eliminar</button>
+              </span>
+            </li>
+          } @empty {
+            <li class="vacio">Todavía no hay roles.</li>
+          }
+        </ul>
+      }
+    </div>
+  </div>
+
+  <div class="caja">
+    <h2>Usuarios</h2>
+    <p class="ayuda">El rol configurable se suma al rol de la cuenta. Un administrador ya puede usar todo el panel.</p>
+    <div class="tabla-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Cuenta</th>
+            <th>Rol configurable</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (usuario of usuarios(); track usuario.id) {
+            <tr>
+              <td>{{ usuario.nombre }} {{ usuario.apellido }}</td>
+              <td>{{ usuario.rol }}</td>
+              <td>
+                <select [attr.aria-label]="'Rol de ' + usuario.nombre" (change)="asignar(usuario, $event)">
+                  <option value="" [selected]="!usuario.rol_personalizado_id">Sin rol</option>
+                  @for (rol of roles(); track rol.id) {
+                    <option [value]="rol.id" [selected]="usuario.rol_personalizado_id === rol.id">{{ rol.nombre }}</option>
+                  }
+                </select>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

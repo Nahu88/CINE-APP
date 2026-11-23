@@ -5,9 +5,11 @@ import { RouterLink } from '@angular/router';
 import { Pelicula } from '../../../models/pelicula.model';
 import { Sala } from '../../../models/sala.model';
 import { Funcion } from '../../../models/funcion.model';
+import { EsperaPorFuncion } from '../../../models/lista-espera.model';
 import { ActividadService } from '../../../services/actividad';
 import { Auth } from '../../../services/auth';
 import { DatosFuncion, FuncionesService, SIN_SALA_DISPONIBLE } from '../../../services/funciones';
+import { ListaEsperaService } from '../../../services/lista-espera';
 import { PeliculasService } from '../../../services/peliculas';
 import { SalasService } from '../../../services/salas';
 import { DIAS_SEMANA, dosDigitos, MESES, numeros } from '../../../utils/fechas';
@@ -25,10 +27,12 @@ export class Funciones implements OnInit {
   private funcionesService = inject(FuncionesService);
   private actividad = inject(ActividadService);
   private auth = inject(Auth);
+  private listaEspera = inject(ListaEsperaService);
 
   peliculas = signal<Pelicula[]>([]);
   salas = signal<Sala[]>([]);
   funciones = signal<Funcion[]>([]);
+  espera = signal<EsperaPorFuncion[]>([]);
 
   cargando = signal(true);
   guardando = signal(false);
@@ -91,6 +95,7 @@ export class Funciones implements OnInit {
       this.peliculas.set(peliculas);
       this.salas.set(salas);
       this.funciones.set(funciones);
+      this.espera.set(await this.listaEspera.porFuncion());
     } catch {
       this.error.set('No se pudo cargar la información.');
     } finally {
@@ -252,6 +257,12 @@ export class Funciones implements OnInit {
       // Si falla, la transacción se deshace entera: nadie queda acreditado a medias.
       this.error.set('No se pudo cancelar la función. No se acreditó a nadie; probá de nuevo.');
     }
+  }
+
+  // Los que esperan en la fila más los que tienen el turno en curso.
+  enEspera(funcion: Funcion): number {
+    const fila = this.espera().find((e) => e.funcion_id === funcion.id);
+    return fila ? fila.en_espera + fila.con_turno : 0;
   }
 
   sePuedeCancelar(funcion: Funcion): boolean {

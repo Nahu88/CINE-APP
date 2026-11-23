@@ -3,9 +3,14 @@ import { DatePipe } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Canje, MovimientoCredito, MovimientoPuntos, Recompensa } from '../../models/fidelizacion.model';
+import { Funcion } from '../../models/funcion.model';
+import { MiListaEspera } from '../../models/lista-espera.model';
+import { Pelicula } from '../../models/pelicula.model';
 import { Propuesta } from '../../models/propuesta.model';
 import { Auth } from '../../services/auth';
 import { FidelizacionService } from '../../services/fidelizacion';
+import { FuncionesService } from '../../services/funciones';
+import { ListaEsperaService } from '../../services/lista-espera';
 import { PeliculasService } from '../../services/peliculas';
 import { PropuestasService } from '../../services/propuestas';
 import { tituloNuevoValidator } from '../../validators/propuesta.validators';
@@ -21,6 +26,8 @@ export class PerfilPagina implements OnInit {
   private fidelizacion = inject(FidelizacionService);
   private peliculasService = inject(PeliculasService);
   private propuestasService = inject(PropuestasService);
+  private funcionesService = inject(FuncionesService);
+  protected listaEspera = inject(ListaEsperaService);
 
   puntos = signal(0);
   credito = signal(0);
@@ -30,6 +37,10 @@ export class PerfilPagina implements OnInit {
   recompensas = signal<Recompensa[]>([]);
   cargando = signal(true);
   error = signal<string | null>(null);
+
+  misListas = signal<MiListaEspera[]>([]);
+  funciones = signal<Funcion[]>([]);
+  peliculas = signal<Pelicula[]>([]);
 
   propuestas = signal<Propuesta[]>([]);
   titulosCartelera = signal<string[]>([]);
@@ -76,6 +87,10 @@ export class PerfilPagina implements OnInit {
       this.propuestas.set(await this.propuestasService.listarDelUsuario(perfil.id));
       const cartelera = await this.peliculasService.listarCartelera();
       this.titulosCartelera.set(cartelera.map((p) => p.nombre));
+
+      this.peliculas.set(cartelera);
+      this.funciones.set(await this.funcionesService.listar());
+      this.misListas.set(await this.listaEspera.misListas());
     } catch {
       this.error.set('No se pudo cargar tu perfil.');
     } finally {
@@ -85,6 +100,25 @@ export class PerfilPagina implements OnInit {
 
   nombreRecompensa(id: string): string {
     return this.recompensas().find((r) => r.id === id)?.descripcion ?? 'Recompensa';
+  }
+
+  funcionDe(lista: MiListaEspera): Funcion | undefined {
+    return this.funciones().find((f) => f.id === lista.funcion_id);
+  }
+
+  nombrePelicula(lista: MiListaEspera): string {
+    const funcion = this.funcionDe(lista);
+    return this.peliculas().find((p) => p.id === funcion?.pelicula_id)?.nombre ?? 'Película';
+  }
+
+  async salirDeLista(lista: MiListaEspera) {
+    try {
+      await this.listaEspera.salir(lista.id);
+      this.misListas.set(await this.listaEspera.misListas());
+    } catch (error) {
+      console.error('No se pudo salir de la lista de espera:', error);
+      this.error.set('No se pudo salir de la lista de espera.');
+    }
   }
 
   tieneErrorPropuesta(campo: string, error: string): boolean {
