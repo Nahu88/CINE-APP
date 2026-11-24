@@ -42,7 +42,6 @@ export class Funciones implements OnInit {
   // Días en que se repite la función (vacío = solo la fecha elegida).
   diasElegidos = signal<number[]>([]);
 
-  // Sin calendario del navegador (RNF-07).
   readonly meses = MESES;
   readonly diasSemana = DIAS_SEMANA;
   readonly dias = numeros(1, 31);
@@ -72,7 +71,6 @@ export class Funciones implements OnInit {
     precio_preventa: new FormControl<number | null>(null),
   });
 
-  // La preventa solo tiene sentido si la película se estrena en el futuro.
   peliculaElegida = signal<Pelicula | null>(null);
   admitePreventa = computed(() => {
     const pelicula = this.peliculaElegida();
@@ -166,7 +164,6 @@ export class Funciones implements OnInit {
       return;
     }
 
-    // La VIP siempre cuesta más que la normal.
     if (Number(valores.precio_vip) <= Number(valores.precio_normal)) {
       this.error.set('El precio VIP tiene que ser mayor que el precio normal.');
       return;
@@ -259,7 +256,6 @@ export class Funciones implements OnInit {
     }
   }
 
-  // Los que esperan en la fila más los que tienen el turno en curso.
   enEspera(funcion: Funcion): number {
     const fila = this.espera().find((e) => e.funcion_id === funcion.id);
     return fila ? fila.en_espera + fila.con_turno : 0;

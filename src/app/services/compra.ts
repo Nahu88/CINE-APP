@@ -156,7 +156,6 @@ export class ComprasService {
       if (errorItems) throw errorItems;
     }
 
-    // Un invitado no suma ni usa puntos ni crédito.
     if (datos.esInvitado) {
       return codigos;
     }
@@ -209,7 +208,6 @@ export class ComprasService {
     if (error) throw error;
   }
 
-  // Solo si faltan más de 2 horas para la función.
   sePuedeCancelar(orden: Orden, inicioFuncion: string): boolean {
     if (orden.estado !== 'pagada') return false;
     const dosHoras = 2 * 60 * 60 * 1000;

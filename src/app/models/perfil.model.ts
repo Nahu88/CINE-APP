@@ -12,7 +12,7 @@ export interface Perfil {
   puntos: number;
   credito: number;
   cupon_bienvenida_usado: boolean;
-  rol_personalizado_id: string | null; // rol configurable con permisos del panel
+  rol_personalizado_id: string | null;
   invitado: boolean; // compró sin registrarse (sesión anónima)
   created_at: string;
 }

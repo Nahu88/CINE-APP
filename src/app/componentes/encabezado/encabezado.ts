@@ -15,8 +15,7 @@ export class Encabezado {
   private router = inject(Router);
 
   constructor() {
-    // Se vuelve a correr cada vez que cambia el perfil: al entrar empieza a escuchar
-    // los avisos y al salir deja de escuchar. El encabezado está en todas las páginas.
+    // Al iniciar sesión empieza a escuchar los avisos del usuario; al cerrarla, deja de escuchar.
     effect(() => {
       const perfil = this.auth.perfil();
       if (perfil) {

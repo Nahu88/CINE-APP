@@ -19,7 +19,6 @@ export class NotificacionesPagina implements OnInit {
   async ngOnInit() {
     this.permiso.set(this.notificaciones.permisoConcedido());
 
-    // Al entrar a ver los avisos, se marcan como leídos.
     const perfil = this.auth.perfil();
     if (perfil && this.notificaciones.sinLeer() > 0) {
       try {

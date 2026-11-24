@@ -75,7 +75,6 @@ export class Compra implements OnInit, OnDestroy {
 
   readonly meses = MESES;
 
-  // Fecha de nacimiento del que compra sin cuenta, para controlar la edad.
   formInvitado = new FormGroup(
     {
       dia: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
@@ -367,7 +366,6 @@ export class Compra implements OnInit, OnDestroy {
       this.usarCredito.set(false);
       this.exito.set(true);
 
-      // Si compró con su turno de la lista de espera, el turno queda usado.
       const lista = this.miLista();
       if (lista && lista.estado === 'notificado') {
         await this.listaEspera.marcarCompra(lista.id);

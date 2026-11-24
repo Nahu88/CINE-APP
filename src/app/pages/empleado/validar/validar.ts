@@ -35,7 +35,6 @@ export class Validar implements OnDestroy {
   error = signal<string | null>(null);
   exito = signal<string | null>(null);
 
-  // html5-qrcode dibuja el video dentro del div #lector.
   leyendo = signal(false);
   private lector: Html5Qrcode | null = null;
 

@@ -41,7 +41,6 @@ export class QrPdfService {
       y += 18;
     }
 
-    // El candy se retira mostrando este mismo QR.
     if (detalle.candy.length) {
       pdf.text('Candy bar (retirá con este mismo QR):', 20, y);
       y += 7;

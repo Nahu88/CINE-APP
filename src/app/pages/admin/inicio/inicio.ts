@@ -12,7 +12,6 @@ import { Auth } from '../../../services/auth';
 export class AdminInicio {
   private auth = inject(Auth);
 
-  // Solo las secciones que el usuario puede usar, agrupadas como en SECCIONES_PANEL.
   grupos = computed(() => {
     const grupos: { titulo: string; secciones: SeccionPanel[] }[] = [];
     for (const seccion of SECCIONES_PANEL) {

@@ -11,7 +11,7 @@ import { ReseniasService } from '../../services/resenias';
 interface PeliculaVista {
   pelicula: Pelicula;
   fecha: string;
-  estrellas: number | null; // null si no la calificó
+  estrellas: number | null;
 }
 
 @Component({

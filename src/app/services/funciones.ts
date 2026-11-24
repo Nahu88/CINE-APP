@@ -13,7 +13,7 @@ export interface DatosFuncion {
   idioma: IdiomaFuncion;
   precio_normal: number;
   precio_vip: number;
-  precio_preventa: number | null; // null si no tiene preventa
+  precio_preventa: number | null;
   preventa_desde: string | null;
   creadoPor?: string;
 }

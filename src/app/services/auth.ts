@@ -19,7 +19,6 @@ export class Auth {
 
   perfil = signal<Perfil | null>(null);
 
-  // Las secciones del panel que habilita el rol configurable del usuario.
   permisos = signal<string[]>([]);
 
   async registrar(datos: DatosRegistro) {

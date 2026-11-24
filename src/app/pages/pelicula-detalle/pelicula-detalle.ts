@@ -50,7 +50,6 @@ export class PeliculaDetalle implements OnInit {
     return this.resenias().find((r) => r.usuario_id === perfil.id) ?? null;
   });
 
-  // Un invitado no puede reseñar ni pedir alertas.
   esClienteRegistrado = computed(() => {
     const perfil = this.auth.perfil();
     return !!perfil && !perfil.invitado;

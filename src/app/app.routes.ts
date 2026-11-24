@@ -58,7 +58,6 @@ export const routes: Routes = [
     canActivate: [permisoGuard('validar')],
   },
 
-  // El panel se protege por permiso: el administrador entra a todo y un rol configurable, a sus secciones.
   {
     path: 'admin',
     loadComponent: () => import('./pages/admin/inicio/inicio').then((m) => m.AdminInicio),
@@ -124,7 +123,6 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/admin/actividad/actividad').then((m) => m.Actividad),
     canActivate: [permisoGuard('actividad')],
   },
-  // Los roles los maneja solo el administrador.
   {
     path: 'admin/roles',
     loadComponent: () => import('./pages/admin/roles/roles').then((m) => m.AdminRoles),
